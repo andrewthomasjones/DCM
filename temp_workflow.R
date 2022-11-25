@@ -1,6 +1,3 @@
-library(tools)
-library(readxl)
-
 filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP.txt'
 nmaxchoicesetsize<-31
 dataname<-'RP.RData'

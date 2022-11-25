@@ -105,7 +105,7 @@ create_concepts<-function(datamatrix, nmaxchoicesetsize=31) {
   }
   nlinesdata <- i2
 
-  return(list(data=data, nconcepts=nconcepts, nlinesdata=nlinesdata, databig=databig)
+  return(list(data=data, nconcepts=nconcepts, nlinesdata=nlinesdata, databig=databig))
 }
 
 
