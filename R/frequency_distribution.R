@@ -1,4 +1,4 @@
-frequencydistribution<-function(coldd){
+frequencyDistribution<-function(coldd){
 
   cold<-matrix(coldd,length(coldd),1)
   s1<-dim(cold)
@@ -9,14 +9,14 @@ frequencydistribution<-function(coldd){
   fd[1,2]<-1
 
   for(i1 in 2:s1[1]){
-    notfound<-1
+    not_found<-1
     for(i2 in 1:i3){
       if(cold[i1,1]==fd[i2,1]){
         fd[i2,2]<-fd[i2,2]+1
-        notfound<-0
+        not_found<-0
       }
     }
-    if(notfound==1){
+    if(not_found==1){
       i3<-i3+1
       fd[i3,1]<-cold[i1,1]
       fd[i3,2]<-1
@@ -48,3 +48,4 @@ frequencydistribution<-function(coldd){
   #print(fdd)
   return(fdd)
 }
+

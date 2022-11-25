@@ -1,15 +1,17 @@
 filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP.txt'
-nmaxchoicesetsize<-31
-dataname<-'RP.RData'
+nmax_choiceset_size<-31
+data_name<-'RP.RData'
 
-datamatrix<-read_data(filename)
+data_matrix<-readData(filename)
 
-print(paste0('Dimensions of raw data: ', paste(dim(datamatrix), collapse = " ")))
+print(paste0('Dimensions of raw data: ', paste(dim(data_matrix), collapse = " ")))
 print('Create concepts')
 
-concept_list<-create_concepts(datamatrix, nmaxchoicesetsize)
+concept_list<-createConcepts(data_matrix, nmax_choiceset_size)
 
-fdd<-frequencydistribution(concept_list$data[,1])
+fdd<-frequencyDistribution(concept_list$data[,1])
+
+##########################################################
 
 ndecisionmakers<-dim(fdd)[1]
 ncovariates<-dim(concept)[2]

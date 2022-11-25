@@ -1,111 +1,132 @@
+create_concepts <- function(data_matrix, nmax_choiceset_size = 31) {
+  dim_data_matrix <- dim(data_matrix)
+  nlines_data_matrix <- dim_data_matrix[1]
+  ncovariates <- dim_data_matrix[2] - 3
 
-create_concepts<-function(datamatrix, nmaxchoicesetsize=31) {
-  dimdatamatrix <- dim(datamatrix)
-  nlinesdatamatrix <- dimdatamatrix[1]
-  ncovariates <- dimdatamatrix[2]-3
+  iddm <- data_matrix[1, 1]
+  idcs <- data_matrix[1, 2]
 
+  data_big <-
+    matrix((1:nlines_data_matrix * (nmax_choiceset_size + 4)) * 0,
+           nlines_data_matrix,
+           nmax_choiceset_size + 4)
+  data_big[1, 1] = iddm
 
-  iddm <- datamatrix[1,1]
-  idcs <- datamatrix[1,2]
-  databig <- matrix((1:nlinesdatamatrix*(nmaxchoicesetsize+4))*0,nlinesdatamatrix,nmaxchoicesetsize+4)
-  databig[1,1]=iddm
-  if (datamatrix[1,3]==1) databig[1,2]<- 1
-  databig[1,4] <- 1
-  conceptbig <- matrix((1:nlinesdatamatrix*ncovariates)*0,nlinesdatamatrix,ncovariates)
-  for (i3 in 1:ncovariates) conceptbig[1,i3] <- datamatrix[1,i3+3]
-  databig[1,5] <-1
+  if (data_matrix[1, 3] == 1){
+    data_big[1, 2] <- 1
+  }
+  data_big[1, 4] <- 1
+
+  concept_big <-
+    matrix((1:nlines_data_matrix * ncovariates) * 0,
+           nlines_data_matrix,
+           ncovariates)
+  for (i3 in 1:ncovariates){
+    concept_big[1, i3] <- data_matrix[1, i3 + 3]
+  }
+  data_big[1, 5] <- 1
   print("i1 is the count of lines moving through the data matrix")
   i1 <- 1
-  print("i2 is the build of the number of rows in databig")
+  print("i2 is the build of the number of rows in data_big")
   i2 <- 1
   print("i3 is the count of covariates moving through the row of the data matrix")
   print("i4 is the count of lines moving through the concept matrix")
-  print("i5 is the build of the number of concepts in a row in databig")
+  print("i5 is the build of the number of concepts in a row in data_big")
   i5 <- 1
   print("i6 is build of the number of concepts")
   i6 <- 1
 
-  while (i1<nlinesdatamatrix){
-  i1 <- i1+1
-  matchnumber <- 0
-  i4 <- 0
+  while (i1 < nlines_data_matrix) {
+    i1 <- i1 + 1
+    match_number <- 0
+    i4 <- 0
 
-  while (i4<i6){
-  i4 <- i4+1
-  matchcount <-0
+    while (i4 < i6) {
+      i4 <- i4 + 1
+      match_count <- 0
 
-  for (i3 in 1:ncovariates) {
-  if (conceptbig[i4,i3]==datamatrix[i1,i3+3]) matchcount <- matchcount+1
+      for (i3 in 1:ncovariates) {
+        if (concept_big[i4, i3] == data_matrix[i1, i3 + 3])
+          match_count <- match_count + 1
+      }
+
+      if (match_count == ncovariates) {
+        match_number <- i4
+        i4 <- i6
+      }
+    }
+
+    if (match_number == 0) {
+      i6 <- i6 + 1
+      match_number <- i6
+      for (i3 in 1:ncovariates)
+        concept_big[i6, i3] <- data_matrix[i1, i3 + 3]
+    }
+
+
+    if (data_matrix[i1, 1] == iddm) {
+      if (data_matrix[i1, 2] == idcs) {
+        i5 <- i5 + 1
+        data_big[i2, i5 + 4] <- match_number
+        if (data_matrix[i1, 3] == 1)
+          data_big[i2, 2] <- match_number
+      }
+    }
+
+    if (data_matrix[i1, 1] == iddm) {
+      if (data_matrix[i1, 2] > idcs) {
+        #print(data_big[i2,])
+        idcs <- data_matrix[i1, 2]
+        i5 <- 1
+        i2 <- i2 + 1
+        data_big[i2, 1] <- iddm
+        data_big[i2, 4] <- 1
+        data_big[i2, i5 + 4] <- match_number
+        if (data_matrix[i1, 3] == 1)
+          data_big[i2, 2] <- match_number
+      }
+    }
+
+    if (data_matrix[i1, 1] > iddm) {
+      iddm <- data_matrix[i1, 1]
+      idcs <- data_matrix[i1, 2]
+      i5 <- 1
+      i2 <- i2 + 1
+      data_big[i2, 1] <- iddm
+      data_big[i2, 4] <- 1
+      data_big[i2, i5 + 4] <- match_number
+      if (data_matrix[i1, 3] == 1)
+        data_big[i2, 2] <- match_number
+
+    }
+
+
   }
 
-  if (matchcount==ncovariates) {
-  matchnumber <- i4
-  i4 <- i6
-  }
-  }
-
-  if (matchnumber==0) {
-  i6 <- i6+1
-  matchnumber <- i6
-  for (i3 in 1:ncovariates) conceptbig[i6,i3] <- datamatrix[i1,i3+3]
-  }
-
-
-  if (datamatrix[i1,1]==iddm) {
-
-  if (datamatrix[i1,2]==idcs) {
-  i5 <- i5+1
-  databig[i2,i5+4] <- matchnumber
-  if (datamatrix[i1,3]==1) databig[i2,2] <- matchnumber
-  }
-  }
-
-  if (datamatrix[i1,1]==iddm) {
-
-  if (datamatrix[i1,2]>idcs) {
-  #print(databig[i2,])
-  idcs <- datamatrix[i1,2]
-  i5 <- 1
-  i2 <- i2+1
-  databig[i2,1] <- iddm
-  databig[i2,4] <- 1
-  databig[i2,i5+4] <- matchnumber
-  if (datamatrix[i1,3]==1) databig[i2,2] <- matchnumber
-  }
-  }
-
-  if (datamatrix[i1,1]>iddm) {
-  iddm <- datamatrix[i1,1]
-  idcs <- datamatrix[i1,2]
-  i5 <- 1
-  i2 <- i2+1
-  databig[i2,1] <- iddm
-  databig[i2,4] <- 1
-  databig[i2,i5+4] <- matchnumber
-  if (datamatrix[i1,3]==1) databig[i2,2] <- matchnumber
-
-  }
-
-
-  }
-
-  concept <- matrix((1:i6*ncovariates)*0,i6,ncovariates)
+  concept <- matrix((1:i6 * ncovariates) * 0, i6, ncovariates)
   for (i8 in 1:i6) {
-  for (i9 in 1:ncovariates) {
-  concept[i8,i9]=conceptbig[i8,i9]
-  }
+    for (i9 in 1:ncovariates) {
+      concept[i8, i9] = concept_big[i8, i9]
+    }
   }
   nconcepts <- i6
 
-  data <- matrix((1:i2*(nmaxchoicesetsize+4))*0,i2,nmaxchoicesetsize+4)
+  data <-
+    matrix((1:i2 * (nmax_choiceset_size + 4)) * 0, i2, nmax_choiceset_size +
+             4)
   for (i8 in 1:i2) {
-  for (i9 in 1:(nmaxchoicesetsize+4)) {
-  data[i8,i9]=databig[i8,i9]
+    for (i9 in 1:(nmax_choiceset_size + 4)) {
+      data[i8, i9] = data_big[i8, i9]
+    }
   }
-  }
-  nlinesdata <- i2
+  nlines_data <- i2
 
-  return(list(data=data, nconcepts=nconcepts, nlinesdata=nlinesdata, databig=databig))
+  return(
+    list(
+      data = data,
+      nconcepts = nconcepts,
+      nlines_data = nlines_data,
+      data_big = data_big
+    )
+  )
 }
-
-
