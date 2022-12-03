@@ -9,8 +9,8 @@ print('Create concepts')
 
 concept_list<-createConcepts(data_matrix, nmax_choiceset_size)
 
-fdd<-frequencyDistribution(concept_list$data[,1])
-
+fdd<-frequencyDistribution(concept_list)
+fdd2<-frequencyDistribution2(concept_list)
 ##########################################################
 
 ndecisionmakers<-dim(fdd)[1]

@@ -1,4 +1,5 @@
-create_concepts <- function(data_matrix, nmax_choiceset_size = 31) {
+#' @export
+createConcepts <- function(data_matrix, nmax_choiceset_size = 31) {
   dim_data_matrix <- dim(data_matrix)
   nlines_data_matrix <- dim_data_matrix[1]
   ncovariates <- dim_data_matrix[2] - 3
