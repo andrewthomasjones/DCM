@@ -1,6 +1,9 @@
-frequencyDistribution<-function(coldd){
+#' @export
+frequencyDistribution<-function(cs){
 
+  coldd<-cs$data[,1]
   cold<-matrix(coldd,length(coldd),1)
+
   s1<-dim(cold)
   i3<-1
 
@@ -21,8 +24,10 @@ frequencyDistribution<-function(coldd){
       fd[i3,1]<-cold[i1,1]
       fd[i3,2]<-1
     }
+    print(i3)
   }
-
+  print(dim(fd))
+  print(sum(fd))
 
   fdd<-matrix((1:i3*2)*0,i3,2)
   fdd[1,1]<-fd[1,1]
@@ -46,6 +51,17 @@ frequencyDistribution<-function(coldd){
     }
   }
   #print(fdd)
+  return(fdd)
+}
+
+#' @export
+frequencyDistribution2<-function(cs){
+
+  coldd<-cs$data[,1]
+  cold<-matrix(coldd,length(coldd),1)
+
+  fdd<-frequencyDistributionCpp(cold)
+
   return(fdd)
 }
 
