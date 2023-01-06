@@ -22,9 +22,22 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// createConceptsCpp
+Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_size);
+RcppExport SEXP _DCM_createConceptsCpp(SEXP data_matrixSEXP, SEXP nmax_choiceset_sizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type data_matrix(data_matrixSEXP);
+    Rcpp::traits::input_parameter< int >::type nmax_choiceset_size(nmax_choiceset_sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(createConceptsCpp(data_matrix, nmax_choiceset_size));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_DCM_frequencyDistributionCpp", (DL_FUNC) &_DCM_frequencyDistributionCpp, 1},
+    {"_DCM_createConceptsCpp", (DL_FUNC) &_DCM_createConceptsCpp, 2},
     {NULL, NULL, 0}
 };
 
