@@ -9,7 +9,11 @@ print('Create concepts')
 
 ########################################################
 concept_list<-createConcepts(data_matrix, nmax_choiceset_size)
+<<<<<<< HEAD
 concept_list2<-createConcepts2(data_matrix, nmax_choiceset_size) #need to fix up the indexing next
+=======
+concept_list2<-createConcepts2(data_matrix, nmax_choiceset_size)
+>>>>>>> e0d9ba40baf83ac6f9f1a9602efc902f83a4273f
 
 ########################################################
 
