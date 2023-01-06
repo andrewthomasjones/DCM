@@ -7,11 +7,20 @@ data_matrix<-readData(filename)
 print(paste0('Dimensions of raw data: ', paste(dim(data_matrix), collapse = " ")))
 print('Create concepts')
 
+########################################################
 concept_list<-createConcepts(data_matrix, nmax_choiceset_size)
+concept_list2<-createConcepts2(data_matrix, nmax_choiceset_size) #need to fix up the indexing next
 
-fdd<-frequencyDistribution(concept_list)
-fdd2<-frequencyDistribution2(concept_list)
+########################################################
+
+fdd<-frequencyDistribution(concept_list) #0.008 sec elapsed
+
+fdd2<-frequencyDistribution2(concept_list) #0.001 sec elapsed
+
 ##########################################################
+
+
+
 
 ndecisionmakers<-dim(fdd)[1]
 ncovariates<-dim(concept)[2]

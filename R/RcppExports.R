@@ -10,3 +10,8 @@ frequencyDistributionCpp <- function(cold) {
     .Call('_DCM_frequencyDistributionCpp', PACKAGE = 'DCM', cold)
 }
 
+#' @export
+createConceptsCpp <- function(data_matrix, nmax_choiceset_size = 31L) {
+    .Call('_DCM_createConceptsCpp', PACKAGE = 'DCM', data_matrix, nmax_choiceset_size)
+}
+
