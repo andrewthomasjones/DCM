@@ -1,3 +1,6 @@
+library(DCM)
+library(tictoc)
+
 filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP.txt'
 nmax_choiceset_size<-31
 data_name<-'RP.RData'
@@ -8,20 +11,19 @@ print(paste0('Dimensions of raw data: ', paste(dim(data_matrix), collapse = " ")
 print('Create concepts')
 
 ########################################################
+tic()
 concept_list<-createConcepts(data_matrix, nmax_choiceset_size)
-concept_list2<-createConcepts2(data_matrix, nmax_choiceset_size) #need to fix up the indexing next
+toc()
 
-
+tic()
+concept_list2<-createConcepts2(data_matrix, nmax_choiceset_size)
+toc()
 ########################################################
 
 fdd<-frequencyDistribution(concept_list) #0.008 sec elapsed
-
 fdd2<-frequencyDistribution2(concept_list) #0.001 sec elapsed
 
 ##########################################################
-
-
-
 
 ndecisionmakers<-dim(fdd)[1]
 ncovariates<-dim(concept)[2]
@@ -38,6 +40,9 @@ print('Dimensions of process data: should be ndecisionmakers by nmaxchoicesetsiz
 print(dim(data))
 print('Dimensions of concept matrix')
 print(dim(concept))
+
+##########################################################
+
 source('jessyfixed.R')
 save(file=modelfixedname,list='model')
 source('jessyglobal.R')
