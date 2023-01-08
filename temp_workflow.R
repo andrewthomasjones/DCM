@@ -5,24 +5,40 @@ filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP.txt'
 nmax_choiceset_size<-31
 data_name<-'RP.RData'
 
+filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
+nmax_choiceset_size<-31
+data_name<-'RP_SP.RData'
+
+filename<-'/Users/uqajon14/Downloads/R Code_RP SP/SP.txt'
+nmax_choiceset_size<-3
+data_name<-'SP.RData'
+
+
 data_matrix<-readData(filename)
+# print(paste0('Dimensions of raw data: ', paste(dim(data_matrix), collapse = " ")))
+# print('Create concepts')
 
-print(paste0('Dimensions of raw data: ', paste(dim(data_matrix), collapse = " ")))
-print('Create concepts')
-
-########################################################
 tic()
 concept_list<-createConcepts(data_matrix, nmax_choiceset_size)
-toc()
+fdd<-frequencyDistribution(concept_list)
+b<-toc()
 
 tic()
 concept_list2<-createConcepts2(data_matrix, nmax_choiceset_size)
-toc()
+fdd2<-frequencyDistribution2(concept_list)
+a<-toc()
+
+as.numeric((b$toc-b$tic)/(a$toc-a$tic))
+all(concept_list2$data == concept_list$data)
+all(concept_list2$concept == concept_list$concept)
+
+########################################################
+concept_list<-createConcepts(data_matrix, nmax_choiceset_size) #83.084 sec elapsed
+concept_list2<-createConcepts2(data_matrix, nmax_choiceset_size) #0.018 sec elapsed
 ########################################################
 
 fdd<-frequencyDistribution(concept_list) #0.008 sec elapsed
 fdd2<-frequencyDistribution2(concept_list) #0.001 sec elapsed
-
 ##########################################################
 
 ndecisionmakers<-dim(fdd)[1]
