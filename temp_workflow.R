@@ -1,5 +1,6 @@
 #library(devtools)
 #devtools::install_git('ssh://git@github.com/andrewthomasjones/DCM.git')
+#install.packages(file.choose(), repos=NULL)
 
 library(DCM)
 filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP.txt'
