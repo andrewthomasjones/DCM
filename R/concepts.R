@@ -26,18 +26,26 @@ createConcepts <- function(data_matrix, nmax_choiceset_size = 31) {
     concept_big[1, i3] <- data_matrix[1, i3 + 3]
   }
   data_big[1, 5] <- 1
-  print("i1 is the count of lines moving through the data matrix")
+
   i1 <- 1
-  print("i2 is the build of the number of rows in data_big")
   i2 <- 1
-  print("i3 is the count of covariates moving through the row of the data matrix")
-  print("i4 is the count of lines moving through the concept matrix")
-  print("i5 is the build of the number of concepts in a row in data_big")
   i5 <- 1
-  print("i6 is build of the number of concepts")
   i6 <- 1
+  i4<-0
+
+  # print("i1 is the count of lines moving through the data matrix")
+  # print("i2 is the build of the number of rows in data_big")
+  # print("i3 is the count of covariates moving through the row of the data matrix")
+  # print("i4 is the count of lines moving through the concept matrix")
+  # print("i5 is the build of the number of concepts in a row in data_big")
+  # print("i6 is build of the number of concepts")
+
 
   while (i1 < nlines_data_matrix) {
+    # if(i1<10){
+    #   print(paste0(c("i1 " , i1 , " i2 " , i2 ,  " i4 " , i4 , " i5 " , i5 , " i6 " , i6)))
+    # }
+
     i1 <- i1 + 1
     match_number <- 0
     i4 <- 0
@@ -56,6 +64,9 @@ createConcepts <- function(data_matrix, nmax_choiceset_size = 31) {
         i4 <- i6
       }
     }
+    # if(i1<10){
+    #   print(paste0(c( "i4 " ,i4 , " i6 " ,i6)))
+    # }
 
     if (match_number == 0) {
       i6 <- i6 + 1
@@ -127,7 +138,8 @@ createConcepts <- function(data_matrix, nmax_choiceset_size = 31) {
       data = data,
       nconcepts = nconcepts,
       nlines_data = nlines_data,
-      data_big = data_big
+      data_big = data_big,
+      concept = concept
     )
   )
 }

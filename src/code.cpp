@@ -72,44 +72,48 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
   int i1, i2, i3, i4, i5, i6;
   int iddm, idcs;
 
+  int ncs4 = nmax_choiceset_size + 4;
+
   nlines_data_matrix = data_matrix.n_rows;
   ncovariates = data_matrix.n_cols - 3;
 
   iddm = data_matrix(0, 0);
   idcs = data_matrix(0, 1);
 
-  arma::mat data_big(nlines_data_matrix, nmax_choiceset_size + 4, arma::fill::zeros);
+  arma::mat data_big = arma::zeros<arma::mat>(nlines_data_matrix, ncs4);
+
   data_big(0, 0) = iddm;
 
   if (data_matrix(0, 2) == 1){
-    data_big(0, 1) = 1.0;
+    data_big(0, 1) = 1;
   }
-  data_big(0, 3) = 1.0;
+  data_big(0, 3) = 1;
 
-  arma::mat concept_big(nlines_data_matrix,ncovariates, arma::fill::zeros);
+  arma::mat concept_big(nlines_data_matrix, ncovariates, arma::fill::zeros);
 
-  for (int i3=0; i3<ncovariates; i3++){
-    concept_big(0, i3) = data_matrix(0, i3 + 3);
-  }
+  concept_big.row(0) = data_matrix(0, arma::span(3, 3+ncovariates-1));
 
-  data_big(0, 4) = 1.0;
+  data_big(0, 4) = 1;
 
-  // i1 is the count of lines moving through the data matrix
-  // i2 is the build of the number of rows in data_big
-  // i3 is the count of covariates moving through the row of the data matrix
-  // i4 is the count of lines moving through the concept matrix
-  // i5 is the build of the number of concepts in a row in data_big
-  // i6 is build of the number of concepts
+  i1 = 0;
+  i2 = 0;
+  i5 = 0;
+  i6 = 0;
+  i4 = -1;
 
-  i1 = 1;
-  i2 = 1;
-  i5 = 1;
-  i6 = 1;
+  //Rcout << "data " << data.n_rows << " " << data.n_cols <<  std::endl;
+  //Rcout << "data_big " << data_big.n_rows << " " << data_big.n_cols <<  std::endl;
+  //Rcout << "concept_big " << concept_big.n_rows << " " << concept_big.n_cols <<  std::endl;
+  //Rcout << "data_matrix " << data_matrix.n_rows << " " << data_matrix.n_cols <<  std::endl;
 
-  while (i1 < nlines_data_matrix) {
+  while (i1 < (nlines_data_matrix-1)){
+    // if(i1<10){
+    //   Rcout << "i1 " << i1 << " i2 " << i2 << " i4 " << i4 << " i5 " << i5 << " i6 " << i6 << std::endl;
+    // }
+
     i1++;
     match_number=0;
-    i4=0;
+    i4=-1;
 
     while (i4 < i6) {
       i4++;
@@ -122,101 +126,81 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
       }
 
       if (match_count == ncovariates) {
-        match_number = i4;
+        match_number = i4 +1;
         i4 = i6;
       }
     }
+    // if(i1<10){
+    //   Rcout << " i4 " << i4 << " i6 " << i6 << std::endl;
+    // }
 
     if (match_number == 0) {
       i6++;
-      match_number = i6;
+      match_number = i6 +1;
+      concept_big.row(i6) = data_matrix(i1, arma::span(3, 3+ncovariates-1));
+    }
 
-      for (int i3=0; i3<ncovariates; i3++) {
-        concept_big(i6, i3) = data_matrix(i1, i3 + 3);
-      }
-
-
-      if (data_matrix(i1, 1) == iddm) {
-        if (data_matrix(i1, 2) == idcs) {
-          i5++;
-          data_big(i2, i5 + 4) = match_number;
-
-          if (data_matrix(i1, 3) == 1){
-            data_big(i2, 2) = match_number;
-          }
-        }
-      }
-
-      if (data_matrix(i1, 1) == iddm) {
-        if (data_matrix(i1, 2) > idcs) {
-          idcs = data_matrix(i1, 2);
-          i5 = 1;
-          i2++;
-          data_big(i2, 1) = iddm;
-          data_big(i2, 4) = 1;
-          data_big(i2, i5 + 4) = match_number;
-
-          if (data_matrix(i1, 3) == 1){
-            data_big(i2, 2) = match_number;
-          }
-        }
-      }
-
-      if (data_matrix(i1, 1) > iddm) {
-        iddm = data_matrix(i1, 1);
-        idcs = data_matrix(i1, 2);
-        i5=1;
-        i2++;
-        data_big(i2, 1) = iddm;
-        data_big(i2, 4) = 1;
+    if (data_matrix(i1, 0) == iddm) {
+      if (data_matrix(i1, 1) == idcs) {
+        i5++;
         data_big(i2, i5 + 4) = match_number;
 
-        if (data_matrix(i1, 3) == 1){
-          data_big(i2, 2) = match_number;
+        if (data_matrix(i1, 2) == 1){
+          data_big(i2, 1) = match_number;
         }
-
-      }
-
-
-    }
-
-
-    arma::mat concept = arma::mat(i6, ncovariates, arma::fill::zeros);
-
-    for (int i8=0; i8<i6; i8++) {
-      for (int i9=0; i9<ncovariates; i9++) {
-        concept(i8, i9) = concept_big(i8, i9);
       }
     }
 
+    if (data_matrix(i1, 0) == iddm) {
+      if (data_matrix(i1, 1) > idcs) {
+        idcs = data_matrix(i1, 1);
+        i5 = 0;
+        i2++;
+        data_big(i2, 0) = iddm;
+        data_big(i2, 3) = 1;
+        data_big(i2, i5 + 4) = match_number;
 
-  }
-
-  nconcepts = i6;
-
-  arma::mat data = arma::mat(i2, i2, arma::fill::zeros);
-
-  //replace with a bulk copy
-  for (int i8 = 0; i8 < i2; i8++){
-    for (int i9 = 0; i9 < (nmax_choiceset_size + 4); i9++){
-      data(i8, i9) = data_big(i8, i9);
+        if (data_matrix(i1, 2) == 1){
+          data_big(i2, 1) = match_number;
+        }
+      }
     }
+
+    if (data_matrix(i1, 0) > iddm) {
+      iddm = data_matrix(i1, 0);
+      idcs = data_matrix(i1, 1);
+      i5=0;
+      i2++;
+      data_big(i2, 0) = iddm;
+      data_big(i2, 3) = 1;
+      data_big(i2, i5 + 4) = match_number;
+
+      if (data_matrix(i1, 2) == 1){
+        data_big(i2, 1) = match_number;
+      }
+
+    }
+
   }
 
-  nlines_data = i2;
+  nconcepts = i6+1;
+  nlines_data = i2+1;
+
+  arma::mat concept = arma::mat(i6+1, ncovariates, arma::fill::zeros);
+  concept(arma::span::all, arma::span::all) =
+    concept_big(arma::span(0,i6), arma::span(0,ncovariates-1));
+
+  arma::mat data = arma::zeros<arma::mat>(i2+1, (nmax_choiceset_size + 4));
+  data(arma::span::all, arma::span::all) =
+    data_big(arma::span(0,i2), arma::span(0,ncs4-1));
 
 
-
-  //arma::mat data = arma::mat(3, 3, arma::fill::zeros);
-  //arma::mat data_big = arma::mat(5, 5, arma::fill::zeros);
-  //nconcepts=10;
-  //nlines_data=10;
 
   Rcpp::List L = Rcpp::List::create(Rcpp::Named("data") = data,
                                     Rcpp::Named("nconcepts") = nconcepts,
                                     Rcpp::Named("nlines_data") = nlines_data,
-                                    Rcpp::Named("data_big") = data_big
-  );
+                                    Rcpp::Named("data_big") = data_big,
+                                    Rcpp::Named("concept") = concept);
 
   return(L);
 
