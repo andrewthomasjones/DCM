@@ -81,7 +81,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
   idcs = data_matrix(0, 1);
 
   arma::mat data_big = arma::zeros<arma::mat>(nlines_data_matrix, ncs4);
-
+  Rcout << "point 1" <<  std::endl;
   data_big(0, 0) = iddm;
 
   if (data_matrix(0, 2) == 1){
@@ -100,7 +100,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
   i5 = 0;
   i6 = 0;
   i4 = -1;
-
+  Rcout << "point 2" <<  std::endl;
   //Rcout << "data " << data.n_rows << " " << data.n_cols <<  std::endl;
   //Rcout << "data_big " << data_big.n_rows << " " << data_big.n_cols <<  std::endl;
   //Rcout << "concept_big " << concept_big.n_rows << " " << concept_big.n_cols <<  std::endl;
@@ -130,6 +130,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
         i4 = i6;
       }
     }
+    Rcout << "Point 3" <<  std::endl;
     // if(i1<10){
     //   Rcout << " i4 " << i4 << " i6 " << i6 << std::endl;
     // }
@@ -139,6 +140,8 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
       match_number = i6 +1;
       concept_big.row(i6) = data_matrix(i1, arma::span(3, 3+ncovariates-1));
     }
+
+    Rcout << "Point 4" <<  std::endl;
 
     if (data_matrix(i1, 0) == iddm) {
       if (data_matrix(i1, 1) == idcs) {
@@ -150,6 +153,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
         }
       }
     }
+    Rcout << "Point 5" <<  std::endl;
 
     if (data_matrix(i1, 0) == iddm) {
       if (data_matrix(i1, 1) > idcs) {
@@ -165,7 +169,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
         }
       }
     }
-
+    Rcout << "Point 6" <<  std::endl;
     if (data_matrix(i1, 0) > iddm) {
       iddm = data_matrix(i1, 0);
       idcs = data_matrix(i1, 1);
@@ -183,6 +187,8 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
 
   }
 
+  Rcout << "final point" <<  std::endl;
+
   nconcepts = i6+1;
   nlines_data = i2+1;
 
@@ -194,7 +200,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
   data(arma::span::all, arma::span::all) =
     data_big(arma::span(0,i2), arma::span(0,ncs4-1));
 
-
+  Rcout << "make list" <<  std::endl;
 
   Rcpp::List L = Rcpp::List::create(Rcpp::Named("data") = data,
                                     Rcpp::Named("nconcepts") = nconcepts,

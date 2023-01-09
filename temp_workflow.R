@@ -6,9 +6,10 @@
 #covers lines 1-4 of model catalog files lines 1-7 of jessydatain
 
 library(DCM)
-filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP.txt'
-nmax_choiceset_size<-31
-data_name<-'RP.RData'
+#filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP.txt'
+filename<-"C:/Users/andre/Downloads/values_data_waves1234.txt"
+nmax_choiceset_size<-20
+data_name<-'Test.RData'
 
 data_matrix<-readData(filename)
 
