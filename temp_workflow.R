@@ -8,7 +8,7 @@
 library(DCM)
 #filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP.txt'
 filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
-nmax_choiceset_size<-20
+nmax_choiceset_size<-80
 data_name<-'Test.RData'
 
 data_matrix<-readData(filename)
@@ -17,8 +17,10 @@ print(paste0('Dimensions of raw data: ', paste(dim(data_matrix), collapse = " ")
 print('Create concepts')
 
 ########################################################
-concept_list<-createConcepts(data_matrix, nmax_choiceset_size) #83.084 sec elapsed
+#concept_list<-createConcepts(data_matrix, nmax_choiceset_size) #83.084 sec elapsed
+tic()
 concept_list2<-createConcepts2(data_matrix, nmax_choiceset_size) #0.018 sec elapsed
+toc()
 ########################################################
 
 fdd<-frequencyDistribution(concept_list) #0.008 sec elapsed
