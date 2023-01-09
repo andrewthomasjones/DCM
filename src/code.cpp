@@ -130,7 +130,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
         i4 = i6;
       }
     }
-    Rcout << "Point 3" <<  std::endl;
+    //Rcout << "Point 3 " << i1 <<  std::endl;
     // if(i1<10){
     //   Rcout << " i4 " << i4 << " i6 " << i6 << std::endl;
     // }
@@ -141,19 +141,22 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
       concept_big.row(i6) = data_matrix(i1, arma::span(3, 3+ncovariates-1));
     }
 
-    Rcout << "Point 4" <<  std::endl;
+    //Rcout << "Point 4 " << i1 <<  std::endl;
 
     if (data_matrix(i1, 0) == iddm) {
       if (data_matrix(i1, 1) == idcs) {
         i5++;
+        Rcout << "Point 4.1 i1 " << i1 << " i5 "<< i5 << " i2 "<< i2 <<  " data big size: "<< data_big.n_rows << " " << data_big.n_cols << std::endl;
         data_big(i2, i5 + 4) = match_number;
-
+        Rcout << "Point 4.2 i1 " << i1 << " i5 "<< i5 << std::endl;
         if (data_matrix(i1, 2) == 1){
           data_big(i2, 1) = match_number;
+          Rcout << "Point 4.3 " << i1 <<  std::endl;
         }
       }
     }
-    Rcout << "Point 5" <<  std::endl;
+
+    Rcout << "Point 5 " << i1 <<  std::endl;
 
     if (data_matrix(i1, 0) == iddm) {
       if (data_matrix(i1, 1) > idcs) {
@@ -169,7 +172,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
         }
       }
     }
-    Rcout << "Point 6" <<  std::endl;
+    Rcout << "Point 6 " << i1 <<  std::endl;
     if (data_matrix(i1, 0) > iddm) {
       iddm = data_matrix(i1, 0);
       idcs = data_matrix(i1, 1);

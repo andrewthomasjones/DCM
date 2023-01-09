@@ -7,7 +7,7 @@
 
 library(DCM)
 #filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP.txt'
-filename<-"C:/Users/andre/Downloads/values_data_waves1234.txt"
+filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
 nmax_choiceset_size<-20
 data_name<-'Test.RData'
 
