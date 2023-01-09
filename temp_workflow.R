@@ -1,5 +1,6 @@
 #library(devtools)
 #devtools::install_git('ssh://git@github.com/andrewthomasjones/DCM.git')
+#install.packages(file.choose(), repos=NULL)
 
 #####################################################################################
 #covers lines 1-4 of model catalog files lines 1-7 of jessydatain
