@@ -18,3 +18,41 @@ readData <-function(filename, header=TRUE){
 }
 
 
+
+setUp<-function(filename, header=TRUE){
+
+  #read in data
+  data_matrix<-readData(filename, header = header)
+
+  #from Kobe code
+  nmax_choiceset_size<-as.numeric(max(unlist(rle(data_matrix[,2])[1])))
+
+  #concept list
+  concept_list<-createConcepts2(data_matrix, nmax_choiceset_size)
+
+  #fdd
+  fdd<-frequencyDistribution2(concept_list)
+
+  #some more intermediate processing
+  ndecisionmakers<-dim(fdd)[1]
+
+  lcovariates<-array(0, concept_list$ncovariates)
+
+  for (i in 1:concept_list$ncovariates) {
+    lcovariates[i]=paste('Cov',i)
+  }
+
+  #all the initial stuff packaged up
+  processed<-list(data_matrix=data_matrix,
+                  data_name=data_name,
+                  data=concept_list$data,
+                  ncovariates=ncovariates,
+                  nmax_choiceset_size=nmax_choiceset_size,
+                  ndecisionmakers=ndecisionmakers,
+                  concept=concept_list$concept,
+                  lcovariates=lcovariates,
+                  fdd=fdd)
+
+  return(processed)
+
+}

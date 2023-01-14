@@ -1,5 +1,5 @@
 
-model_generator <- function(ncovariates, npp, nhop, description, type, ndraws){
+model_generator <- function(ncovariates, npp, nhop, description, type){
 
   code <- matrix(0,ncovariates,npp)
 
@@ -48,7 +48,6 @@ model_generator <- function(ncovariates, npp, nhop, description, type, ndraws){
   }
 
   model<-list(description=description,
-              ndraws=ndraws,
               ncovariates=ncovariates,
               npp=npp,
               nhop=nhop,
