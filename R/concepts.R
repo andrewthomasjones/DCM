@@ -138,6 +138,7 @@ createConcepts <- function(data_matrix, nmax_choiceset_size = 31) {
       data = data,
       nconcepts = nconcepts,
       nlines_data = nlines_data,
+      ncovariates = ncovariates,
       data_big = data_big,
       concept = concept
     )

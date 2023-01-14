@@ -208,6 +208,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
   Rcpp::List L = Rcpp::List::create(Rcpp::Named("data") = data,
                                     Rcpp::Named("nconcepts") = nconcepts,
                                     Rcpp::Named("nlines_data") = nlines_data,
+                                    Rcpp::Named("ncovariates") = ncovariates,
                                     Rcpp::Named("data_big") = data_big,
                                     Rcpp::Named("concept") = concept);
 
