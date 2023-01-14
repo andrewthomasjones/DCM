@@ -1,0 +1,88 @@
+---
+title: "Kobe Shiny"
+runtime: shiny
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+bibliography: references.bib
+nocite: '@*'
+biblio-style: apalike
+link-citations: yes
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(readxl)
+library(openxlsx)
+library(tools)
+library(data.table)
+library(shiny)
+
+options(shiny.maxRequestSize = 30*1024^2)
+
+```
+
+# Home
+
+```{r include=FALSE}
+art <- readLines("ascii_art.txt") %>%
+  dput()
+```
+
+```{r}
+cat(art, sep = "\n")
+```
+
+# Read in Data
+
+```{r}
+
+fluidPage(
+  fileInput("files", "Instructions...", accept = ".csv", multiple = TRUE),
+  checkboxInput("header", "Header", TRUE)
+)
+
+reactive({
+
+req(input$files)  
+filenames <- as.matrix(input$files$name)
+filenames
+
+})
+
+```
+
+
+# Join Datasets
+
+```{r}
+fluidPage(
+  fileInput("data1", "Select the first dataset", accept = ".csv"),
+  fileInput("data2", "Select the second dataset", accept = ".csv"),
+    submitButton(text = "Combine Data")
+)  
+```
+
+# Specify SCMs
+
+```{r}
+fluidPage(
+  selectInput("models", "Select the model(s) to specify", multiple = TRUE,
+              choices = c("Fixed Coefficients",
+                          "Random Coefficents",
+                          "Factor-on-Factor",
+                          "Multi-Trait Multi-Method (MTMM)")),
+    submitButton(text = "Run Model(s)")
+)  
+```
+
+# Help and Documentation
+
+### Documentation
+
+Documentation File
+
+### Structural Choice Modelling
+
+**References**
