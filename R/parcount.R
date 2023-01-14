@@ -1,3 +1,4 @@
+#' @export
 parameterCount<-function(model){
 
   npp<-model$npp
@@ -62,14 +63,14 @@ parameterCount<-function(model){
   for (i in 1:(npp+nhop-1)){
     for (j in (i+1):(npp+nhop)){
       if (model$phi[i,j]==1){
-        if (model&phi[j,i]==1){
+        if (model$phi[j,i]==1){
           parcount[8]<-parcount[8]+1
         }
       }
     }
   }
 
-  parcount$total <- sum(parcount[2:8])
+  parcount_list$total <- sum(parcount[2:8])
 
   for (i in 2:8){
     parcount_list[[i]]<-parcount[i]

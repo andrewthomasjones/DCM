@@ -17,8 +17,13 @@ readData <-function(filename, header=TRUE){
   return(data)
 }
 
-
-
+#' Read data. This documentation is incomplete.
+#'
+#' @returns A list of the processed data.
+#' @examples
+#' x<-setUp(test.txt, header=TRUE)
+#' x<-setUp(test.xlsx)
+#' @export
 setUp<-function(filename, header=TRUE){
 
   #read in data
@@ -44,9 +49,9 @@ setUp<-function(filename, header=TRUE){
 
   #all the initial stuff packaged up
   processed<-list(data_matrix=data_matrix,
-                  data_name=data_name,
+                  data_name=filename,
                   data=concept_list$data,
-                  ncovariates=ncovariates,
+                  ncovariates=concept_list$ncovariates,
                   nmax_choiceset_size=nmax_choiceset_size,
                   ndecisionmakers=ndecisionmakers,
                   concept=concept_list$concept,

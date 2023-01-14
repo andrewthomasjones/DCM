@@ -1,4 +1,4 @@
-
+#' @export
 model_generator <- function(ncovariates, npp, nhop, description, type){
 
   code <- matrix(0,ncovariates,npp)
@@ -61,6 +61,7 @@ model_generator <- function(ncovariates, npp, nhop, description, type){
 
   return(model)
 }
+
 
 
 

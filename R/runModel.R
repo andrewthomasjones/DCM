@@ -1,11 +1,12 @@
+#' @export
 runModel <- function(model, processed, run_option, model_name, ndraws=1000){
 
   parcount<-parameterCount(model)
 
-  if (parcount[[8]]==0){
-    print('correlations not operational yet')
-    return(NA)
-  }
+  # if (parcount[[8]]==0){
+  #   print('correlations not operational yet')
+  #   return(NA)
+  # }
 
   if (length(model$initial_values)==parcount$total){
     print('You have the correct number of initial values.')
@@ -17,7 +18,7 @@ runModel <- function(model, processed, run_option, model_name, ndraws=1000){
   nrc<-dim(model$epsilon)[1]+dim(model$delta)[1]
   drawsmatrix<-draws_matrix(ndraws,nrc)
 
-  if (runoption == 0){
+  if (run_option == 0){
 
       loglik0 <- llCalc(model$initial_values,
                       model,
@@ -30,7 +31,7 @@ runModel <- function(model, processed, run_option, model_name, ndraws=1000){
     resultname<-paste('Result 0', model_name)
 
     results <- list(resultname=resultname, run_option=run_option, model=model, loglikf=loglik0, ndraws=ndraws)
-  }else if (runoption == 1){
+  }else if (run_option == 1){
 
     loglik1<-llMax(parcount, model, processed, drawsmatrix)
 

@@ -1,18 +1,20 @@
-llMax <-function(parcount, model, processed, drawsmatrix){
+#' @export
+llMax <-function(parcount, model, processed, draws_matrix){
 
-  loglik <- nlm(llCalc, p=initialvalues,
+  loglik <- nlm(llCalc, p=model$initial_values,
                 model,
                 processed$concept,
-                processed$nmaxchoicesetsize,
+                processed$nmax_choiceset_size,
                 processed$data,
                 processed$ndecisionmakers,
-                drawsmatrix,
+                draws_matrix,
                 hessian = TRUE)
 
   return(loglik)
 }
 
-llCalc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmakers,drawsmatrix){
+#' @export
+llCalc<-function(working_values,model,concept,nmax_choiceset_size,data,ndecisionmakers,draws_matrix){
 
   epsilonmatrix<-model$epsilon
   deltamatrix<-model$delta
@@ -23,7 +25,7 @@ llCalc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmak
 
   npp<-model$npp
   nhop<-model$nhop
-  ndraws<-dim(drawsmatrix)[1]
+  ndraws<-dim(draws_matrix)[1]
 
   muepsilonparameters<-array(0,npp)
   mudeltaparameters<-array(0,nhop)
@@ -40,7 +42,7 @@ llCalc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmak
 
     if(epsilonmatrix[i,1]==1){
       m<-m+1
-      muepsilonparameters[i]<-workingvalues[m]
+      muepsilonparameters[i]<-working_values[m]
     }
 
     if(epsilonmatrix[i,1]==-1) muepsilonparameters[i]<-1
@@ -51,7 +53,7 @@ llCalc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmak
     if(deltamatrix[i,1]==1){
 
       m<-m+1
-      mudeltaparameters[i]<-workingvalues[m]
+      mudeltaparameters[i]<-working_values[m]
     }
 
     if(deltamatrix[i,1]==-1){
@@ -63,7 +65,7 @@ llCalc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmak
 
     if(epsilonmatrix[i,2]==1){
       m<-m+1
-      sigmaepsilonparameters[i]<-abs(workingvalues[m])
+      sigmaepsilonparameters[i]<-abs(working_values[m])
     }
 
     if(epsilonmatrix[i,2]==-1){
@@ -75,7 +77,7 @@ llCalc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmak
 
     if(deltamatrix[i,2]==1){
       m<-m+1
-      sigmadeltaparameters[i]<-abs(workingvalues[m])
+      sigmadeltaparameters[i]<-abs(working_values[m])
     }
 
     if(deltamatrix[i,2]==-1){
@@ -87,7 +89,7 @@ llCalc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmak
     for(i in 1:npp){
       if(gammamatrix[i,j]==1){
         m<-m+1
-        gammaparameters[i,j]<-workingvalues[m]
+        gammaparameters[i,j]<-working_values[m]
       }
       if(gammamatrix[i,j]==-1){
         gammaparameters[i,j]<-1
@@ -98,7 +100,7 @@ llCalc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmak
     for(i in 1:nhop){
       if(betamatrix[i,j]==1){
         m<-m+1
-        betaparameters[i,j]<-workingvalues[m]
+        betaparameters[i,j]<-working_values[m]
       }
       if(betamatrix[i,j]==-1){
         betaparameters[i,j]<-1
@@ -115,27 +117,27 @@ llCalc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmak
       if(phimatrix[i,j]==1){
         if(phimatrix[j,i]==1){
           m<-m+1
-          phiparameters[i,j]<-workingvalues[m]
-          phiparameters[j,i]<-workingvalues[m]
+          phiparameters[i,j]<-working_values[m]
+          phiparameters[j,i]<-working_values[m]
         }
       }
     }
   }
 
-  drawsmatrix<-drawsmatrix%*%(phiparameters^0.5)
-  drawsepsilon<-cbind(drawsmatrix[,1])
+  draws_matrix<-draws_matrix%*%(phiparameters^0.5)
+  drawsepsilon<-cbind(draws_matrix[,1])
 
   if(npp>1){
     for(i in 2:npp){
-      drawsepsilon<-cbind(drawsepsilon,drawsmatrix[,i])
+      drawsepsilon<-cbind(drawsepsilon,draws_matrix[,i])
     }
   }
 
-  drawsdelta<-cbind(drawsmatrix[,npp+1])
+  drawsdelta<-cbind(draws_matrix[,npp+1])
 
   if(nhop>1){
     for(i in 2:nhop){
-      drawsdelta<-cbind(drawsdelta,drawsmatrix[,i+npp])
+      drawsdelta<-cbind(drawsdelta,draws_matrix[,i+npp])
     }
   }
 
@@ -174,7 +176,7 @@ llCalc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmak
   for(i in 1:nlines){
     bottom <- bottom*0
 
-    for(j in 1:nmaxchoicesetsize){
+    for(j in 1:nmax_choiceset_size){
       if(data[i,j+4]>0){
         bottom <- bottom+gb[data[i,j+4],]
       }

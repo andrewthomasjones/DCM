@@ -1,3 +1,4 @@
+#' @export
 draws_matrix <- function(ndraws, nrc) {
 
   q<-qnorm((1:(ndraws))/(ndraws+1))
@@ -8,6 +9,7 @@ draws_matrix <- function(ndraws, nrc) {
 
 }
 
+#' @export
 draws <- function(nrc) {
 
   draws_data<-list(
