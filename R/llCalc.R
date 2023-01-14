@@ -1,6 +1,6 @@
-ll_max <-function(parcount, model, processed, drawsmatrix){
+llMax <-function(parcount, model, processed, drawsmatrix){
 
-  loglik <- nlm(ll_calc, p=initialvalues,
+  loglik <- nlm(llCalc, p=initialvalues,
                 model,
                 processed$concept,
                 processed$nmaxchoicesetsize,
@@ -12,7 +12,7 @@ ll_max <-function(parcount, model, processed, drawsmatrix){
   return(loglik)
 }
 
-ll_calc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmakers,drawsmatrix){
+llCalc<-function(workingvalues,model,concept,nmaxchoicesetsize,data,ndecisionmakers,drawsmatrix){
 
   epsilonmatrix<-model$epsilon
   deltamatrix<-model$delta

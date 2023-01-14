@@ -19,7 +19,7 @@ runModel <- function(model, processed, run_option, model_name, ndraws=1000){
 
   if (runoption == 0){
 
-      loglik0 <- ll_calc(model$initial_values,
+      loglik0 <- llCalc(model$initial_values,
                       model,
                       processed$concept,
                       processed$nmax_choiceset_size,
@@ -32,7 +32,7 @@ runModel <- function(model, processed, run_option, model_name, ndraws=1000){
     results <- list(resultname=resultname, run_option=run_option, model=model, loglikf=loglik0, ndraws=ndraws)
   }else if (runoption == 1){
 
-    loglik1<-ll_max(parcount, model, processed, drawsmatrix)
+    loglik1<-llMax(parcount, model, processed, drawsmatrix)
 
     standard_errors <- sqrt(diag(solve(loglik1$hessian)))
 
