@@ -156,6 +156,7 @@ llCalc<-function(working_values,model,concept,nmax_choiceset_size,data,ndecision
   gb<-imatrix-betaparameters
   gb<-solve(gb)
   gb <- gammaparameters%*%gb
+
   gb <- gb%*%t(drawsdelta)
   gb<-gb+t(drawsepsilon)
   conceptuse<-concept%*%model$code

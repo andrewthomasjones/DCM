@@ -6,7 +6,7 @@ library(DCM)
 #filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
 filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP.txt'
 
-processed<-setUp(filename)
+processed<-setUp(filename, header = F)
 
 ncovariates<-processed$ncovariates
 npp<-processed$ncovariates
