@@ -612,7 +612,6 @@ double llCalc3a(const arma::vec& working_values,
                Rcpp::List processed,
                const arma::mat& draws_matrix){
 
-
   arma::mat concept =  as<arma::mat>(processed["concept"]);
   arma::mat data =  as<arma::mat>(processed["data"]);
 
@@ -806,14 +805,17 @@ double llCalc3a(const arma::vec& working_values,
 
 //' @export
 // [[Rcpp::export]]
-Rcpp::List llMax2(const arma::vec& working_values,
-                   Rcpp::List model,
+Rcpp::List llMax2( Rcpp::List model,
                    Rcpp::List processed,
                    const arma::mat& draws_matrix){
+
+
+  arma::vec working_values =  as<arma::vec>(model["initial_values"]);
 
   // Extract R's optim function
   Rcpp::Environment stats("package:stats");
   Rcpp::Function nlm = stats["nlm"];
+
 
   // Call the optim function from R in C++
   Rcpp::List opt_results = nlm(Rcpp::_["f"] = Rcpp::InternalFunction(&llCalc3a),

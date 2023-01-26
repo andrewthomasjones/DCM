@@ -26,7 +26,7 @@ llCalc3 <- function(working_values, model, processed, draws_matrix) {
 }
 
 #' @export
-llMax2 <- function(working_values, model, processed, draws_matrix) {
-    .Call('_DCM_llMax2', PACKAGE = 'DCM', working_values, model, processed, draws_matrix)
+llMax2 <- function(model, processed, draws_matrix) {
+    .Call('_DCM_llMax2', PACKAGE = 'DCM', model, processed, draws_matrix)
 }
 

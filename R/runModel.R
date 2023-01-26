@@ -28,7 +28,7 @@ runModel <- function(model, processed, run_option, model_name, ndraws=1000){
   }else if (run_option == 1){
 
 
-    loglik1<-suppressWarnings(llMax2(model$initial_values, model, processed, draws_matrix))
+    loglik1<-suppressWarnings(llMax2(model, processed, draws_matrix))
 
     standard_errors <- sqrt(diag(solve(loglik1$hessian)))
 

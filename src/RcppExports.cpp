@@ -73,16 +73,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // llMax2
-Rcpp::List llMax2(const arma::vec& working_values, Rcpp::List model, Rcpp::List processed, const arma::mat& draws_matrix);
-RcppExport SEXP _DCM_llMax2(SEXP working_valuesSEXP, SEXP modelSEXP, SEXP processedSEXP, SEXP draws_matrixSEXP) {
+Rcpp::List llMax2(Rcpp::List model, Rcpp::List processed, const arma::mat& draws_matrix);
+RcppExport SEXP _DCM_llMax2(SEXP modelSEXP, SEXP processedSEXP, SEXP draws_matrixSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec& >::type working_values(working_valuesSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type processed(processedSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type draws_matrix(draws_matrixSEXP);
-    rcpp_result_gen = Rcpp::wrap(llMax2(working_values, model, processed, draws_matrix));
+    rcpp_result_gen = Rcpp::wrap(llMax2(model, processed, draws_matrix));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -92,7 +91,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_DCM_createConceptsCpp", (DL_FUNC) &_DCM_createConceptsCpp, 2},
     {"_DCM_llCalcCpp", (DL_FUNC) &_DCM_llCalcCpp, 14},
     {"_DCM_llCalc3", (DL_FUNC) &_DCM_llCalc3, 4},
-    {"_DCM_llMax2", (DL_FUNC) &_DCM_llMax2, 4},
+    {"_DCM_llMax2", (DL_FUNC) &_DCM_llMax2, 3},
     {NULL, NULL, 0}
 };
 
