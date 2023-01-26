@@ -28,5 +28,5 @@ runModel(fixed_model, processed, 1, "FIXED 1")
 
 runModel(one_factor_model, processed, 0, "1F 0")
 runModel(one_factor_model, processed, 1, "1F 1")
-toc()
+toc() #118.491 sec elapsed
 
