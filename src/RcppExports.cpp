@@ -34,10 +34,65 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// llCalcCpp
+double llCalcCpp(const arma::vec& working_values, const arma::mat& concept, int nmax_choiceset_size, const arma::mat& data, int ndecisionmakers, int npp, int nhop, const arma::mat& epsilonmatrix, const arma::mat& deltamatrix, const arma::mat& gammamatrix, const arma::mat& betamatrix, const arma::mat& phimatrix, const arma::mat& draws_matrix, const arma::mat& code);
+RcppExport SEXP _DCM_llCalcCpp(SEXP working_valuesSEXP, SEXP conceptSEXP, SEXP nmax_choiceset_sizeSEXP, SEXP dataSEXP, SEXP ndecisionmakersSEXP, SEXP nppSEXP, SEXP nhopSEXP, SEXP epsilonmatrixSEXP, SEXP deltamatrixSEXP, SEXP gammamatrixSEXP, SEXP betamatrixSEXP, SEXP phimatrixSEXP, SEXP draws_matrixSEXP, SEXP codeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type working_values(working_valuesSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type concept(conceptSEXP);
+    Rcpp::traits::input_parameter< int >::type nmax_choiceset_size(nmax_choiceset_sizeSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< int >::type ndecisionmakers(ndecisionmakersSEXP);
+    Rcpp::traits::input_parameter< int >::type npp(nppSEXP);
+    Rcpp::traits::input_parameter< int >::type nhop(nhopSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type epsilonmatrix(epsilonmatrixSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type deltamatrix(deltamatrixSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type gammamatrix(gammamatrixSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type betamatrix(betamatrixSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type phimatrix(phimatrixSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type draws_matrix(draws_matrixSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type code(codeSEXP);
+    rcpp_result_gen = Rcpp::wrap(llCalcCpp(working_values, concept, nmax_choiceset_size, data, ndecisionmakers, npp, nhop, epsilonmatrix, deltamatrix, gammamatrix, betamatrix, phimatrix, draws_matrix, code));
+    return rcpp_result_gen;
+END_RCPP
+}
+// llCalc3
+double llCalc3(const arma::vec& working_values, Rcpp::List model, Rcpp::List processed, const arma::mat& draws_matrix);
+RcppExport SEXP _DCM_llCalc3(SEXP working_valuesSEXP, SEXP modelSEXP, SEXP processedSEXP, SEXP draws_matrixSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type working_values(working_valuesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type processed(processedSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type draws_matrix(draws_matrixSEXP);
+    rcpp_result_gen = Rcpp::wrap(llCalc3(working_values, model, processed, draws_matrix));
+    return rcpp_result_gen;
+END_RCPP
+}
+// llMax2
+Rcpp::List llMax2(const arma::vec& working_values, Rcpp::List model, Rcpp::List processed, const arma::mat& draws_matrix);
+RcppExport SEXP _DCM_llMax2(SEXP working_valuesSEXP, SEXP modelSEXP, SEXP processedSEXP, SEXP draws_matrixSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type working_values(working_valuesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type processed(processedSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type draws_matrix(draws_matrixSEXP);
+    rcpp_result_gen = Rcpp::wrap(llMax2(working_values, model, processed, draws_matrix));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_DCM_frequencyDistributionCpp", (DL_FUNC) &_DCM_frequencyDistributionCpp, 1},
     {"_DCM_createConceptsCpp", (DL_FUNC) &_DCM_createConceptsCpp, 2},
+    {"_DCM_llCalcCpp", (DL_FUNC) &_DCM_llCalcCpp, 14},
+    {"_DCM_llCalc3", (DL_FUNC) &_DCM_llCalc3, 4},
+    {"_DCM_llMax2", (DL_FUNC) &_DCM_llMax2, 4},
     {NULL, NULL, 0}
 };
 

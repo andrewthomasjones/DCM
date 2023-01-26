@@ -1,5 +1,5 @@
 #' @export
-draws_matrix <- function(ndraws, nrc) {
+drawsMatrix <- function(ndraws, nrc) {
 
   q<-qnorm((1:(ndraws))/(ndraws+1))
   draws1 <- matrix(rep(q,nrc),ndraws,nrc)

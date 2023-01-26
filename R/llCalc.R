@@ -1,20 +1,20 @@
 #' @export
-llMax <-function(parcount, model, processed, draws_matrix){
+llMax <-function(model, processed, draws_matrix){
 
   loglik <- nlm(llCalc, p=model$initial_values,
-                model,
-                processed$concept,
-                processed$nmax_choiceset_size,
-                processed$data,
-                processed$ndecisionmakers,
-                draws_matrix,
-                hessian = TRUE)
+                model, processed, draws_matrix,
+                hessian = TRUE, print.level=0)
 
   return(loglik)
 }
 
 #' @export
-llCalc<-function(working_values,model,concept,nmax_choiceset_size,data,ndecisionmakers,draws_matrix){
+llCalc<-function(working_values, model, processed, draws_matrix){
+
+  concept <- processed$concept
+  nmax_choiceset_size <-processed$nmax_choiceset_size
+  data <- processed$data
+  ndecisionmakers <- processed$ndecisionmakers
 
   epsilonmatrix<-model$epsilon
   deltamatrix<-model$delta
@@ -173,7 +173,7 @@ llCalc<-function(working_values,model,concept,nmax_choiceset_size,data,ndecision
   bottom <- array(0, ncol(gb))
 
   nlines <- dim(data)[1]
-
+  l1<-list()
   for(i in 1:nlines){
     bottom <- bottom*0
 
@@ -183,11 +183,12 @@ llCalc<-function(working_values,model,concept,nmax_choiceset_size,data,ndecision
       }
     }
 
-    pthiscs <- gb[data[i,2],]/bottom
+    pthiscs <- matrix(gb[data[i,2],]/bottom,1,ndraws)
 
     if(data[i,1]==iddm){
       pthisdm <- pthisdm*pthiscs
     }
+
     if(data[i,1]>iddm){
       ploglike[n]<-sum(pthisdm)/ndraws
       n <- n+1
@@ -205,4 +206,34 @@ llCalc<-function(working_values,model,concept,nmax_choiceset_size,data,ndecision
 
   return(loglike)
 }
+
+#'
+#' #' @export
+#' llCalc2<-function(working_values, model, processed, draws_matrix){
+#'
+#'   concept <- processed$concept
+#'   nmax_choiceset_size <-processed$nmax_choiceset_size
+#'   data <- processed$data
+#'   ndecisionmakers <- processed$ndecisionmakers
+#'   npp<-model$npp
+#'   nhop<-model$nhop
+#'
+#'   epsilonmatrix<-model$epsilon
+#'   deltamatrix<-model$delta
+#'   gammamatrix<-model$gamma
+#'   deltamatrix<-model$delta
+#'   betamatrix<-model$beta
+#'   phimatrix<-model$phi
+#'   code<-model$code
+#'
+#'
+#'   loglike<-llCalcCpp(working_values, concept,
+#'             nmax_choiceset_size, data,
+#'             ndecisionmakers, npp, nhop, epsilonmatrix, deltamatrix, gammamatrix,
+#'             betamatrix, phimatrix, draws_matrix, code)
+#'
+#'
+#'
+#'   return(loglike)
+#' }
 

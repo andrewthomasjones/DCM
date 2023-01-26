@@ -81,7 +81,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
   idcs = data_matrix(0, 1);
 
   arma::mat data_big = arma::zeros<arma::mat>(nlines_data_matrix, ncs4);
- //Rout << "point 1" <<  std::endl;
+ //Rcout << "point 1" <<  std::endl;
   data_big(0, 0) = iddm;
 
   if (data_matrix(0, 2) == 1){
@@ -100,7 +100,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
   i5 = 0;
   i6 = 0;
   i4 = -1;
- //Rout << "point 2" <<  std::endl;
+ //Rcout << "point 2" <<  std::endl;
   //Rcout << "data " << data.n_rows << " " << data.n_cols <<  std::endl;
   //Rcout << "data_big " << data_big.n_rows << " " << data_big.n_cols <<  std::endl;
   //Rcout << "concept_big " << concept_big.n_rows << " " << concept_big.n_cols <<  std::endl;
@@ -146,17 +146,17 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
     if (data_matrix(i1, 0) == iddm) {
       if (data_matrix(i1, 1) == idcs) {
         i5++;
-       //Rout << "Point 4.1 i1 " << i1 << " i5 "<< i5 << " i2 "<< i2 <<  " data big size: "<< data_big.n_rows << " " << data_big.n_cols << std::endl;
+       //Rcout << "Point 4.1 i1 " << i1 << " i5 "<< i5 << " i2 "<< i2 <<  " data big size: "<< data_big.n_rows << " " << data_big.n_cols << std::endl;
         data_big(i2, i5 + 4) = match_number;
-       //Rout << "Point 4.2 i1 " << i1 << " i5 "<< i5 << std::endl;
+       //Rcout << "Point 4.2 i1 " << i1 << " i5 "<< i5 << std::endl;
         if (data_matrix(i1, 2) == 1){
           data_big(i2, 1) = match_number;
-         //Rout << "Point 4.3 " << i1 <<  std::endl;
+         //Rcout << "Point 4.3 " << i1 <<  std::endl;
         }
       }
     }
 
-   //Rout << "Point 5 " << i1 <<  std::endl;
+   //Rcout << "Point 5 " << i1 <<  std::endl;
 
     if (data_matrix(i1, 0) == iddm) {
       if (data_matrix(i1, 1) > idcs) {
@@ -172,7 +172,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
         }
       }
     }
-   //Rout << "Point 6 " << i1 <<  std::endl;
+   //Rcout << "Point 6 " << i1 <<  std::endl;
     if (data_matrix(i1, 0) > iddm) {
       iddm = data_matrix(i1, 0);
       idcs = data_matrix(i1, 1);
@@ -190,7 +190,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
 
   }
 
- //Rout << "final point" <<  std::endl;
+ //Rcout << "final point" <<  std::endl;
 
   nconcepts = i6+1;
   nlines_data = i2+1;
@@ -203,7 +203,7 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
   data(arma::span::all, arma::span::all) =
     data_big(arma::span(0,i2), arma::span(0,ncs4-1));
 
- //Rout << "make list" <<  std::endl;
+ //Rcout << "make list" <<  std::endl;
 
   Rcpp::List L = Rcpp::List::create(Rcpp::Named("data") = data,
                                     Rcpp::Named("nconcepts") = nconcepts,
@@ -214,6 +214,618 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
 
   return(L);
 
+}
+
+
+//' @export
+// [[Rcpp::export]]
+double llCalcCpp(const arma::vec& working_values,
+                 const arma::mat& concept,
+                 int nmax_choiceset_size,
+                 const arma::mat& data,
+                 int ndecisionmakers,
+                 int npp,
+                 int nhop,
+                 const arma::mat& epsilonmatrix,
+                 const arma::mat& deltamatrix,
+                 const arma::mat& gammamatrix,
+                 const arma::mat& betamatrix,
+                 const arma::mat& phimatrix,
+                 const arma::mat& draws_matrix,
+                 const arma::mat& code){
+
+  arma::vec muepsilonparameters(npp, arma::fill::zeros);
+  arma::vec mudeltaparameters(nhop, arma::fill::zeros);
+  arma::vec sigmaepsilonparameters(npp, arma::fill::zeros);
+  arma::vec sigmadeltaparameters(nhop, arma::fill::zeros);
+  arma::vec deltaepsilonparameters(nhop, arma::fill::zeros);
+
+  arma::mat gammaparameters(arma::size(gammamatrix), arma::fill::zeros);
+  arma::mat betaparameters(arma::size(betamatrix), arma::fill::zeros);
+  arma::mat phiparameters(arma::size(phimatrix), arma::fill::zeros);
+
+  int ndraws = draws_matrix.n_rows;
+  int m=-1;
+
+  for(int i=0; i<npp; i++){
+
+    if(epsilonmatrix(i,0)==1){
+      m++;
+      muepsilonparameters(i) = working_values(m);
+    }
+
+    if(epsilonmatrix(i,0) == -1){
+      muepsilonparameters(i) = 1;
+    }
+
+  }
+
+  for(int i=0; i<nhop; i++){
+
+    if(deltamatrix(i,0)==1){
+      m++;
+      mudeltaparameters(i) = working_values[m];
+    }
+
+    if(deltamatrix(i,0)==-1){
+      deltaepsilonparameters(i) = 1;
+    }
+  }
+
+  for(int i=0; i<npp; i++){
+
+    if(epsilonmatrix(i,1)==1){
+      m++;
+      sigmaepsilonparameters(i) = abs(working_values[m]);
+    }
+
+    if(epsilonmatrix(i,1)==-1){
+      sigmaepsilonparameters(i) = 1;
+    }
+  }
+
+  for(int i=0; i<nhop; i++){
+
+    if(deltamatrix(i, 1)==1){
+      m++;
+      sigmadeltaparameters(i) = abs(working_values[m]);
+    }
+
+    if(deltamatrix(i,1)==-1){
+      sigmadeltaparameters(i) = 1;
+    }
+  }
+
+  for(int j=0; j<nhop; j++){
+    for(int i=0; i<npp; i++){
+
+      if(gammamatrix(i,j)==1){
+        m++;
+        gammaparameters(i,j) = working_values[m];
+      }
+      if(gammamatrix(i,j)==-1){
+        gammaparameters(i,j) = 1;
+      }
+    }
+  }
+
+  for(int j=0; j<nhop; j++){
+    for(int i=0; i<nhop; i++){
+
+      if(betamatrix(i,j)==1){
+        m++;
+        betaparameters(i,j) = working_values[m];
+      }
+      if(betamatrix(i,j)==-1){
+        betaparameters(i,j) = 1;
+      }
+    }
+  }
+  phiparameters.diag().ones();
+
+  for(int i=0; i<(npp+nhop-1); i++){
+    for(int j=i+1; j<(npp+nhop); j++){
+      if(phimatrix(i,j)==1){
+        if(phimatrix(j,i)==1){
+          m++;
+          phiparameters(i,j) = working_values[m];
+          phiparameters(j,i) = working_values[m];
+        }
+      }
+    }
+  }
+
+  arma::mat draws_matrix2 = draws_matrix * pow( phiparameters, 0.5);
+  arma::mat draws_epsilon = draws_matrix2.cols(0, npp-1);
+  arma::mat draws_delta = draws_matrix2.cols(npp, npp+nhop-1);
+
+  for(int i=0; i<ndraws; i++){
+
+    for(int j=0; j<npp; j++){
+      draws_epsilon(i,j) = draws_epsilon(i,j)*sigmaepsilonparameters[j]+muepsilonparameters[j];
+    }
+
+    for(int j=0; j<nhop; j++){
+      draws_delta(i,j) = draws_delta(i,j)*sigmadeltaparameters[j]+mudeltaparameters[j];
+    }
+
+  }
+
+  arma::mat imatrix = arma::eye(nhop, nhop);
+  arma::mat gb(nhop, nhop, arma::fill::zeros);
+
+  gb = gammaparameters*arma::inv(imatrix-betaparameters);
+  gb = gb*draws_delta.t() + draws_epsilon.t();
+
+  arma::mat concept_use = concept * code;
+  gb = concept_use*gb;
+  gb = arma::exp(gb);
+
+  arma::vec pthisdm(ndraws, arma::fill::ones);
+  arma::vec pthiscs(ndraws, arma::fill::zeros);
+  arma::vec ploglike(ndecisionmakers, arma::fill::zeros);
+  arma::vec bottom(gb.n_cols, arma::fill::zeros);
+
+  int n = 0;
+  double iddm  = data(0,0);
+  int nlines = data.n_rows;
+
+  for(int i=0; i<nlines; i++){
+
+    bottom.zeros();
+
+    for(int j=0; j<nmax_choiceset_size; j++){
+      if(data(i,j+4)>0){
+        bottom  =  bottom+arma::trans(gb.row(data(i,j+4)-1));
+      }
+    }
+
+
+
+    pthiscs  =  arma::trans(gb.row(data(i,1)-1))/bottom;
+
+    if(data(i, 0)==iddm){
+      pthisdm  =  pthisdm%pthiscs;
+    }
+
+
+    if(data(i, 0)>iddm){
+      ploglike(n) = arma::accu(pthisdm)/ndraws;
+      n++;
+      pthisdm  =  pthiscs;
+      iddm  =  data(i, 0);
+    }
+
+
+  }
+
+  ploglike(n) = arma::accu(pthisdm)/ndraws;
+
+
+  double loglike  =  -1.0 * arma::accu(arma::log(ploglike));
+
+  return(loglike);
+
+}
+
+//' @export
+// [[Rcpp::export]]
+double llCalc3(const arma::vec& working_values,
+                  Rcpp::List model,
+                  Rcpp::List processed,
+                  const arma::mat& draws_matrix){
+
+
+  arma::mat concept =  as<arma::mat>(processed["concept"]);
+  arma::mat data =  as<arma::mat>(processed["data"]);
+
+  int ndecisionmakers = as<int>(processed["ndecisionmakers"]);
+  int nmax_choiceset_size = as<int>(processed["nmax_choiceset_size"]);
+
+  int npp = as<int>(model["npp"]);
+  int nhop = as<int>(model["nhop"]);
+
+  arma::mat epsilonmatrix =  as<arma::mat>(model["epsilon"]);
+  arma::mat gammamatrix =  as<arma::mat>(model["gamma"]);
+  arma::mat deltamatrix =  as<arma::mat>(model["delta"]);
+  arma::mat betamatrix =  as<arma::mat>(model["beta"]);
+  arma::mat phimatrix =  as<arma::mat>(model["phi"]);
+  arma::mat code =  as<arma::mat>(model["code"]);
+
+  arma::vec muepsilonparameters(npp, arma::fill::zeros);
+  arma::vec mudeltaparameters(nhop, arma::fill::zeros);
+  arma::vec sigmaepsilonparameters(npp, arma::fill::zeros);
+  arma::vec sigmadeltaparameters(nhop, arma::fill::zeros);
+  arma::vec deltaepsilonparameters(nhop, arma::fill::zeros);
+
+  arma::mat gammaparameters(arma::size(gammamatrix), arma::fill::zeros);
+  arma::mat betaparameters(arma::size(betamatrix), arma::fill::zeros);
+  arma::mat phiparameters(arma::size(phimatrix), arma::fill::zeros);
+
+  int ndraws = draws_matrix.n_rows;
+  int m=-1;
+
+  for(int i=0; i<npp; i++){
+
+    if(epsilonmatrix(i,0)==1){
+      m++;
+      muepsilonparameters(i) = working_values(m);
+    }
+
+    if(epsilonmatrix(i,0) == -1){
+      muepsilonparameters(i) = 1;
+    }
+
+  }
+
+  for(int i=0; i<nhop; i++){
+
+    if(deltamatrix(i,0)==1){
+      m++;
+      mudeltaparameters(i) = working_values[m];
+    }
+
+    if(deltamatrix(i,0)==-1){
+      deltaepsilonparameters(i) = 1;
+    }
+  }
+
+  for(int i=0; i<npp; i++){
+
+    if(epsilonmatrix(i,1)==1){
+      m++;
+      sigmaepsilonparameters(i) = abs(working_values[m]);
+    }
+
+    if(epsilonmatrix(i,1)==-1){
+      sigmaepsilonparameters(i) = 1;
+    }
+  }
+
+  for(int i=0; i<nhop; i++){
+
+    if(deltamatrix(i, 1)==1){
+      m++;
+      sigmadeltaparameters(i) = abs(working_values[m]);
+    }
+
+    if(deltamatrix(i,1)==-1){
+      sigmadeltaparameters(i) = 1;
+    }
+  }
+
+  for(int j=0; j<nhop; j++){
+    for(int i=0; i<npp; i++){
+
+      if(gammamatrix(i,j)==1){
+        m++;
+        gammaparameters(i,j) = working_values[m];
+      }
+      if(gammamatrix(i,j)==-1){
+        gammaparameters(i,j) = 1;
+      }
+    }
+  }
+
+  for(int j=0; j<nhop; j++){
+    for(int i=0; i<nhop; i++){
+
+      if(betamatrix(i,j)==1){
+        m++;
+        betaparameters(i,j) = working_values[m];
+      }
+      if(betamatrix(i,j)==-1){
+        betaparameters(i,j) = 1;
+      }
+    }
+  }
+  phiparameters.diag().ones();
+
+  for(int i=0; i<(npp+nhop-1); i++){
+    for(int j=i+1; j<(npp+nhop); j++){
+      if(phimatrix(i,j)==1){
+        if(phimatrix(j,i)==1){
+          m++;
+          phiparameters(i,j) = working_values[m];
+          phiparameters(j,i) = working_values[m];
+        }
+      }
+    }
+  }
+
+  arma::mat draws_matrix2 = draws_matrix * pow( phiparameters, 0.5);
+  arma::mat draws_epsilon = draws_matrix2.cols(0, npp-1);
+  arma::mat draws_delta = draws_matrix2.cols(npp, npp+nhop-1);
+
+  for(int i=0; i<ndraws; i++){
+
+    for(int j=0; j<npp; j++){
+      draws_epsilon(i,j) = draws_epsilon(i,j)*sigmaepsilonparameters[j]+muepsilonparameters[j];
+    }
+
+    for(int j=0; j<nhop; j++){
+      draws_delta(i,j) = draws_delta(i,j)*sigmadeltaparameters[j]+mudeltaparameters[j];
+    }
+
+  }
+
+  arma::mat imatrix = arma::eye(nhop, nhop);
+  arma::mat gb(nhop, nhop, arma::fill::zeros);
+
+  gb = gammaparameters*arma::inv(imatrix-betaparameters);
+  gb = gb*draws_delta.t() + draws_epsilon.t();
+
+  arma::mat concept_use = concept * code;
+  gb = concept_use*gb;
+  gb = arma::exp(gb);
+
+  arma::vec pthisdm(ndraws, arma::fill::ones);
+  arma::vec pthiscs(ndraws, arma::fill::zeros);
+  arma::vec ploglike(ndecisionmakers, arma::fill::zeros);
+  arma::vec bottom(gb.n_cols, arma::fill::zeros);
+
+  int n = 0;
+  double iddm  = data(0,0);
+  int nlines = data.n_rows;
+
+  for(int i=0; i<nlines; i++){
+
+    bottom.zeros();
+
+    for(int j=0; j<nmax_choiceset_size; j++){
+      if(data(i,j+4)>0){
+        bottom  =  bottom+arma::trans(gb.row(data(i,j+4)-1));
+      }
+    }
+
+
+
+    pthiscs  =  arma::trans(gb.row(data(i,1)-1))/bottom;
+
+    if(data(i, 0)==iddm){
+      pthisdm  =  pthisdm%pthiscs;
+    }
+
+
+    if(data(i, 0)>iddm){
+      ploglike(n) = arma::accu(pthisdm)/ndraws;
+      n++;
+      pthisdm  =  pthiscs;
+      iddm  =  data(i, 0);
+    }
+
+
+  }
+
+  ploglike(n) = arma::accu(pthisdm)/ndraws;
+
+
+  double loglike  =  -1.0 * arma::accu(arma::log(ploglike));
+
+  return(loglike);
+
+}
+
+
+double llCalc3a(const arma::vec& working_values,
+               Rcpp::List model,
+               Rcpp::List processed,
+               const arma::mat& draws_matrix){
+
+
+  arma::mat concept =  as<arma::mat>(processed["concept"]);
+  arma::mat data =  as<arma::mat>(processed["data"]);
+
+  int ndecisionmakers = as<int>(processed["ndecisionmakers"]);
+  int nmax_choiceset_size = as<int>(processed["nmax_choiceset_size"]);
+
+  int npp = as<int>(model["npp"]);
+  int nhop = as<int>(model["nhop"]);
+
+  arma::mat epsilonmatrix =  as<arma::mat>(model["epsilon"]);
+  arma::mat gammamatrix =  as<arma::mat>(model["gamma"]);
+  arma::mat deltamatrix =  as<arma::mat>(model["delta"]);
+  arma::mat betamatrix =  as<arma::mat>(model["beta"]);
+  arma::mat phimatrix =  as<arma::mat>(model["phi"]);
+  arma::mat code =  as<arma::mat>(model["code"]);
+
+  arma::vec muepsilonparameters(npp, arma::fill::zeros);
+  arma::vec mudeltaparameters(nhop, arma::fill::zeros);
+  arma::vec sigmaepsilonparameters(npp, arma::fill::zeros);
+  arma::vec sigmadeltaparameters(nhop, arma::fill::zeros);
+  arma::vec deltaepsilonparameters(nhop, arma::fill::zeros);
+
+  arma::mat gammaparameters(arma::size(gammamatrix), arma::fill::zeros);
+  arma::mat betaparameters(arma::size(betamatrix), arma::fill::zeros);
+  arma::mat phiparameters(arma::size(phimatrix), arma::fill::zeros);
+
+  int ndraws = draws_matrix.n_rows;
+  int m=-1;
+
+  for(int i=0; i<npp; i++){
+
+    if(epsilonmatrix(i,0)==1){
+      m++;
+      muepsilonparameters(i) = working_values(m);
+    }
+
+    if(epsilonmatrix(i,0) == -1){
+      muepsilonparameters(i) = 1;
+    }
+
+  }
+
+  for(int i=0; i<nhop; i++){
+
+    if(deltamatrix(i,0)==1){
+      m++;
+      mudeltaparameters(i) = working_values[m];
+    }
+
+    if(deltamatrix(i,0)==-1){
+      deltaepsilonparameters(i) = 1;
+    }
+  }
+
+  for(int i=0; i<npp; i++){
+
+    if(epsilonmatrix(i,1)==1){
+      m++;
+      sigmaepsilonparameters(i) = abs(working_values[m]);
+    }
+
+    if(epsilonmatrix(i,1)==-1){
+      sigmaepsilonparameters(i) = 1;
+    }
+  }
+
+  for(int i=0; i<nhop; i++){
+
+    if(deltamatrix(i, 1)==1){
+      m++;
+      sigmadeltaparameters(i) = abs(working_values[m]);
+    }
+
+    if(deltamatrix(i,1)==-1){
+      sigmadeltaparameters(i) = 1;
+    }
+  }
+
+  for(int j=0; j<nhop; j++){
+    for(int i=0; i<npp; i++){
+
+      if(gammamatrix(i,j)==1){
+        m++;
+        gammaparameters(i,j) = working_values[m];
+      }
+      if(gammamatrix(i,j)==-1){
+        gammaparameters(i,j) = 1;
+      }
+    }
+  }
+
+  for(int j=0; j<nhop; j++){
+    for(int i=0; i<nhop; i++){
+
+      if(betamatrix(i,j)==1){
+        m++;
+        betaparameters(i,j) = working_values[m];
+      }
+      if(betamatrix(i,j)==-1){
+        betaparameters(i,j) = 1;
+      }
+    }
+  }
+  phiparameters.diag().ones();
+
+  for(int i=0; i<(npp+nhop-1); i++){
+    for(int j=i+1; j<(npp+nhop); j++){
+      if(phimatrix(i,j)==1){
+        if(phimatrix(j,i)==1){
+          m++;
+          phiparameters(i,j) = working_values[m];
+          phiparameters(j,i) = working_values[m];
+        }
+      }
+    }
+  }
+
+  arma::mat draws_matrix2 = draws_matrix * pow( phiparameters, 0.5);
+  arma::mat draws_epsilon = draws_matrix2.cols(0, npp-1);
+  arma::mat draws_delta = draws_matrix2.cols(npp, npp+nhop-1);
+
+  for(int i=0; i<ndraws; i++){
+
+    for(int j=0; j<npp; j++){
+      draws_epsilon(i,j) = draws_epsilon(i,j)*sigmaepsilonparameters[j]+muepsilonparameters[j];
+    }
+
+    for(int j=0; j<nhop; j++){
+      draws_delta(i,j) = draws_delta(i,j)*sigmadeltaparameters[j]+mudeltaparameters[j];
+    }
+
+  }
+
+  arma::mat imatrix = arma::eye(nhop, nhop);
+  arma::mat gb(nhop, nhop, arma::fill::zeros);
+
+  gb = gammaparameters*arma::inv(imatrix-betaparameters);
+  gb = gb*draws_delta.t() + draws_epsilon.t();
+
+  arma::mat concept_use = concept * code;
+  gb = concept_use*gb;
+  gb = arma::exp(gb);
+
+  arma::vec pthisdm(ndraws, arma::fill::ones);
+  arma::vec pthiscs(ndraws, arma::fill::zeros);
+  arma::vec ploglike(ndecisionmakers, arma::fill::zeros);
+  arma::vec bottom(gb.n_cols, arma::fill::zeros);
+
+  int n = 0;
+  double iddm  = data(0,0);
+  int nlines = data.n_rows;
+
+  for(int i=0; i<nlines; i++){
+
+    bottom.zeros();
+
+    for(int j=0; j<nmax_choiceset_size; j++){
+      if(data(i,j+4)>0){
+        bottom  =  bottom+arma::trans(gb.row(data(i,j+4)-1));
+      }
+    }
+
+
+
+    pthiscs  =  arma::trans(gb.row(data(i,1)-1))/bottom;
+
+    if(data(i, 0)==iddm){
+      pthisdm  =  pthisdm%pthiscs;
+    }
+
+
+    if(data(i, 0)>iddm){
+      ploglike(n) = arma::accu(pthisdm)/ndraws;
+      n++;
+      pthisdm  =  pthiscs;
+      iddm  =  data(i, 0);
+    }
+
+
+  }
+
+  ploglike(n) = arma::accu(pthisdm)/ndraws;
+
+
+  double loglike  =  -1.0 * arma::accu(arma::log(ploglike));
+
+  return(loglike);
+
+}
+
+
+//' @export
+// [[Rcpp::export]]
+Rcpp::List llMax2(const arma::vec& working_values,
+                   Rcpp::List model,
+                   Rcpp::List processed,
+                   const arma::mat& draws_matrix){
+
+  // Extract R's optim function
+  Rcpp::Environment stats("package:stats");
+  Rcpp::Function nlm = stats["nlm"];
+
+  // Call the optim function from R in C++
+  Rcpp::List opt_results = nlm(Rcpp::_["f"] = Rcpp::InternalFunction(&llCalc3a),
+                               Rcpp::_["p"] = working_values,
+                               Rcpp::_["model"] = model,
+                               Rcpp::_["processed,"] = processed,
+                               Rcpp::_["draws_matrix"] = draws_matrix,
+                               Rcpp::_["hessian"] = true,
+                               Rcpp::_["print.level"] = 0);
+
+  // Return estimated values
+  return opt_results ;
 }
 
 

@@ -16,24 +16,19 @@ runModel <- function(model, processed, run_option, model_name, ndraws=1000){
   }
 
   nrc<-dim(model$epsilon)[1]+dim(model$delta)[1]
-  drawsmatrix<-draws_matrix(ndraws,nrc)
+  draws_matrix<-drawsMatrix(ndraws,nrc)
 
   if (run_option == 0){
 
-      loglik0 <- llCalc(model$initial_values,
-                      model,
-                      processed$concept,
-                      processed$nmax_choiceset_size,
-                      processed$data,
-                      processed$ndecisionmakers,
-                      drawsmatrix)
+      loglik0 <- llCalc3(model$initial_values, model, processed, draws_matrix)
 
     resultname<-paste('Result 0', model_name)
 
     results <- list(resultname=resultname, run_option=run_option, model=model, loglikf=loglik0, ndraws=ndraws)
   }else if (run_option == 1){
 
-    loglik1<-llMax(parcount, model, processed, drawsmatrix)
+
+    loglik1<-suppressWarnings(llMax2(model$initial_values, model, processed, draws_matrix))
 
     standard_errors <- sqrt(diag(solve(loglik1$hessian)))
 

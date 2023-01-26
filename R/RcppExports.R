@@ -15,3 +15,18 @@ createConceptsCpp <- function(data_matrix, nmax_choiceset_size = 31L) {
     .Call('_DCM_createConceptsCpp', PACKAGE = 'DCM', data_matrix, nmax_choiceset_size)
 }
 
+#' @export
+llCalcCpp <- function(working_values, concept, nmax_choiceset_size, data, ndecisionmakers, npp, nhop, epsilonmatrix, deltamatrix, gammamatrix, betamatrix, phimatrix, draws_matrix, code) {
+    .Call('_DCM_llCalcCpp', PACKAGE = 'DCM', working_values, concept, nmax_choiceset_size, data, ndecisionmakers, npp, nhop, epsilonmatrix, deltamatrix, gammamatrix, betamatrix, phimatrix, draws_matrix, code)
+}
+
+#' @export
+llCalc3 <- function(working_values, model, processed, draws_matrix) {
+    .Call('_DCM_llCalc3', PACKAGE = 'DCM', working_values, model, processed, draws_matrix)
+}
+
+#' @export
+llMax2 <- function(working_values, model, processed, draws_matrix) {
+    .Call('_DCM_llMax2', PACKAGE = 'DCM', working_values, model, processed, draws_matrix)
+}
+
