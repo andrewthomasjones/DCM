@@ -31,8 +31,7 @@ setUp<-function(filename, header=TRUE){
 
   #from Kobe code
   nmax_choiceset_size<-as.numeric(max(unlist(rle(data_matrix[,2])[1])))
-
-  #concept list
+    #concept list
   concept_list<-createConcepts2(data_matrix, nmax_choiceset_size)
 
   #fdd

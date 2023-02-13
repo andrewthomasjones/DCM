@@ -5,14 +5,14 @@ library(tictoc)
 tic()
 library(DCM)
 
-#filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
-filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
+filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
+#filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
 
-processed<-setUp(filename, header = F)
+processed<-setUp(filename, header = T)
 
 ncovariates<-processed$ncovariates
 npp<-processed$ncovariates
-nhop <-1
+nhop<-1
 
 #set up default models
 fixed_model <- model_generator(ncovariates, npp, nhop, 'Fixed Model', "Fixed")
@@ -23,10 +23,10 @@ global_model <- model_generator(ncovariates, npp, nhop, 'Global Model', "Global"
 fixed_model<-model_generator(ncovariates, npp, nhop, 'FIXED', "Fixed")
 one_factor_model<-model_generator(ncovariates, npp, nhop, 'ONE FACTOR', "Global")
 
-runModel(fixed_model, processed, 0, "FIXED 0")
-runModel(fixed_model, processed, 1, "FIXED 1")
+#runModel(fixed_model, processed, 0, "FIXED 0")
+#runModel(fixed_model, processed, 1, "FIXED 1")
 
 runModel(one_factor_model, processed, 0, "1F 0")
 runModel(one_factor_model, processed, 1, "1F 1")
-toc() #118.491 sec elapsed
 
+toc() #118.491 sec elapsed
