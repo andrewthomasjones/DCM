@@ -5,8 +5,8 @@ library(tictoc)
 tic()
 library(DCM)
 
-filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
-#filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
+#filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
+filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
 
 processed<-setUp(filename, header = T)
 
