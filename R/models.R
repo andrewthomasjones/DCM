@@ -52,6 +52,7 @@ model_generator <- function(processed, nhop, description, type){
   }
 
   model<-list(description=description,
+              data=processed,
               ncovariates=ncovariates,
               npp=npp,
               nhop=nhop,

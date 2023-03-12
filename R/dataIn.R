@@ -46,11 +46,13 @@ setUp<-function(filename, header=TRUE){
     lcovariates[i]=paste('Cov',i)
   }
 
+
   #all the initial stuff packaged up
   processed<-list(data_matrix=data_matrix,
                   data_name=filename,
                   data=concept_list$data,
                   ncovariates=concept_list$ncovariates,
+                  npp=concept_list$ncovariates,
                   nmax_choiceset_size=nmax_choiceset_size,
                   ndecisionmakers=ndecisionmakers,
                   concept=concept_list$concept,

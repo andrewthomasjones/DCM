@@ -3,6 +3,8 @@
 #install.packages(file.choose(), repos=NULL)
 library(tictoc)
 tic()
+
+
 library(DCM)
 
 #filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
@@ -24,7 +26,10 @@ fixed_model<-model_generator(processed, nhop, 'FIXED', "Fixed")
 one_factor_model<-model_generator(processed, nhop, 'ONE FACTOR', "Global")
 
 
-runModel(one_factor_model, processed,"n 100 shuf", ndraws=100, shuffle=TRUE)
-runModel(one_factor_model, processed,"n 100 noshuf", ndraws=100, shuffle=FALSE)
+r1<-runModel(one_factor_model, "n 1000 shuf", ndraws=1000, shuffle=TRUE)
+r2<-runModel(one_factor_model, "n 1000 noshuf", ndraws=1000, shuffle=FALSE)
+
+
+
 
 toc() #118.491 sec elapsed

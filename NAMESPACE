@@ -3,7 +3,6 @@
 export(createConcepts)
 export(createConcepts2)
 export(createConceptsCpp)
-export(draws)
 export(drawsMatrix)
 export(frequencyDistribution)
 export(frequencyDistribution2)

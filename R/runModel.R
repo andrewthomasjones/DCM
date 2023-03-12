@@ -1,7 +1,12 @@
 #' @export
-runModel <- function(model, processed, model_name, ndraws=1000,shuffle=TRUE, run_option=1){
+runModel <- function(model, model_name, ndraws=1000,shuffle=TRUE, run_option=1){
 
   parcount<-parameterCount(model)
+
+  processed<-model$data
+
+  npp<-model$npp
+  nhop<-model$nhop
 
   # if (parcount[[8]]==0){
   #   print('correlations not operational yet')
