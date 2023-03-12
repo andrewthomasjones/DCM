@@ -1,5 +1,9 @@
 #' @export
-model_generator <- function(ncovariates, npp, nhop, description, type){
+model_generator <- function(processed, nhop, description, type){
+
+  npp<-processed$npp
+
+  ncovariates<-processed$ncovariates
 
   code <- matrix(0,ncovariates,npp)
 
