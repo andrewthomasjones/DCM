@@ -1,5 +1,5 @@
 #' @export
-runModel <- function(model, processed, run_option, model_name, ndraws=1000,shuffle=TRUE){
+runModel <- function(model, processed, model_name, ndraws=1000,shuffle=TRUE, run_option=1){
 
   parcount<-parameterCount(model)
 

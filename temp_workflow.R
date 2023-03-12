@@ -23,10 +23,8 @@ global_model <- model_generator(processed, nhop, 'Global Model', "Global")
 fixed_model<-model_generator(processed, nhop, 'FIXED', "Fixed")
 one_factor_model<-model_generator(processed, nhop, 'ONE FACTOR', "Global")
 
-#runModel(fixed_model, processed, 0, "FIXED 0")
-#runModel(fixed_model, processed, 1, "FIXED 1")
 
-runModel(one_factor_model, processed, 0, "1F 0")
-runModel(one_factor_model, processed, 1, "1F 1", ndraws=100)
+runModel(one_factor_model, processed,"n 100 shuf", ndraws=100, shuffle=TRUE)
+runModel(one_factor_model, processed,"n 100 noshuf", ndraws=100, shuffle=FALSE)
 
 toc() #118.491 sec elapsed
