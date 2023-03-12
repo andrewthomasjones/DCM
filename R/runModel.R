@@ -1,5 +1,5 @@
 #' @export
-runModel <- function(model, processed, run_option, model_name, ndraws=1000){
+runModel <- function(model, processed, run_option, model_name, ndraws=1000,shuffle=TRUE){
 
   parcount<-parameterCount(model)
 
@@ -16,7 +16,7 @@ runModel <- function(model, processed, run_option, model_name, ndraws=1000){
   }
 
   nrc<-dim(model$epsilon)[1]+dim(model$delta)[1]
-  draws_matrix<-drawsMatrix(ndraws,nrc)
+  draws_matrix<-drawsMatrix(ndraws,nrc, shuffle)
 
   if (run_option == 0){
 
