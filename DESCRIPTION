@@ -12,7 +12,8 @@ LazyData: true
 Imports:
     tools,
     readxl,
-    Rcpp
+    Rcpp,
+    tibble
 Suggests: 
     knitr,
     rmarkdown,

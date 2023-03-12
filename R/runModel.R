@@ -1,9 +1,11 @@
 #' @export
-runModel <- function(model, model_name, ndraws=1000,shuffle=TRUE, run_option=1){
+runModel <- function(model, model_name, ndraws=1000){
 
   parcount<-parameterCount(model)
-
+  shuffle<-FALSE
   processed<-model$data
+
+  model_name<-model$description
 
   npp<-model$npp
   nhop<-model$nhop
@@ -22,16 +24,6 @@ runModel <- function(model, model_name, ndraws=1000,shuffle=TRUE, run_option=1){
 
   nrc<-dim(model$epsilon)[1]+dim(model$delta)[1]
   draws_matrix<-drawsMatrix(ndraws,nrc, shuffle)
-
-  if (run_option == 0){
-
-      loglik0 <- llCalc3(model$initial_values, model, processed, draws_matrix)
-
-    resultname<-paste('Result 0', model_name)
-
-    results <- list(resultname=resultname, run_option=run_option, model=model, loglikf=loglik0, ndraws=ndraws)
-  }else if (run_option == 1){
-
 
     loglik1<-suppressWarnings(llMax2(model, processed, draws_matrix))
 
@@ -62,6 +54,12 @@ runModel <- function(model, model_name, ndraws=1000,shuffle=TRUE, run_option=1){
       }
     }
 
+    k<-parcount$total
+    n<-nrow(processed$data)
+    AIC <- 2*k -2*log(loglik1$minimum)
+    BIC <- k*log(n) - 2*log(loglik1$minimum)
+
+
     parastems <- c(rep(("epsilon"),printpara[1]), rep(("epsilon_sig"),printpara[2]), rep(("delta_mu"),printpara[3]), rep(("delta_sig"),printpara[4]), rep(("gamma"),printpara[5]), rep(("beta"),printpara[6]))
 
     subscripts <- matrix(rbind(which(model$epsilon >0, arr.ind = T), which(model$delta >0, arr.ind = T), which(model$gamma >0, arr.ind = T), which(model$beta >0, arr.ind = T)),nrow = sum(printpara), ncol = 2)
@@ -70,13 +68,11 @@ runModel <- function(model, model_name, ndraws=1000,shuffle=TRUE, run_option=1){
 
     results <- data.frame(parameters=parameters, estimate=loglik1$estimate, standard_errors=standard_errors)
 
-    results$LL <-  c(loglik1$minimum,rep(".",nrow(results)-1))
+    results$LL <-  c(loglik1$minimum, rep(".", nrow(results)-1))
 
-    resultname<-paste('Result 0', model_name)
+    result_name<-paste0(model_name, " ", format(Sys.time(), "%Y-%m-%d %H:%M"))
 
-    results <- list(resultname=resultname, run_option=run_option, model=model, loglikf=loglik1, ndraws=ndraws, results=results)
+    fitted_model <- list(result_name=result_name,  model=model, model_name=model_name, LL=loglik1$minimum, loglikf=loglik1, ndraws=ndraws, results=results, AIC = AIC, BIC=BIC, par_count=parcount)
 
-  }
-
-  return(results)
+  return(fitted_model)
 }

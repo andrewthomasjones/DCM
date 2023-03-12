@@ -4,7 +4,6 @@ parameterCount<-function(model){
   npp<-model$npp
   nhop<-model$nhop
 
-
   parcount<-array(0,8)
 
   parcount_list<-list(
