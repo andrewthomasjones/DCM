@@ -13,19 +13,19 @@ processed<-setUp(filename, header = F)
 m1<-model_generator(processed, "fixed")
 m2<-model_generator(processed, "random")
 m3<-model_generator(processed, "one-factor")
-m4<-model_generator(processed, "mtmm")
+#m4<-model_generator(processed, "mtmm") #doesnt work divide by two thing
 
 r1<-runModel(m1)
 r2<-runModel(m2)
 r3<-runModel(m3)
-r4<-runModel(m4)
+#r4<-runModel(m4)
 
-summariseModelList(list(r1,r2,r3, r4))
+summariseModelList(list(r1,r2,r3))#, r4))
 
 parPrintOld(r1)
 parPrintOld(r2)
 parPrintOld(r3)
-parPrintOld(r4)
+#parPrintOld(r4)
 
 
 

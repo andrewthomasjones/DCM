@@ -58,7 +58,7 @@ setUp<-function(filename, header=TRUE){
                   concept=concept_list$concept,
                   lcovariates=lcovariates,
                   fdd=fdd,
-                  attribute_names = names(data_matrix))
+                  attribute_names = names(data_matrix)[-(1:3)])
 
   return(processed)
 

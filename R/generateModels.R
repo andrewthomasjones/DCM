@@ -101,31 +101,35 @@ generate_model_matrices <- function(pre_processed_data, model_type) {
 
     nhop<-ncovariates
 
+    nhop_d2_p2<-ceiling(nhop/2)+2
+    ncovariates_d2_p2<-ceiling(ncovariates/2)+2
+    ncovariates_d2<-ceiling(ncovariates/2)
+
     default.muep <- rep(1,ncovariates)
     default.musig <- rep(0,ncovariates)
-    default.deltaep <- rep(0,nhop/2+2)
-    default.deltasig <- rep(-1,nhop/2+2)
-    default.gamma <- rbind(cbind(diag(ncovariates/2)*1,matrix(cbind(rep(1,ncovariates/2),rep(0,ncovariates/2)),ncol=2)),
-                           cbind(diag(ncovariates/2)*1,matrix(cbind(rep(0,ncovariates/2),rep(1,ncovariates/2)),ncol=2)))
-    default.beta <- diag(nhop/2+2)*0
+    default.deltaep <- rep(0,nhop_d2_p2)
+    default.deltasig <- rep(-1,nhop_d2_p2)
+    default.gamma <- rbind(cbind(diag(ncovariates_d2),matrix(cbind(rep(1,ncovariates_d2),rep(0,ncovariates_d2)),ncol=2)),
+                           cbind(diag(ncovariates_d2),matrix(cbind(rep(0,ncovariates_d2),rep(1,ncovariates_d2)),ncol=2)))
+    default.beta <- diag(nhop_d2_p2)*0
     default.muep_initial <- rep(.1,ncovariates)
     default.musig_initial <- rep(NA,ncovariates)
     default.deltaep_initial <- rep(NA,nhop)
     default.deltasig_initial <- rep(NA,nhop)
-    default.gamma_initial <- rbind(cbind(diag(ncovariates/2)*.1,matrix(cbind(rep(.1,ncovariates/2),rep(NA,ncovariates/2)),ncol=2)),
-                                   cbind(diag(ncovariates/2)*.1,matrix(cbind(rep(NA,ncovariates/2),rep(.1,ncovariates/2)),ncol=2)))
-    default.beta_initial <- diag(nhop/2+2)*NA
+    default.gamma_initial <- rbind(cbind(diag(ncovariates_d2)*.1,matrix(cbind(rep(.1,ncovariates_d2),rep(NA,ncovariates_d2)),ncol=2)),
+                                   cbind(diag(ncovariates_d2)*.1,matrix(cbind(rep(NA,ncovariates_d2),rep(.1,ncovariates_d2)),ncol=2)))
+    default.beta_initial <- diag(nhop_d2_p2)*NA
 
     epsilon_model <- matrix(cbind(default.muep,default.musig), ncol=2, dimnames = list(attribute_names,c("mu","sigma")))
-    delta_model <- matrix(cbind(default.deltaep,default.deltasig), ncol=2, dimnames = list(paste("HoP_",1:(nhop/2+2),sep=""),c("mu","sigma")))
-    gamma_model <- matrix(default.gamma, ncol=(ncovariates/2)+2, dimnames = list(attribute_names,paste("HoP_",1:(ncovariates/2+2),sep="")))
-    beta_model <- matrix(default.beta,ncol=nhop/2+2,dimnames = list(paste("HoP_",1:(nhop/2+2),sep=""),paste("HoP_",1:(nhop/2+2),sep="")))
+    delta_model <- matrix(cbind(default.deltaep,default.deltasig), ncol=2, dimnames = list(paste("HoP_",1:(nhop_d2_p2),sep=""),c("mu","sigma")))
+    gamma_model <- matrix(default.gamma, ncol=ncovariates_d2_p2, dimnames = list(attribute_names, paste("HoP_",1:ncovariates_d2_p2,sep="")))
+    beta_model <- matrix(default.beta, ncol=nhop_d2_p2, dimnames = list(paste("HoP_",1:(nhop_d2_p2),sep=""),paste("HoP_",1:(nhop_d2_p2),sep="")))
 
     epsilon_model_initial <- matrix(cbind(default.muep_initial,default.musig_initial),ncol=2,dimnames = list(attribute_names,c("mu","sigma")))
     delta_model_initial <- matrix(cbind(default.deltaep_initial,default.deltasig_initial),ncol=2, dimnames = list(paste("HoP_",1:nhop,sep=""),c("mu","sigma")))
-    gamma_model_initial <- matrix(default.gamma_initial, ncol=(ncovariates/2)+2, dimnames = list(attribute_names,paste("HoP_",1:(ncovariates/2+2),sep="")))
+    gamma_model_initial <- matrix(default.gamma_initial, ncol=ncovariates_d2_p2, dimnames = list(attribute_names,paste("HoP_",1:ncovariates_d2_p2,sep="")))
     gamma_model_initial[gamma_model_initial==0] <- NA
-    beta_model_initial <- matrix(default.beta_initial,ncol=nhop/2+2, dimnames = list(paste("HoP_",1:(nhop/2+2),sep=""),paste("HoP_",1:(nhop/2+2),sep="")))
+    beta_model_initial <- matrix(default.beta_initial,ncol=nhop_d2_p2, dimnames = list(paste("HoP_",1:(nhop_d2_p2),sep=""),paste("HoP_",1:(nhop_d2_p2),sep="")))
   }
 
   model_matrices <-list(
@@ -150,6 +154,7 @@ model_generator <- function(pre_processed_data, model_type){
   matrix_list<-generate_model_matrices(pre_processed_data, model_type)
   nhop<-nrow(matrix_list$delta_model)
   npp<-processed$npp
+  ncovariates<-pre_processed_data$ncovariates
 
   initial_e <-  matrix_list$epsilon_model_initial
   initial_e <-  na.omit(as.vector(initial_e))
@@ -159,7 +164,7 @@ model_generator <- function(pre_processed_data, model_type){
   initial_g <-  na.omit(as.vector(initial_g))
   initial_b <-  matrix_list$beta_model_initial
   initial_b <-  na.omit(as.vector(initial_b))
-  initialvalues <- c(initial_e,initial_d,initial_g,initial_b)
+  initial_values <- c(initial_e,initial_d,initial_g,initial_b)
 
   phi <- diag(npp+nhop)
 
@@ -168,16 +173,18 @@ model_generator <- function(pre_processed_data, model_type){
     diag(code)<-1
   }
 
+  description <- "" #FIX
+
   model<-list(description=description,
               data=pre_processed_data,
-              ncovariates=pre_processed_data$ncovariates,
+              ncovariates=ncovariates,
               npp=processed$npp,
               nhop=nhop,
               code=code,
-              epsilon=matrix_list$epsilon,
-              delta=matrix_list$delta,
-              gamma=matrix_list$gamma,
-              beta=matrix_list$beta,
+              epsilon=matrix_list$epsilon_model,
+              delta=matrix_list$delta_model,
+              gamma=matrix_list$gamma_model,
+              beta=matrix_list$beta_model,
               phi=phi,
               initial_values=initial_values)
 

@@ -3,7 +3,7 @@ summariseModelList<-function(list_of_models){
 
   m<-length(list_of_models)
 
-  table<-tibble("Model Specifications" = rep(NA,m),
+  table<-tibble::tibble("Model Specifications" = rep(NA,m),
              "Parameters" = rep(NA,m),
              "Latent Variables"= rep(NA,m),
               "Log-Likelihood"= rep(NA,m),
@@ -12,12 +12,12 @@ summariseModelList<-function(list_of_models){
              )
 
   for(i in 1:m){
-    table$"Model Specifications"[i] <- paste0("M", i, ": ", list_of_models[[m]]$model_name)
-     table$"Parameters"[i] <- list_of_models[[m]]$par_count$total
+    table$"Model Specifications"[i] <- paste0("M", i, ": ", list_of_models[[i]]$model_name)
+     table$"Parameters"[i] <- list_of_models[[i]]$par_count$total
      table$"Latent Variables"[i] <- NA
-     table$"Log-Likelihood"[i] <-  list_of_models[[m]]$LL
-     table$"AIC"[i] <- list_of_models[[m]]$AIC
-     table$"BIC"[i] <- list_of_models[[m]]$BIC
+     table$"Log-Likelihood"[i] <-  list_of_models[[i]]$LL
+     table$"AIC"[i] <- list_of_models[[i]]$AIC
+     table$"BIC"[i] <- list_of_models[[i]]$BIC
   }
 
 
