@@ -1,6 +1,12 @@
 #' @export
 generate_model_matrices <- function(pre_processed_data, model_type) {
 
+  model_types <- c("fixed", "random", "one-factor", "mtmm")
+
+  if(!(model_type %in% model_types)){
+    stop(paste("model_type not one of ", paste(model_types, collapse = ', ')))
+  }
+
   #setup values
   ncovariates <- pre_processed_data$ncovariates
   attribute_names <- pre_processed_data$attribute_names

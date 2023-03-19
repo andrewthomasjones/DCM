@@ -10,18 +10,15 @@ filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
 
 processed<-setUp(filename, header = F)
 
-nhop<-1
+m1<-model_generator(processed, "fixed")
+m2<-model_generator(processed, "random")
+m3<-model_generator(processed, "one-factor")
+m4<-model_generator(processed, "mtmm")
 
-#set up default models
-fixed_model <- model_generator(processed, nhop, 'Fixed Model', "Fixed")
-random_model <- model_generator(processed, nhop, 'Random Model', "Random")
-one_factor_model<-model_generator(processed, nhop, 'ONE FACTOR', "Global")
-
-
-r1<-runModel(one_factor_model, "n 100 1F", ndraws=100)
-r2<-runModel(fixed_model, "n 100 fixed", ndraws=100)
-r3<-runModel(random_model, "n 100 Rand", ndraws=100)
-r4<-runModel(global_model, "n 100 Glob", ndraws=100)
+r1<-runModel(m1)
+r2<-runModel(m2)
+r3<-runModel(m3)
+r4<-runModel(m4)
 
 summariseModelList(list(r1,r2,r3, r4))
 

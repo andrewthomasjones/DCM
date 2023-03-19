@@ -1,5 +1,5 @@
 #' @export
-runModel <- function(model, model_name, ndraws=1000){
+runModel <- function(model, model_name="name", ndraws=1000){
 
   parcount<-parameterCount(model)
   shuffle<-FALSE
