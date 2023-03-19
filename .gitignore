@@ -3,7 +3,6 @@
 .RData
 .Ruserdata
 inst/doc
-*.RData
 .DS_Store
 .DS_Store?
 ._*
