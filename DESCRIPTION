@@ -2,8 +2,8 @@ Package: DCM
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.1
-Author: Who wrote it
-Maintainer: Andrew Jones <andrewthomasjones@gmail.com>
+Author: Andrew Thomas Jones, Thomas Magor, Leonard V. Coote
+Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: GPL (>= 3)
@@ -13,7 +13,8 @@ Imports:
     tools,
     readxl,
     Rcpp,
-    tibble
+    tibble,
+    openxlsx
 Suggests: 
     knitr,
     rmarkdown,
