@@ -57,7 +57,8 @@ setUp<-function(filename, header=TRUE){
                   ndecisionmakers=ndecisionmakers,
                   concept=concept_list$concept,
                   lcovariates=lcovariates,
-                  fdd=fdd)
+                  fdd=fdd,
+                  attribute_names = names(data_matrix))
 
   return(processed)
 

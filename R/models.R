@@ -1,5 +1,5 @@
 #' @export
-model_generator <- function(processed, nhop, description, type){
+model_generator_old <- function(processed, nhop, description, type){
 
   npp<-processed$npp
 
@@ -32,9 +32,7 @@ model_generator <- function(processed, nhop, description, type){
 
 
   beta <- matrix(0,nhop,nhop)
-  phi <- matrix(0,npp+nhop,npp+nhop)
-
-  diag(phi)<-1
+  phi <- diag(npp+nhop)
 
   if (ncovariates==npp){
     diag(code)<-1
