@@ -29,14 +29,14 @@ generate_model_matrices <- function(pre_processed_data, model_type) {
     default.gamma_initial <- rep(NA,ncovariates)
     default.beta_initial <- rep(NA,1)
 
-    epsilon_model <- matrix(cbind(default.muep,default.musig), ncol = 2, dimnames = list(attributenames,c("mu","sigma")))
+    epsilon_model <- matrix(cbind(default.muep,default.musig), ncol = 2, dimnames = list(attribute_names,c("mu","sigma")))
     delta_model <- matrix(cbind(default.deltaep,default.deltasig), ncol = 2, dimnames = list("HoP_1",c("mu","sigma")))
-    gamma_model <- matrix(default.gamma, ncol = 1, dimnames = list(attributenames,"HoP_1"))
+    gamma_model <- matrix(default.gamma, ncol = 1, dimnames = list(attribute_names,"HoP_1"))
     beta_model <- matrix(default.beta, ncol = 1, dimnames = list("HoP_1","HoP_1"))
 
-    epsilon_model_initial <- matrix(cbind(default.muep_initial,default.musig_initial), ncol = 2, dimnames = list(attributenames,c("mu","sigma")))
+    epsilon_model_initial <- matrix(cbind(default.muep_initial,default.musig_initial), ncol = 2, dimnames = list(attribute_names,c("mu","sigma")))
     delta_model_initial <- matrix(cbind(default.deltaep_initial,default.deltasig_initial), ncol = 2, dimnames = list("HoP_1",c("mu","sigma")))
-    gamma_model_initial <- matrix(default.gamma_initial,ncol = 1, dimnames = list(attributenames,"HoP_1"))
+    gamma_model_initial <- matrix(default.gamma_initial,ncol = 1, dimnames = list(attribute_names,"HoP_1"))
     beta_model_initial <- matrix(default.beta_initial,ncol = 1, dimnames = list("HoP_1","HoP_1"))
 
   }else if(model_type == "random"){
@@ -57,14 +57,14 @@ generate_model_matrices <- function(pre_processed_data, model_type) {
     default.gamma_initial <- diag(nhop)*NA
     default.beta_initial <- diag(nhop)*NA
 
-    epsilon_model <- matrix(cbind(default.muep,default.musig), ncol = 2, dimnames = list(attributenames, c("mu","sigma")))
+    epsilon_model <- matrix(cbind(default.muep,default.musig), ncol = 2, dimnames = list(attribute_names, c("mu","sigma")))
     delta_model <- matrix(cbind(default.deltaep,default.deltasig), ncol = 2, dimnames = list(paste("HoP_",1:nhop,sep=""), c("mu","sigma")))
-    gamma_model <- matrix(default.gamma,ncol=nhop, dimnames = list(attributenames, paste("HoP_",1:nhop,sep="")))
+    gamma_model <- matrix(default.gamma,ncol=nhop, dimnames = list(attribute_names, paste("HoP_",1:nhop,sep="")))
     beta_model <- matrix(default.beta,ncol=nhop, dimnames = list(paste("HoP_",1:nhop,sep=""), paste("HoP_",1:nhop,sep="")))
 
-    epsilon_model_initial <- matrix(cbind(default.muep_initial,default.musig_initial), ncol=2, dimnames = list(attributenames,c("mu","sigma")))
+    epsilon_model_initial <- matrix(cbind(default.muep_initial,default.musig_initial), ncol=2, dimnames = list(attribute_names,c("mu","sigma")))
     delta_model_initial <- matrix(cbind(default.deltaep_initial,default.deltasig_initial), ncol=2, dimnames = list(paste("HoP_",1:nhop,sep=""),c("mu","sigma")))
-    gamma_model_initial <- matrix(default.gamma_initial, ncol = nhop, dimnames = list(attributenames,paste("HoP_",1:nhop,sep="")))
+    gamma_model_initial <- matrix(default.gamma_initial, ncol = nhop, dimnames = list(attribute_names,paste("HoP_",1:nhop,sep="")))
     beta_model_initial <- matrix(default.beta_initial, ncol = nhop, dimnames = list(paste("HoP_",1:nhop,sep=""),paste("HoP_",1:nhop,sep="")))
 
   }else if(model_type == "one-factor"){
@@ -85,14 +85,14 @@ generate_model_matrices <- function(pre_processed_data, model_type) {
     default.gamma_initial <- rep(.1,ncovariates)
     default.beta_initial <- rep(NA,1)
 
-    epsilon_model <- matrix(cbind(default.muep,default.musig),ncol=2,dimnames = list(attributenames,c("mu","sigma")))
+    epsilon_model <- matrix(cbind(default.muep,default.musig),ncol=2,dimnames = list(attribute_names,c("mu","sigma")))
     delta_model <- matrix(cbind(default.deltaep,default.deltasig), ncol = 2, dimnames = list("HoP_1",c("mu","sigma")))
-    gamma_model <- matrix(default.gamma, ncol = 1, dimnames = list(attributenames,"HoP_1"))
+    gamma_model <- matrix(default.gamma, ncol = 1, dimnames = list(attribute_names,"HoP_1"))
     beta_model<- matrix(default.beta, ncol = 1, dimnames = list("HoP_1","HoP_1"))
 
-    epsilon_model_initial <- matrix(cbind(default.muep_initial,default.musig_initial), ncol = 2, dimnames = list(attributenames,c("mu","sigma")))
+    epsilon_model_initial <- matrix(cbind(default.muep_initial,default.musig_initial), ncol = 2, dimnames = list(attribute_names,c("mu","sigma")))
     delta_model_initial <- matrix(cbind(default.deltaep_initial,default.deltasig_initial),ncol=2, dimnames = list("HoP_1",c("mu","sigma")))
-    gamma_model_initial <- matrix(default.gamma_initial, ncol = 1, dimnames = list(attributenames,"HoP_1"))
+    gamma_model_initial <- matrix(default.gamma_initial, ncol = 1, dimnames = list(attribute_names,"HoP_1"))
     beta_model_initial <- matrix(default.beta_initial, ncol = 1, dimnames = list("HoP_1","HoP_1"))
 
 
@@ -116,14 +116,14 @@ generate_model_matrices <- function(pre_processed_data, model_type) {
                                    cbind(diag(ncovariates/2)*.1,matrix(cbind(rep(NA,ncovariates/2),rep(.1,ncovariates/2)),ncol=2)))
     default.beta_initial <- diag(nhop/2+2)*NA
 
-    epsilon_model <- matrix(cbind(default.muep,default.musig), ncol=2, dimnames = list(attributenames,c("mu","sigma")))
+    epsilon_model <- matrix(cbind(default.muep,default.musig), ncol=2, dimnames = list(attribute_names,c("mu","sigma")))
     delta_model <- matrix(cbind(default.deltaep,default.deltasig), ncol=2, dimnames = list(paste("HoP_",1:(nhop/2+2),sep=""),c("mu","sigma")))
-    gamma_model <- matrix(default.gamma, ncol=(ncovariates/2)+2, dimnames = list(attributenames,paste("HoP_",1:(ncovariates/2+2),sep="")))
+    gamma_model <- matrix(default.gamma, ncol=(ncovariates/2)+2, dimnames = list(attribute_names,paste("HoP_",1:(ncovariates/2+2),sep="")))
     beta_model <- matrix(default.beta,ncol=nhop/2+2,dimnames = list(paste("HoP_",1:(nhop/2+2),sep=""),paste("HoP_",1:(nhop/2+2),sep="")))
 
-    epsilon_model_initial <- matrix(cbind(default.muep_initial,default.musig_initial),ncol=2,dimnames = list(attributenames,c("mu","sigma")))
+    epsilon_model_initial <- matrix(cbind(default.muep_initial,default.musig_initial),ncol=2,dimnames = list(attribute_names,c("mu","sigma")))
     delta_model_initial <- matrix(cbind(default.deltaep_initial,default.deltasig_initial),ncol=2, dimnames = list(paste("HoP_",1:nhop,sep=""),c("mu","sigma")))
-    gamma_model_initial <- matrix(default.gamma_initial, ncol=(ncovariates/2)+2, dimnames = list(attributenames,paste("HoP_",1:(ncovariates/2+2),sep="")))
+    gamma_model_initial <- matrix(default.gamma_initial, ncol=(ncovariates/2)+2, dimnames = list(attribute_names,paste("HoP_",1:(ncovariates/2+2),sep="")))
     gamma_model_initial[gamma_model_initial==0] <- NA
     beta_model_initial <- matrix(default.beta_initial,ncol=nhop/2+2, dimnames = list(paste("HoP_",1:(nhop/2+2),sep=""),paste("HoP_",1:(nhop/2+2),sep="")))
   }
