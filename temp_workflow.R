@@ -1,36 +1,60 @@
 #library(devtools)
 #devtools::install_git('ssh://git@github.com/andrewthomasjones/DCM.git')
 #install.packages(file.choose(), repos=NULL)
-library(tictoc)
-
+#library(tictoc)
 library(DCM)
 
 #filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
-filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
+#filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
 
-processed<-setUp(filename, header = F)
+processedBW<-setUp(BWpriorities)
+processedDCE<-setUp(DCEpriorities)
 
-m1<-model_generator(processed, "fixed")
-m2<-model_generator(processed, "random")
-m3<-model_generator(processed, "one-factor")
-#m4<-model_generator(processed, "mtmm") #doesnt work divide by two thing
+m1BW<-model_generator(processedBW, "fixed")
+m2BW<-model_generator(processedBW, "random")
+m3BW<-model_generator(processedBW, "one-factor")
 
-r1<-runModel(m1)
-r2<-runModel(m2)
-r3<-runModel(m3)
-#r4<-runModel(m4)
+m1DCE<-model_generator(processedDCE, "fixed")
+m2DCE<-model_generator(processedDCE, "random")
+m3DCE<-model_generator(processedDCE, "one-factor")
 
-summariseModelList(list(r1,r2,r3))#, r4))
+processedBWDCE <- join(processedBW, processedDCE)
 
-parPrintOld(r1)
-parPrintOld(r2)
-parPrintOld(r3)
-#parPrintOld(r4)
+m1BWDCE<-model_generator(processedBWDCE, "fixed")
+m2BWDCE<-model_generator(processedBWDCE, "random")
+m3BWDCE<-model_generator(processedBWDCE, "one-factor")
+#m4BWDCE<-model_generator(processedBWDCE , "mtmm")
+
+r1BW<-runModel(m1BW)
+r2BW<-runModel(m2BW)
+r3BW<-runModel(m3BW)
+
+r1DCE<-runModel(m1DCE)
+r2DCE<-runModel(m2DCE)
+r3DCE<-runModel(m3DCE)
+
+r1BWDCE<-runModel(m1BWDCE)
+r2BWDCE<-runModel(m2BWDCE)
+r3BWDCE<-runModel(m3BWDCE)
+#r4BWDCE<-runModel(m4BWDCE)
 
 
 
 
 #
+#
+#
+#
+#
+# summariseModelList(list(r1,r2,r3))#, r4))
+#
+# parPrintOld(r1)
+# parPrintOld(r2)
+# parPrintOld(r3)
+# #parPrintOld(r4)
+
+
+#runModel(m1BW)
 #
 # dataname=paste("./DATA/",select.list(list.files(path = "./DATA", pattern = ".RData"), multiple = FALSE,
 #                                      title = "Choose your dataset", graphics = TRUE),sep="")
