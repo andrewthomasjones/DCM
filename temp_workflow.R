@@ -4,6 +4,10 @@
 #library(tictoc)
 library(DCM)
 
+#lint_package(linters = linters_with_defaults(
+#  line_length_linter = line_length_linter(100),
+#  object_name_linter= object_name_linter(c("snake_case","camelCase"))))
+
 #filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
 #filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
 

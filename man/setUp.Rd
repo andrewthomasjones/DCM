@@ -13,6 +13,6 @@ A list of the processed data.
 Read data. This documentation is incomplete.
 }
 \examples{
-x<-setUp(test.txt, header=TRUE)
-x<-setUp(test.xlsx)
+x <- setUp(test.txt, header=TRUE)
+x <- setUp(test.xlsx)
 }

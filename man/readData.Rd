@@ -13,6 +13,6 @@ A dataframe of the input data.
 Read data. This documentation is incomplete.
 }
 \examples{
-x<-read_data(test.txt)
-x<-read_data(test.xlsx)
+x <- read_data(test.txt)
+x <- read_data(test.xlsx)
 }
