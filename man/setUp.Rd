@@ -4,7 +4,7 @@
 \alias{setUp}
 \title{Read data. This documentation is incomplete.}
 \usage{
-setUp(filename, header = TRUE)
+setUp(data, header = TRUE)
 }
 \value{
 A list of the processed data.

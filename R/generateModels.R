@@ -153,7 +153,7 @@ model_generator <- function(pre_processed_data, model_type){
 
   matrix_list<-generate_model_matrices(pre_processed_data, model_type)
   nhop<-nrow(matrix_list$delta_model)
-  npp<-processed$npp
+  npp<-pre_processed_data$npp
   ncovariates<-pre_processed_data$ncovariates
 
   initial_e <-  matrix_list$epsilon_model_initial
@@ -178,7 +178,7 @@ model_generator <- function(pre_processed_data, model_type){
   model<-list(description=description,
               data=pre_processed_data,
               ncovariates=ncovariates,
-              npp=processed$npp,
+              npp=npp,
               nhop=nhop,
               code=code,
               epsilon=matrix_list$epsilon_model,

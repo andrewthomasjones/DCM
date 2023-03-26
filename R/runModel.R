@@ -23,7 +23,7 @@ runModel <- function(model, model_name="name", ndraws=1000){
   }
 
   nrc<-dim(model$epsilon)[1]+dim(model$delta)[1]
-  draws_matrix<-drawsMatrix(ndraws,nrc, shuffle)
+  draws_matrix<-drawsMatrix(ndraws, nrc, shuffle)
 
     loglik1<-suppressWarnings(llMax2(model, processed, draws_matrix))
 

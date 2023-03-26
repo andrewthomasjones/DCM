@@ -30,8 +30,10 @@ setUp<-function(data, header=TRUE){
   if(class(data)=="character"){
     #read in data
     data_matrix<-readData(data, header = header)
+    filename <- data
   }else if(class(data)%in% c("data.frame", "tibble", "matrix")){
     data_matrix<- as.data.frame(data)
+    filename <- NULL
   }else{
     stop("Data must either be a filename or data as a matrix, tibble, or data.frame")
   }
@@ -39,7 +41,8 @@ setUp<-function(data, header=TRUE){
 
   #from Kobe code
   nmax_choiceset_size<-as.numeric(max(unlist(rle(data_matrix[,2])[1])))
-    #concept list
+
+  #concept list
   concept_list<-createConcepts2(data_matrix, nmax_choiceset_size)
 
   #fdd
@@ -66,7 +69,8 @@ setUp<-function(data, header=TRUE){
                   concept=concept_list$concept,
                   lcovariates=lcovariates,
                   fdd=fdd,
-                  attribute_names = names(data_matrix)[-(1:3)])
+                  attribute_names = names(data_matrix)[-(1:3)]
+                  )
 
   return(processed)
 
