@@ -24,10 +24,18 @@ readData <-function(filename, header=TRUE){
 #' x<-setUp(test.txt, header=TRUE)
 #' x<-setUp(test.xlsx)
 #' @export
-setUp<-function(filename, header=TRUE){
+setUp<-function(data, header=TRUE){
 
-  #read in data
-  data_matrix<-readData(filename, header = header)
+
+  if(class(data)=="character"){
+    #read in data
+    data_matrix<-readData(data, header = header)
+  }else if(class(data)%in% c("data.frame", "tibble", "matrix")){
+    data_matrix<- as.data.frame(data)
+  }else{
+    stop("Data must either be a filename or data as a matrix, tibble, or data.frame")
+  }
+
 
   #from Kobe code
   nmax_choiceset_size<-as.numeric(max(unlist(rle(data_matrix[,2])[1])))
