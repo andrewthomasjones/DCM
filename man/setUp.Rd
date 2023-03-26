@@ -12,7 +12,3 @@ A list of the processed data.
 \description{
 Read data. This documentation is incomplete.
 }
-\examples{
-x <- setUp(test.txt, header=TRUE)
-x <- setUp(test.xlsx)
-}

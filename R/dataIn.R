@@ -3,8 +3,6 @@
 #' @importFrom tools file_ext
 #' @returns A dataframe of the input data.
 #' @examples
-#' x <- read_data(test.txt)
-#' x <- read_data(test.xlsx)
 #' @export
 readData  <-  function(filename, header = TRUE) {
   #checks file type and then reads accordingly
@@ -22,8 +20,6 @@ readData  <-  function(filename, header = TRUE) {
 #'
 #' @returns A list of the processed data.
 #' @examples
-#' x <- setUp(test.txt, header=TRUE)
-#' x <- setUp(test.xlsx)
 #' @export
 setUp <- function(data, header = TRUE) {
 
