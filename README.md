@@ -24,32 +24,54 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(DCM)
-## basic example code
-```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+processedBW<-setUp(BWpriorities)
+
+m1BW<-model_generator(processedBW, "fixed")
+m2BW<-model_generator(processedBW, "random")
+m3BW<-model_generator(processedBW, "one-factor")
+
+
+r1BW<-runModel(m1BW)
+#> [1] "You have the correct number of initial values."
+#> Warning in sqrt(diag(solve(loglik1$hessian))): NaNs produced
+r2BW<-runModel(m2BW)
+#> [1] "You have the correct number of initial values."
+#> Warning in sqrt(diag(solve(loglik1$hessian))): NaNs produced
+r3BW<-runModel(m3BW)
+#> [1] "You have the correct number of initial values."
+#> Warning in sqrt(diag(solve(loglik1$hessian))): NaNs produced
+```
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+summariseModelList(list(r1BW,r2BW,r3BW))
+#> # A tibble: 3 × 6
+#>   `Model Specifications` Parameters `Latent Variables` Log-Likelih…¹   AIC   BIC
+#>   <chr>                       <dbl> <lgl>                      <dbl> <dbl> <dbl>
+#> 1 "M1: "                         10 NA                        12086.  1.20  68.5
+#> 2 "M2: "                         20 NA                        11227. 21.3  156. 
+#> 3 "M3: "                         20 NA                        11227. 21.3  156. 
+#> # … with abbreviated variable name ¹​`Log-Likelihood`
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+``` r
+parPrintOld(r1BW)
+#>  [1] "Printout of results for  2023-03-26 17:58\\\\"  
+#>  [2] "log likelihood12085.8865\\\\"                   
+#>  [3] "Number of parameters10\\\\"                     
+#>  [4] "$\\\\"                                          
+#>  [5] "\\begin{array}{lrr}"                            
+#>  [6] "Model Parameter & Estimate & Standard Error\\\\"
+#>  [7] "\\epsilon_{\\mu,1}&1.0592&NaN\\\\"              
+#>  [8] "\\epsilon_{\\mu,2}&1.1867&NaN\\\\"              
+#>  [9] "\\epsilon_{\\mu,3}&-0.6469&NaN\\\\"             
+#> [10] "\\epsilon_{\\mu,4}&-0.113&NaN\\\\"              
+#> [11] "\\epsilon_{\\mu,5}&0.4849&NaN\\\\"              
+#> [12] "\\epsilon_{\\mu,6}&0.2573&NaN\\\\"              
+#> [13] "\\epsilon_{\\mu,7}&-0.8583&NaN\\\\"             
+#> [14] "\\epsilon_{\\mu,8}&-1.191&NaN\\\\"              
+#> [15] "\\epsilon_{\\mu,9}&0.9775&NaN\\\\"              
+#> [16] "\\epsilon_{\\mu,10}&-0.1564&NaN\\\\"            
+#> [17] "\\end{array}"                                   
+#> [18] "$\\\\"
+```
