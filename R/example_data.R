@@ -12,10 +12,10 @@
 #'
 #' @references
 #'
-#' @source
+#' @source not sure
 #'
 #' @examples
-"BWpriorities"
+#' BWpriorities
 
 
 #' DCE Dataset
@@ -32,7 +32,7 @@
 #'
 #' @references
 #'
-#' @source
+#' @source not sure
 #'
 #' @examples
-"DCEpriorities"
+#' DCEpriorities

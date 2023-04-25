@@ -5,26 +5,27 @@
 #' @useDynLib DCM
 NULL
 
-#' @export
 frequencyDistributionCpp <- function(cold) {
     .Call('_DCM_frequencyDistributionCpp', PACKAGE = 'DCM', cold)
 }
 
-#' @export
 createConceptsCpp <- function(data_matrix, nmax_choiceset_size = 31L) {
     .Call('_DCM_createConceptsCpp', PACKAGE = 'DCM', data_matrix, nmax_choiceset_size)
 }
 
-#' @export
-llCalcCpp <- function(working_values, concept, nmax_choiceset_size, data, ndecisionmakers, npp, nhop, epsilonmatrix, deltamatrix, gammamatrix, betamatrix, phimatrix, draws_matrix, code) {
-    .Call('_DCM_llCalcCpp', PACKAGE = 'DCM', working_values, concept, nmax_choiceset_size, data, ndecisionmakers, npp, nhop, epsilonmatrix, deltamatrix, gammamatrix, betamatrix, phimatrix, draws_matrix, code)
-}
-
+#' llCalc3
+#' does the calc
+#' actually llCalc3a does, this is same but other cant export
+#' @returns loglike
 #' @export
 llCalc3 <- function(working_values, model, processed, draws_matrix) {
     .Call('_DCM_llCalc3', PACKAGE = 'DCM', working_values, model, processed, draws_matrix)
 }
 
+#' llMax2
+#' does the maximisation
+#'
+#' @returns opt_results
 #' @export
 llMax2 <- function(model, processed, draws_matrix) {
     .Call('_DCM_llMax2', PACKAGE = 'DCM', model, processed, draws_matrix)

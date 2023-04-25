@@ -1,3 +1,6 @@
+#' create concepts.
+#'
+#' @returns List of outputs.
 #' @export
 createConcepts <- function(data_matrix, nmax_choiceset_size = 31) {
   dim_data_matrix <- dim(data_matrix)

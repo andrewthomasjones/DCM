@@ -1,3 +1,6 @@
+#' Prints parmaters
+#'
+#' @returns Tex code to paste
 #' @export
 parPrint <- function(results) {
 

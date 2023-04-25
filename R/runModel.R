@@ -1,3 +1,6 @@
+#' Runs Model
+#'
+#' @returns fitted model.
 #' @export
 runModel  <-  function(model,  model_name = "name",  ndraws = 1000) {
 

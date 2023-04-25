@@ -1,5 +1,6 @@
-#'@importFrom stats nlm
-
+#' calculates optimum model fit
+#' not used - C++ version is
+#' @returns max loglik
 #' @export
 llMax  <- function(model,  processed,  draws_matrix) {
 
@@ -10,6 +11,9 @@ llMax  <- function(model,  processed,  draws_matrix) {
   return(loglik)
 }
 
+#' does LL calc
+#' not used - C++ version is
+#' @returns loglik
 #' @export
 llCalc <- function(working_values,  model,  processed,  draws_matrix) {
 

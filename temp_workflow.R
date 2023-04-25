@@ -25,7 +25,7 @@ m3DCE<-model_generator(processedDCE, "one-factor")
 
 #remove extra var and join
 processedBW2 <- remove_variable(processedBW, "Accessibility_BW")
-processedBWDCE <- join2(processedBW2, processedDCE)
+processedBWDCE <- join(processedBW2, processedDCE)
 
 m1BWDCE<-model_generator(processedBWDCE, "fixed")
 m2BWDCE<-model_generator(processedBWDCE, "random")

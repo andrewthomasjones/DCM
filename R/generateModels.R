@@ -1,5 +1,6 @@
-#'@importFrom utils read.table read.csv
-
+#' generate_model_matrices
+#'
+#' @returns model matrices
 #' @export
 generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
 
@@ -287,6 +288,9 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
 }
 
 
+#' generate model
+#'
+#' @returns model
 #' @export
 model_generator  <-  function(pre_processed_data,  model_type) {
 

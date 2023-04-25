@@ -1,5 +1,6 @@
-#'@importFrom stats qnorm
-
+#' Draws matrix
+#'
+#' @returns draws matrix
 #' @export
 drawsMatrix <- function(ndraws, nrc, shuffle = TRUE) {
 

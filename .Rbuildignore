@@ -4,3 +4,5 @@
 ^data-raw$
 ^README\.Rmd$
 ^\.github$
+^temp_workflow.R
+^misc$

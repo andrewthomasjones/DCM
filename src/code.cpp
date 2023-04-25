@@ -7,7 +7,6 @@
 
 using namespace Rcpp;
 
-//' @export
 // [[Rcpp::export]]
 arma::mat frequencyDistributionCpp(const arma::mat& cold) {
   // init
@@ -64,7 +63,6 @@ arma::mat frequencyDistributionCpp(const arma::mat& cold) {
 }
 
 
-//' @export
 // [[Rcpp::export]]
 Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_size = 31) {
 
@@ -216,198 +214,10 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
 
 }
 
-
-//' @export
-// [[Rcpp::export]]
-double llCalcCpp(const arma::vec& working_values,
-                 const arma::mat& concept,
-                 int nmax_choiceset_size,
-                 const arma::mat& data,
-                 int ndecisionmakers,
-                 int npp,
-                 int nhop,
-                 const arma::mat& epsilonmatrix,
-                 const arma::mat& deltamatrix,
-                 const arma::mat& gammamatrix,
-                 const arma::mat& betamatrix,
-                 const arma::mat& phimatrix,
-                 const arma::mat& draws_matrix,
-                 const arma::mat& code){
-
-  arma::vec muepsilonparameters(npp, arma::fill::zeros);
-  arma::vec mudeltaparameters(nhop, arma::fill::zeros);
-  arma::vec sigmaepsilonparameters(npp, arma::fill::zeros);
-  arma::vec sigmadeltaparameters(nhop, arma::fill::zeros);
-  arma::vec deltaepsilonparameters(nhop, arma::fill::zeros);
-
-  arma::mat gammaparameters(arma::size(gammamatrix), arma::fill::zeros);
-  arma::mat betaparameters(arma::size(betamatrix), arma::fill::zeros);
-  arma::mat phiparameters(arma::size(phimatrix), arma::fill::zeros);
-
-  int ndraws = draws_matrix.n_rows;
-  int m=-1;
-
-  for(int i=0; i<npp; i++){
-
-    if(epsilonmatrix(i,0)==1){
-      m++;
-      muepsilonparameters(i) = working_values(m);
-    }
-
-    if(epsilonmatrix(i,0) == -1){
-      muepsilonparameters(i) = 1;
-    }
-
-  }
-
-  for(int i=0; i<nhop; i++){
-
-    if(deltamatrix(i,0)==1){
-      m++;
-      mudeltaparameters(i) = working_values[m];
-    }
-
-    if(deltamatrix(i,0)==-1){
-      deltaepsilonparameters(i) = 1;
-    }
-  }
-
-  for(int i=0; i<npp; i++){
-
-    if(epsilonmatrix(i,1)==1){
-      m++;
-      sigmaepsilonparameters(i) = abs(working_values[m]);
-    }
-
-    if(epsilonmatrix(i,1)==-1){
-      sigmaepsilonparameters(i) = 1;
-    }
-  }
-
-  for(int i=0; i<nhop; i++){
-
-    if(deltamatrix(i, 1)==1){
-      m++;
-      sigmadeltaparameters(i) = abs(working_values[m]);
-    }
-
-    if(deltamatrix(i,1)==-1){
-      sigmadeltaparameters(i) = 1;
-    }
-  }
-
-  for(int j=0; j<nhop; j++){
-    for(int i=0; i<npp; i++){
-
-      if(gammamatrix(i,j)==1){
-        m++;
-        gammaparameters(i,j) = working_values[m];
-      }
-      if(gammamatrix(i,j)==-1){
-        gammaparameters(i,j) = 1;
-      }
-    }
-  }
-
-  for(int j=0; j<nhop; j++){
-    for(int i=0; i<nhop; i++){
-
-      if(betamatrix(i,j)==1){
-        m++;
-        betaparameters(i,j) = working_values[m];
-      }
-      if(betamatrix(i,j)==-1){
-        betaparameters(i,j) = 1;
-      }
-    }
-  }
-  phiparameters.diag().ones();
-
-  for(int i=0; i<(npp+nhop-1); i++){
-    for(int j=i+1; j<(npp+nhop); j++){
-      if(phimatrix(i,j)==1){
-        if(phimatrix(j,i)==1){
-          m++;
-          phiparameters(i,j) = working_values[m];
-          phiparameters(j,i) = working_values[m];
-        }
-      }
-    }
-  }
-
-  arma::mat draws_matrix2 = draws_matrix * pow( phiparameters, 0.5);
-  arma::mat draws_epsilon = draws_matrix2.cols(0, npp-1);
-  arma::mat draws_delta = draws_matrix2.cols(npp, npp+nhop-1);
-
-  for(int i=0; i<ndraws; i++){
-
-    for(int j=0; j<npp; j++){
-      draws_epsilon(i,j) = draws_epsilon(i,j)*sigmaepsilonparameters[j]+muepsilonparameters[j];
-    }
-
-    for(int j=0; j<nhop; j++){
-      draws_delta(i,j) = draws_delta(i,j)*sigmadeltaparameters[j]+mudeltaparameters[j];
-    }
-
-  }
-
-  arma::mat imatrix = arma::eye(nhop, nhop);
-  arma::mat gb(nhop, nhop, arma::fill::zeros);
-
-  gb = gammaparameters*arma::inv(imatrix-betaparameters);
-  gb = gb*draws_delta.t() + draws_epsilon.t();
-
-  arma::mat concept_use = concept * code;
-  gb = concept_use*gb;
-  gb = arma::exp(gb);
-
-  arma::vec pthisdm(ndraws, arma::fill::ones);
-  arma::vec pthiscs(ndraws, arma::fill::zeros);
-  arma::vec ploglike(ndecisionmakers, arma::fill::zeros);
-  arma::vec bottom(gb.n_cols, arma::fill::zeros);
-
-  int n = 0;
-  double iddm  = data(0,0);
-  int nlines = data.n_rows;
-
-  for(int i=0; i<nlines; i++){
-
-    bottom.zeros();
-
-    for(int j=0; j<nmax_choiceset_size; j++){
-      if(data(i,j+4)>0){
-        bottom  =  bottom+arma::trans(gb.row(data(i,j+4)-1));
-      }
-    }
-
-
-
-    pthiscs  =  arma::trans(gb.row(data(i,1)-1))/bottom;
-
-    if(data(i, 0)==iddm){
-      pthisdm  =  pthisdm%pthiscs;
-    }
-
-
-    if(data(i, 0)>iddm){
-      ploglike(n) = arma::accu(pthisdm)/ndraws;
-      n++;
-      pthisdm  =  pthiscs;
-      iddm  =  data(i, 0);
-    }
-
-
-  }
-
-  ploglike(n) = arma::accu(pthisdm)/ndraws;
-
-
-  double loglike  =  -1.0 * arma::accu(arma::log(ploglike));
-
-  return(loglike);
-
-}
-
+//' llCalc3
+//' does the calc
+//' actually llCalc3a does, this is same but other cant export
+//' @returns loglike
 //' @export
 // [[Rcpp::export]]
 double llCalc3(const arma::vec& working_values,
@@ -803,6 +613,10 @@ double llCalc3a(const arma::vec& working_values,
 }
 
 
+//' llMax2
+//' does the maximisation
+//'
+//' @returns opt_results
 //' @export
 // [[Rcpp::export]]
 Rcpp::List llMax2( Rcpp::List model,

@@ -1,8 +1,6 @@
 #' Read data. This documentation is incomplete.
 #'
-#' @importFrom tools file_ext
 #' @returns A dataframe of the input data.
-#' @examples
 #' @export
 readData  <-  function(filename, header = TRUE) {
   #checks file type and then reads accordingly
@@ -19,16 +17,15 @@ readData  <-  function(filename, header = TRUE) {
 #' Read data. This documentation is incomplete.
 #'
 #' @returns A list of the processed data.
-#' @examples
 #' @export
 setUp <- function(data, header = TRUE) {
 
 
-  if (class(data) == "character") {
+  if (inherits(data,"character")) {
     #read in data
     data_matrix <- readData(data, header = header)
     filename  <-  data
-  }else if (class(data) %in% c("data.frame", "tibble", "matrix")) {
+  }else if (inherits(data, c("data.frame", "tibble", "matrix"))) {
     data_matrix <-  as.data.frame(data)
     filename  <-  NULL
   }else {
@@ -43,7 +40,7 @@ setUp <- function(data, header = TRUE) {
   concept_list <- createConcepts2(data_matrix, nmax_choiceset_size)
 
   #fdd
-  fdd <- frequencyDistribution2(concept_list)
+  fdd <- frequencyDistribution(concept_list)
 
   #some more intermediate processing
   ndecisionmakers <- dim(fdd)[1]
@@ -73,9 +70,14 @@ setUp <- function(data, header = TRUE) {
 
 }
 
+#' remove variable This documentation is incomplete.
+#'
+#' @returns a new processed data object with everything updated
 #' @export
 remove_variable <- function(processed_data, variable) {
   data <- processed_data$data_original
   data <- data[, !names(data) %in% c(variable)]
   return(setUp(data))
 }
+
+
