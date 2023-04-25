@@ -19,7 +19,7 @@ join  <-  function(data1,  data2) {
   nmax_choiceset_size <- as.numeric(max(unlist(rle(data_original[, 2])[1])))
 
   #concept list
-  concept_list <- createConcepts2(data_original, nmax_choiceset_size)
+  concept_list <- createConcepts(data_original, nmax_choiceset_size)
 
   #fdd
   fdd <- frequencyDistribution(concept_list)

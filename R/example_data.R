@@ -10,12 +10,10 @@
 #'
 #' @keywords datasets
 #'
-#' @references
+#' @references not sure
 #'
 #' @source not sure
-#'
-#' @examples
-#' BWpriorities
+"BWpriorities"
 
 
 #' DCE Dataset
@@ -30,9 +28,8 @@
 #'
 #' @keywords datasets
 #'
-#' @references
+#' @references not sure
 #'
 #' @source not sure
 #'
-#' @examples
-#' DCEpriorities
+"DCEpriorities"

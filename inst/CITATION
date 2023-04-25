@@ -2,10 +2,10 @@ citHeader("To cite DCM in publications use:")
 
 citEntry(
   entry    = "Article",
-  title    = "",
-  author   = "",
-  journal  = "",
-  year     = "",
+  title    = "title",
+  author   = "author",
+  journal  = "journal",
+  year     = "202X",
   volume   = "",
   number   = "",
   pages    = "",

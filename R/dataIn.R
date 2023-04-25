@@ -37,7 +37,7 @@ setUp <- function(data, header = TRUE) {
   nmax_choiceset_size <- as.numeric(max(unlist(rle(data_matrix[, 2])[1])))
 
   #concept list
-  concept_list <- createConcepts2(data_matrix, nmax_choiceset_size)
+  concept_list <- createConcepts(data_matrix, nmax_choiceset_size)
 
   #fdd
   fdd <- frequencyDistribution(concept_list)
