@@ -14,11 +14,11 @@ join  <-  function(data1,  data2) {
   ncovariates_1 <- data1$ncovariates
   ncovariates_2 <- data2$ncovariates
 
-  nrowsdata_1 <- dim(data1$data_matrix)[1]
-  nrowsdata_2 <- dim(data2$data_matrix)[1]
+  nrowsdata_1 <- dim(data1$data_original)[1]
+  nrowsdata_2 <- dim(data2$data_original)[1]
 
-  ncolsdata_1 <- dim(data1$data_matrix)[2]
-  ncolsdata_2 <- dim(data2$data_matrix)[2]
+  ncolsdata_1 <- dim(data1$data_original)[2]
+  ncolsdata_2 <- dim(data2$data_original)[2]
 
   #combined values
   dlength_m  <-  nrowsdata_1 + nrowsdata_2
@@ -47,19 +47,19 @@ join  <-  function(data1,  data2) {
 
   for (i in 1:nrowsdata_1){
     for (j in 1:ncolsdata_1){
-      data_m[i, j] <- data1$data_matrix[i, j]
+      data_m[i, j] <- data1$data_original[i, j]
     }
     data_m[i, 3] <- 1
   }
 
   for (i in 1:nrowsdata_2){
-    data_m[i + nrowsdata_1, 1] <- data2$data_matrix[i, 1]
-    data_m[i + nrowsdata_1, 2] <- data2$data_matrix[i, 2] + nconcepts_1
+    data_m[i + nrowsdata_1, 1] <- data2$data_original[i, 1]
+    data_m[i + nrowsdata_1, 2] <- data2$data_original[i, 2] + nconcepts_1
     data_m[i + nrowsdata_1, 3] <- 2
-    data_m[i + nrowsdata_1, 4] <- data2$data_matrix[i, 4]
+    data_m[i + nrowsdata_1, 4] <- data2$data_original[i, 4]
 
     for (j in 5:ncolsdata_2){
-      data_m[i + nrowsdata_1, j] <- data2$data_matrix[i, j] + nconcepts_1
+      data_m[i + nrowsdata_1, j] <- data2$data_original[i, j] + nconcepts_1
     }
   }
 
@@ -80,7 +80,7 @@ join  <-  function(data1,  data2) {
   }
 
   processed <- list(
-                  data_matrix = list(data1$data_matrix, data2$data_matrix),
+                  data_original = list(data1$data_original, data2$data_original),
                   data_name = paste(data1$data_name, data2$data_name),
                   data = data_m,
                   ncovariates = ncovariates_m,
@@ -95,3 +95,59 @@ join  <-  function(data1,  data2) {
 
   return(processed)
 }
+
+#' @export
+join2  <-  function(data1,  data2) {
+
+  #from each input
+  data_1 <- data1$data_original
+  data_2 <- data2$data_original
+
+  if(ncol(data_1) == ncol(data_2)){
+    data_original <- data.frame(Map(c,data_1,data_2))
+  }else{
+    print("ERROR - datasets to be joined need to have the same number of atributes.")
+    return(NA)
+  }
+
+  #from Kobe code
+  nmax_choiceset_size <- as.numeric(max(unlist(rle(data_original[, 2])[1])))
+
+  #concept list
+  concept_list <- createConcepts2(data_original, nmax_choiceset_size)
+
+  #fdd
+  fdd <- frequencyDistribution2(concept_list)
+
+  #some more intermediate processing
+  ndecisionmakers <- dim(fdd)[1]
+
+  lcovariates <- array(0, concept_list$ncovariates)
+
+  for (i in 1:concept_list$ncovariates) {
+    lcovariates[i] <- paste("Cov", i)
+  }
+
+  n1 <- deparse(substitute(data1))
+  n2 <- deparse(substitute(data2))
+
+  #all the initial stuff packaged up
+  processed <- list(data_original = data_original,
+                    data_name = paste0("Joined_from_", n1, "_and_", n2),
+                    data = concept_list$data,
+                    ncovariates = concept_list$ncovariates,
+                    npp = concept_list$ncovariates,
+                    nmax_choiceset_size = nmax_choiceset_size,
+                    ndecisionmakers = ndecisionmakers,
+                    concept = concept_list$concept,
+                    lcovariates = lcovariates,
+                    fdd = fdd,
+                    attribute_names  =  names(data_original)[-(1:3)]
+  )
+
+  return(processed)
+}
+
+
+
+

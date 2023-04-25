@@ -56,7 +56,7 @@ setUp <- function(data, header = TRUE) {
 
 
   #all the initial stuff packaged up
-  processed <- list(data_matrix = data_matrix,
+  processed <- list(data_original = data_matrix,
                   data_name = filename,
                   data = concept_list$data,
                   ncovariates = concept_list$ncovariates,
@@ -71,4 +71,11 @@ setUp <- function(data, header = TRUE) {
 
   return(processed)
 
+}
+
+#' @export
+remove_variable<-function(processed_data, variable){
+  data <- processed_data$data_original
+  data <- data[ ,!names(data) %in% c(variable)]
+  return(setUp(data))
 }
