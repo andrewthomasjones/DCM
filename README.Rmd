@@ -54,5 +54,5 @@ summariseModelList(list(r1BW,r2BW,r3BW))
 ```
 
 ```{r table2, results='as.is'}
-parPrintOld(r1BW)
+cat(parPrint(r1BW))
 ```
