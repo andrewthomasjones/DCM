@@ -148,7 +148,7 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
 }
 
 
-#" @export
+#' @export
 model_generator  <-  function(pre_processed_data,  model_type) {
 
   matrix_list <- generate_model_matrices(pre_processed_data,  model_type)
