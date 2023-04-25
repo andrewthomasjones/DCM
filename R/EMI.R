@@ -1,3 +1,5 @@
+#'@importFrom stats na.omit
+
 #' @export
 createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder = NULL) {
 
@@ -119,7 +121,7 @@ loadEMIWorkbook <- function(emi_file_name) {
   description <- "" #need something here
 
   model <- list(description = description,
-              data = pre_processed_data,
+              data = NA, #pre_processed_data,
               ncovariates = ncovariates,
               npp = npp,
               nhop = nhop,

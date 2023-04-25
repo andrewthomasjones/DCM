@@ -1,3 +1,5 @@
+#'@importFrom stats qnorm
+
 #' @export
 drawsMatrix <- function(ndraws, nrc, shuffle = TRUE) {
 

@@ -1,3 +1,5 @@
+#'@importFrom stats nlm
+
 #' @export
 llMax  <- function(model,  processed,  draws_matrix) {
 
