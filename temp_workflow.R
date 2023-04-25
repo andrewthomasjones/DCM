@@ -22,13 +22,15 @@ m1DCE<-model_generator(processedDCE, "fixed")
 m2DCE<-model_generator(processedDCE, "random")
 m3DCE<-model_generator(processedDCE, "one-factor")
 
-processedBWDCE <- join(processedBW, processedDCE)
+#remove extra var and join
+processedBW2 <- remove_variable(processedBW, "Accessibility_BW")
+processedBWDCE <- join2(processedBW2, processedDCE)
 
 m1BWDCE<-model_generator(processedBWDCE, "fixed")
 m2BWDCE<-model_generator(processedBWDCE, "random")
 m3BWDCE<-model_generator(processedBWDCE, "one-factor")
-#m4BWDCE<-model_generator(processedBWDCE , "mtmm")
 
+#run models
 r1BW<-runModel(m1BW)
 r2BW<-runModel(m2BW)
 r3BW<-runModel(m3BW)
@@ -40,59 +42,19 @@ r3DCE<-runModel(m3DCE)
 r1BWDCE<-runModel(m1BWDCE)
 r2BWDCE<-runModel(m2BWDCE)
 r3BWDCE<-runModel(m3BWDCE)
-#r4BWDCE<-runModel(m4BWDCE)
 
+summariseModelList(list(r1BW,r2BW,r3BW))
+summariseModelList(list(r1DCE,r2DCE,r3DCE))
+summariseModelList(list(r1BWDCE,r2BWDCE,r3BWDCE))
 
+cat(parPrint(r1BW))
+cat(parPrint(r2BW))
+cat(parPrint(r3BW))
 
+cat(parPrint(r1DCE))
+cat(parPrint(r2DCE))
+cat(parPrint(r3DCE))
 
-#
-#
-#
-#
-#
-# summariseModelList(list(r1,r2,r3))#, r4))
-#
-# parPrintOld(r1)
-# parPrintOld(r2)
-# parPrintOld(r3)
-# #parPrintOld(r4)
-
-
-#runModel(m1BW)
-#
-# dataname=paste("./DATA/",select.list(list.files(path = "./DATA", pattern = ".RData"), multiple = FALSE,
-#                                      title = "Choose your dataset", graphics = TRUE),sep="")
-# load(dataname)
-#
-# EMIs <- as.matrix(select.list(list.files(path = "./EMIs", pattern = "EMI_"), preselect = NULL, multiple = TRUE,
-#                               title = "Model specification (hold CTRL to select multiple", graphics = TRUE))
-#
-# descriptions <- as.matrix(file_path_sans_ext(EMIs))
-# descriptions
-#
-# ndraws <<- as.integer(select.list(c("100","1000","10000"), multiple = FALSE,
-#                                   title = "Specify the resample size", graphics = TRUE))
-#
-# ndraws_save <<- ndraws
-# ll_list <- vector()
-# ncov_list <- vector()
-# nhop_list <- vector()
-# AIC_list <- vector()
-# BIC_list <- vector()
-#
-# for (i in 1:nrow(descriptions)){
-#   description=descriptions[i]
-#
-#   source('./R/KOBEemi.R')
-#   source('./R/KOBEcheckmodel.R')
-#   source('./R/KOBEresample.R')
-#
-#   KOBEcheckmodel(paste('./WORKSPACE/',description,".RData",sep=""))
-# }
-#
-# model_catalogue <- matrix(cbind(c(descriptions,nhop_list,ncov_list,ll_list,AIC_list,BIC_list)),ncol=6)
-# colnames(model_catalogue) <- c("Model","C","K","LL","AIC","BIC")
-# rownames(model_catalogue) <- paste0(rep("M",nrow(model_catalogue)),1:nrow(model_catalogue))
-# print(model_catalogue)
-# write.csv(model_catalogue, paste0("./RESULTS/","RESULTS_CATALOGUE_",format(Sys.time(), "%Y-%m-%d_%H-%M-%S"),".csv"))
-#
+cat(parPrint(r1BWDCE))
+cat(parPrint(r2BWDCE))
+cat(parPrint(r3BWDCE))
