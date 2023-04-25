@@ -74,8 +74,8 @@ setUp <- function(data, header = TRUE) {
 }
 
 #' @export
-remove_variable<-function(processed_data, variable){
+remove_variable <- function(processed_data, variable) {
   data <- processed_data$data_original
-  data <- data[ ,!names(data) %in% c(variable)]
+  data <- data[, !names(data) %in% c(variable)]
   return(setUp(data))
 }

@@ -20,28 +20,61 @@ createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder =
   #Write all sheets
 
   openxlsx::addWorksheet(wb,  "epsilon_model")
-  openxlsx::writeData(wb,  matrix_list$epsilon_model,  sheet = "epsilon_model",  rowNames = TRUE)
+  openxlsx::writeData(wb,
+                      matrix_list$epsilon_model,
+                      sheet = "epsilon_model",
+                      rowNames = TRUE
+                      )
 
   openxlsx::addWorksheet(wb,  "delta_model")
-  openxlsx::writeData(wb,  matrix_list$delta_model,  sheet = "delta_model",  rowNames = TRUE)
+  openxlsx::writeData(wb,
+                      matrix_list$delta_model,
+                      sheet = "delta_model",
+                      rowNames = TRUE
+                      )
+
 
   openxlsx::addWorksheet(wb,  "gamma_model")
-  openxlsx::writeData(wb,  matrix_list$gamma_model,  sheet = "gamma_model",  rowNames = TRUE)
+  openxlsx::writeData(wb,
+                      matrix_list$gamma_model,
+                      sheet = "gamma_model",
+                      rowNames = TRUE
+                      )
 
   openxlsx::addWorksheet(wb,  "beta_model")
-  openxlsx::writeData(wb,  matrix_list$beta_model,  sheet = "beta_model",  rowNames = TRUE)
+  openxlsx::writeData(wb,
+                      matrix_list$beta_model,
+                      sheet = "beta_model",
+                      rowNames = TRUE
+                      )
 
   openxlsx::addWorksheet(wb,  "epsilon_initial_values")
-  openxlsx::writeData(wb,  matrix_list$epsilon_model_initial,  sheet = "epsilon_initial_values",  rowNames = TRUE)
+  openxlsx::writeData(wb,
+                      matrix_list$epsilon_model_initial,
+                      sheet = "epsilon_initial_values",
+                      rowNames = TRUE
+                      )
 
   openxlsx::addWorksheet(wb,  "delta_initial_values")
-  openxlsx::writeData(wb,  matrix_list$delta_model_initial,  sheet = "delta_initial_values",  rowNames = TRUE)
+  openxlsx::writeData(wb,
+                      matrix_list$delta_model_initial,
+                      sheet = "delta_initial_values",
+                      rowNames = TRUE
+                      )
 
   openxlsx::addWorksheet(wb,  "gamma_initial_values")
-  openxlsx::writeData(wb,  matrix_list$gamma_model_initial,  sheet = "gamma_initial_values",  rowNames = TRUE)
+  openxlsx::writeData(wb,
+                      matrix_list$gamma_model_initial,
+                      sheet = "gamma_initial_values",
+                      rowNames = TRUE
+                      )
 
   openxlsx::addWorksheet(wb,  "beta_initial_values")
-  openxlsx::writeData(wb,  matrix_list$beta_model_initial,  sheet = "beta_initial_values",  rowNames = TRUE)
+  openxlsx::writeData(wb,
+                      matrix_list$beta_model_initial,
+                      sheet = "beta_initial_values",
+                      rowNames = TRUE
+                      )
 
   #save workbook
   openxlsx::saveWorkbook(wb,  file = emi_name,  overwrite = TRUE)

@@ -10,11 +10,6 @@ runModel  <-  function(model,  model_name = "name",  ndraws = 1000) {
   npp <- model$npp
   nhop <- model$nhop
 
-  # if (parcount[[8]] == 0) {
-  #   print("correlations not operational yet")
-  #   return(NA)
-  # }
-
   if (length(model$initial_values) == parcount$total) {
     #print("You have the correct number of initial values.")
   }else {
@@ -78,7 +73,7 @@ runModel  <-  function(model,  model_name = "name",  ndraws = 1000) {
     BIC  <-  k * log(n) - 2 * log(loglik1$minimum)
 
 
-    parastems  <-  c(rep(("epsilon"),
+    para_stems  <-  c(rep(("epsilon"),
                          printpara[1]),
                      rep(("epsilon_sig"),
                          printpara[2]),
@@ -97,7 +92,7 @@ runModel  <-  function(model,  model_name = "name",  ndraws = 1000) {
                                  which(model$beta > 0,  arr.ind = TRUE)),
                                  nrow = sum(printpara),  ncol = 2)
 
-    parameters  <-  paste0(parastems, "_",
+    parameters  <-  paste0(para_stems, "_",
                            "[", subscripts[, 1], ", ", subscripts[, 2], "]")
 
     results  <-  data.frame(parameters = parameters,

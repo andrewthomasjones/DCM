@@ -103,9 +103,9 @@ join2  <-  function(data1,  data2) {
   data_1 <- data1$data_original
   data_2 <- data2$data_original
 
-  if(ncol(data_1) == ncol(data_2)){
-    data_original <- data.frame(Map(c,data_1,data_2))
-  }else{
+  if (ncol(data_1) == ncol(data_2)) {
+    data_original <- data.frame(Map(c, data_1, data_2))
+  }else {
     print("ERROR - datasets to be joined need to have the same number of atributes.")
     return(NA)
   }
@@ -147,7 +147,3 @@ join2  <-  function(data1,  data2) {
 
   return(processed)
 }
-
-
-
-

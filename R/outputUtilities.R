@@ -24,9 +24,7 @@ summariseModelList <- function(list_of_models) {
   return(table)
 }
 
-
 #' @export
 modelSummary <- function(model) {
 
 }
-

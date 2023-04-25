@@ -1,5 +1,5 @@
 #' @export
-parPrint<- function(results) {
+parPrint <- function(results) {
 
   npp <- results$model$npp
   nhop <- results$model$nhop
@@ -88,6 +88,6 @@ parPrint<- function(results) {
   resprinti <- resprinti + 1
   resprint[resprinti] <- "\\end{center}"
 
-  out <- paste(resprint, sep="\n")
+  out <- paste(resprint, sep = "\n")
   return(out)
 }
