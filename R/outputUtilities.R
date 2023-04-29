@@ -1,5 +1,5 @@
 #' Summary list
-#'
+#' @param list_of_models list of model list
 #' @returns ltable of summary info
 #' @export
 summariseModelList <- function(list_of_models) {
@@ -29,6 +29,7 @@ summariseModelList <- function(list_of_models) {
 
 #' Summary
 #'
+#' @param model model list
 #' @returns model summary and fit stats
 #' @export
 modelSummary <- function(model) {

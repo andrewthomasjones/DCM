@@ -1,5 +1,7 @@
 #' Runs Model
-#'
+#' @param model model list
+#' @param model_name string default "name"
+#' @param ndraws default 1000
 #' @returns fitted model.
 #' @export
 runModel  <-  function(model,  model_name = "name",  ndraws = 1000) {

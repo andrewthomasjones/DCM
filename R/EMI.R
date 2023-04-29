@@ -1,5 +1,7 @@
 #' Create workbook
-#'
+#' @param pre_processed_data processed data list
+#' @param model_type string
+#' @param working_folder string
 #' @returns name of workbook
 #' @export
 createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder = NULL) {
@@ -89,6 +91,7 @@ createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder =
 #this needs to be edited so the EMI model is joined to an existing data set
 #' Loads an existing workbook
 #'
+#' @param emi_file_name filename string
 #' @returns model
 #' @export
 loadEMIWorkbook <- function(emi_file_name) {

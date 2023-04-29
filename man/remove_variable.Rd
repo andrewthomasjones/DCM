@@ -6,6 +6,11 @@
 \usage{
 remove_variable(processed_data, variable)
 }
+\arguments{
+\item{processed_data}{processes data list}
+
+\item{variable}{variable to remove, string}
+}
 \value{
 a new processed data object with everything updated
 }

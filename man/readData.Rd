@@ -6,6 +6,11 @@
 \usage{
 readData(filename, header = TRUE)
 }
+\arguments{
+\item{filename}{filename string}
+
+\item{header}{deafult TRUE}
+}
 \value{
 A dataframe of the input data.
 }

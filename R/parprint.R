@@ -1,5 +1,5 @@
 #' Prints parmaters
-#'
+#' @param results results list
 #' @returns Tex code to paste
 #' @export
 parPrint <- function(results) {

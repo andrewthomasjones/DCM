@@ -2,13 +2,18 @@
 % Please edit documentation in R/frequencyDistribution.R
 \name{frequencyDistribution}
 \alias{frequencyDistribution}
-\title{Frequency distribution}
+\title{Frequency distribution
+this probably shouldnt be exported to be honest}
 \usage{
 frequencyDistribution(cs)
+}
+\arguments{
+\item{cs}{data}
 }
 \value{
 fdd
 }
 \description{
 Frequency distribution
+this probably shouldnt be exported to be honest
 }

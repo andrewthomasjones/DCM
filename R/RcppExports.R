@@ -16,6 +16,10 @@ createConceptsCpp <- function(data_matrix, nmax_choiceset_size = 31L) {
 #' llCalc3
 #' does the calc
 #' actually llCalc3a does, this is same but other cant export
+#' @param working_values vector
+#' @param model List
+#' @param processed List
+#' @param draws_matrix matrix
 #' @returns loglike
 #' @export
 llCalc3 <- function(working_values, model, processed, draws_matrix) {
@@ -24,7 +28,9 @@ llCalc3 <- function(working_values, model, processed, draws_matrix) {
 
 #' llMax2
 #' does the maximisation
-#'
+#' @param model list
+#' @param processed  list
+#' @param draws_matrix matrix
 #' @returns opt_results
 #' @export
 llMax2 <- function(model, processed, draws_matrix) {

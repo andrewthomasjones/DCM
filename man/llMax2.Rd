@@ -7,6 +7,13 @@ does the maximisation}
 \usage{
 llMax2(model, processed, draws_matrix)
 }
+\arguments{
+\item{model}{list}
+
+\item{processed}{list}
+
+\item{draws_matrix}{matrix}
+}
 \value{
 opt_results
 }

@@ -217,6 +217,10 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
 //' llCalc3
 //' does the calc
 //' actually llCalc3a does, this is same but other cant export
+//' @param working_values vector
+//' @param model List
+//' @param processed List
+//' @param draws_matrix matrix
 //' @returns loglike
 //' @export
 // [[Rcpp::export]]
@@ -615,7 +619,9 @@ double llCalc3a(const arma::vec& working_values,
 
 //' llMax2
 //' does the maximisation
-//'
+//' @param model list
+//' @param processed  list
+//' @param draws_matrix matrix
 //' @returns opt_results
 //' @export
 // [[Rcpp::export]]

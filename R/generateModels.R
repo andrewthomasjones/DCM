@@ -1,5 +1,7 @@
 #' generate_model_matrices
 #'
+#' @param pre_processed_data processed data list
+#' @param model_type string
 #' @returns model matrices
 #' @export
 generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
@@ -289,7 +291,8 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
 
 
 #' generate model
-#'
+#' @param pre_processed_data processed data list
+#' @param model_type string
 #' @returns model
 #' @export
 model_generator  <-  function(pre_processed_data,  model_type) {

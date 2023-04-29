@@ -6,6 +6,11 @@
 \usage{
 join(data1, data2)
 }
+\arguments{
+\item{data1}{processed data list}
+
+\item{data2}{processed data list}
+}
 \value{
 joins two processed objects
 }

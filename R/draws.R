@@ -1,5 +1,7 @@
 #' Draws matrix
-#'
+#' @param ndraws int number of draws
+#' @param nrc int number of columns
+#' @param shuffle deafult TRUE
 #' @returns draws matrix
 #' @export
 drawsMatrix <- function(ndraws, nrc, shuffle = TRUE) {

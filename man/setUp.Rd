@@ -6,6 +6,11 @@
 \usage{
 setUp(data, header = TRUE)
 }
+\arguments{
+\item{data}{input}
+
+\item{header}{deafult TRUE}
+}
 \value{
 A list of the processed data.
 }

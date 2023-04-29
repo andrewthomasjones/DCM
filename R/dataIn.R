@@ -1,5 +1,6 @@
 #' Read data. This documentation is incomplete.
-#'
+#' @param filename filename string
+#' @param header deafult TRUE
 #' @returns A dataframe of the input data.
 #' @export
 readData  <-  function(filename, header = TRUE) {
@@ -16,6 +17,8 @@ readData  <-  function(filename, header = TRUE) {
 
 #' Read data. This documentation is incomplete.
 #'
+#' @param data input
+#' @param header deafult TRUE
 #' @returns A list of the processed data.
 #' @export
 setUp <- function(data, header = TRUE) {
@@ -71,7 +74,8 @@ setUp <- function(data, header = TRUE) {
 }
 
 #' remove variable This documentation is incomplete.
-#'
+#' @param processed_data processes data list
+#' @param variable variable to remove, string
 #' @returns a new processed data object with everything updated
 #' @export
 remove_variable <- function(processed_data, variable) {

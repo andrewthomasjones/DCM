@@ -6,6 +6,9 @@
 \usage{
 modelSummary(model)
 }
+\arguments{
+\item{model}{model list}
+}
 \value{
 model summary and fit stats
 }

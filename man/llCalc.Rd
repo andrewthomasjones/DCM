@@ -7,6 +7,15 @@ not used - C++ version is}
 \usage{
 llCalc(working_values, model, processed, draws_matrix)
 }
+\arguments{
+\item{working_values}{vector}
+
+\item{model}{model list}
+
+\item{processed}{data list}
+
+\item{draws_matrix}{mat}
+}
 \value{
 loglik
 }

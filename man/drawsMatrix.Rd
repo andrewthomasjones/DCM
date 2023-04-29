@@ -6,6 +6,13 @@
 \usage{
 drawsMatrix(ndraws, nrc, shuffle = TRUE)
 }
+\arguments{
+\item{ndraws}{int number of draws}
+
+\item{nrc}{int number of columns}
+
+\item{shuffle}{deafult TRUE}
+}
 \value{
 draws matrix
 }

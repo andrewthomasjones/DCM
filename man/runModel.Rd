@@ -6,6 +6,13 @@
 \usage{
 runModel(model, model_name = "name", ndraws = 1000)
 }
+\arguments{
+\item{model}{model list}
+
+\item{model_name}{string default "name"}
+
+\item{ndraws}{default 1000}
+}
 \value{
 fitted model.
 }

@@ -7,6 +7,13 @@ not used - C++ version is}
 \usage{
 llMax(model, processed, draws_matrix)
 }
+\arguments{
+\item{model}{model list}
+
+\item{processed}{data list}
+
+\item{draws_matrix}{mat}
+}
 \value{
 max loglik
 }

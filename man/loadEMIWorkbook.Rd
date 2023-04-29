@@ -6,6 +6,9 @@
 \usage{
 loadEMIWorkbook(emi_file_name)
 }
+\arguments{
+\item{emi_file_name}{filename string}
+}
 \value{
 model
 }

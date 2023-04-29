@@ -1,5 +1,6 @@
 #' join
-#'
+#' @param data1 processed data list
+#' @param data2 processed data list
 #' @returns joins two processed objects
 #' @export
 join  <-  function(data1,  data2) {

@@ -8,6 +8,15 @@ actually llCalc3a does, this is same but other cant export}
 \usage{
 llCalc3(working_values, model, processed, draws_matrix)
 }
+\arguments{
+\item{working_values}{vector}
+
+\item{model}{List}
+
+\item{processed}{List}
+
+\item{draws_matrix}{matrix}
+}
 \value{
 loglike
 }

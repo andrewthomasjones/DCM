@@ -6,6 +6,9 @@
 \usage{
 parPrint(results)
 }
+\arguments{
+\item{results}{results list}
+}
 \value{
 Tex code to paste
 }

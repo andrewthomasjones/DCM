@@ -6,6 +6,9 @@
 \usage{
 parameterCount(model)
 }
+\arguments{
+\item{model}{model list}
+}
 \value{
 list of counts
 }

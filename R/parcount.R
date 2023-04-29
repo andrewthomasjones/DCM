@@ -1,5 +1,6 @@
 #' Counts parameters
 #'
+#' @param model model list
 #' @returns list of counts
 #' @export
 parameterCount <- function(model) {

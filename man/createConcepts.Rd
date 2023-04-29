@@ -6,6 +6,11 @@
 \usage{
 createConcepts(data_matrix, nmax_choiceset_size = 31)
 }
+\arguments{
+\item{data_matrix}{matrix}
+
+\item{nmax_choiceset_size}{int default 31}
+}
 \value{
 List of outputs.
 }

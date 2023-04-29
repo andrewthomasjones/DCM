@@ -1,5 +1,8 @@
 #' calculates optimum model fit
 #' not used - C++ version is
+#' @param model model list
+#' @param processed data list
+#' @param draws_matrix mat
 #' @returns max loglik
 #' @export
 llMax  <- function(model,  processed,  draws_matrix) {
@@ -13,6 +16,10 @@ llMax  <- function(model,  processed,  draws_matrix) {
 
 #' does LL calc
 #' not used - C++ version is
+#' @param working_values vector
+#' @param model model list
+#' @param processed data list
+#' @param draws_matrix mat
 #' @returns loglik
 #' @export
 llCalc <- function(working_values,  model,  processed,  draws_matrix) {

@@ -6,6 +6,9 @@
 \usage{
 summariseModelList(list_of_models)
 }
+\arguments{
+\item{list_of_models}{list of model list}
+}
 \value{
 ltable of summary info
 }

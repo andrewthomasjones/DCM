@@ -6,6 +6,13 @@
 \usage{
 createEMIWorkbook(pre_processed_data, model_type, working_folder = NULL)
 }
+\arguments{
+\item{pre_processed_data}{processed data list}
+
+\item{model_type}{string}
+
+\item{working_folder}{string}
+}
 \value{
 name of workbook
 }

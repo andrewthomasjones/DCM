@@ -6,6 +6,11 @@
 \usage{
 generate_model_matrices(pre_processed_data, model_type)
 }
+\arguments{
+\item{pre_processed_data}{processed data list}
+
+\item{model_type}{string}
+}
 \value{
 model matrices
 }
