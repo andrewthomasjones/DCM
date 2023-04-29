@@ -16,9 +16,9 @@ runModel  <-  function(model,  model_name = "name",  ndraws = 1000) {
   nhop <- model$nhop
 
   if (length(model$initial_values) == parcount$total) {
-    #print("You have the correct number of initial values.")
+    message("You have the correct number of initial values.")
   }else {
-    print("ERROR - you have the incorrect number of initial values.")
+    stop("ERROR - you have the incorrect number of initial values.")
     return(NA)
   }
 

@@ -1,7 +1,7 @@
 Package: DCM
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.1
+Version: 0.1.2
 Author: Andrew Thomas Jones, Thomas Magor, Leonard V. Coote
 Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
 Description: More about what it does (maybe more than one line)
@@ -10,6 +10,8 @@ License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports:
+    cli (>= 3.6.0),
+    rlang (>= 1.0.6),
     tools,
     readxl,
     Rcpp,

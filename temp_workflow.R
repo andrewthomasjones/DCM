@@ -15,6 +15,8 @@ lint_package(linters = linters_with_defaults(
 processedBW<-setUp(BWpriorities)
 processedDCE<-setUp(DCEpriorities)
 
+
+
 m1BW<-model_generator(processedBW, "fixed")
 m2BW<-model_generator(processedBW, "random")
 m3BW<-model_generator(processedBW, "one-factor")
@@ -25,6 +27,9 @@ m3DCE<-model_generator(processedDCE, "one-factor")
 
 #remove extra var and join
 processedBW2 <- remove_variable(processedBW, "Accessibility_BW")
+vif(processedBW)
+vif(processedBW2)
+
 processedBWDCE <- join(processedBW2, processedDCE)
 
 m1BWDCE<-model_generator(processedBWDCE, "fixed")
