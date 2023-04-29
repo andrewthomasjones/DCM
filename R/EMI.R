@@ -94,7 +94,7 @@ createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder =
 #' @param emi_file_name filename string
 #' @returns model
 #' @export
-loadEMIWorkbook <- function(emi_file_name) {
+loadEMIWorkbook <- function(emi_file_name, pre_processed_data) {
 
   EMI <- openxlsx::loadWorkbook(emi_file_name, isUnzipped = FALSE)
 
@@ -128,7 +128,7 @@ loadEMIWorkbook <- function(emi_file_name) {
   description <- "" #need something here
 
   model <- list(description = description,
-              data = NA, #pre_processed_data,
+              data = pre_processed_data,
               ncovariates = ncovariates,
               npp = npp,
               nhop = nhop,
