@@ -17,7 +17,9 @@ Imports:
     Rcpp,
     tibble,
     openxlsx,
-    lifecycle
+    lifecycle,
+    mltools,
+    data.table
 Suggests: 
     knitr,
     rmarkdown,
