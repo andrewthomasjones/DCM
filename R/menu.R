@@ -1,7 +1,9 @@
 inform_startup <- function()
 {
   msg <- c(paste0(
-    "    ###################################################################################
+    "
+
+    ###################################################################################
     #KKKKKKKKK    KKKKKKK     OOOOOOOOO     BBBBBBBBBBBBBBBBB   EEEEEEEEEEEEEEEEEEEEEE#
     #K:::::::K    K:::::K   OO:::::::::OO   B::::::::::::::::B  E::::::::::::::::::::E#
     #K:::::::K    K:::::K OO:::::::::::::OO B::::::BBBBBB:::::B E::::::::::::::::::::E#
@@ -19,9 +21,12 @@ inform_startup <- function()
     #K:::::::K    K:::::K   OO:::::::::OO   B::::::::::::::::B  E::::::::::::::::::::E#
     #KKKKKKKKK    KKKKKKK     OOOOOOOOO     BBBBBBBBBBBBBBBBB   EEEEEEEEEEEEEEEEEEEEEE#
     ###################################################################################
+
     version ",
     packageVersion("DCM")),
-    "\nType 'citation(\"DCM\")' for citing this R package in publications.")
+    "\nType 'citation(\"DCM\")' for citing this R package in publications.
+
+    ")
   return(msg)
 }
 

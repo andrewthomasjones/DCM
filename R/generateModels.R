@@ -293,9 +293,15 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
 #' generate model
 #' @param pre_processed_data processed data list
 #' @param model_type string
+#' @param variables defaults to all, choose which variables to include
 #' @returns model
 #' @export
-model_generator  <-  function(pre_processed_data,  model_type) {
+model_generator  <-  function(pre_processed_data, model_type, variables = "all") {
+
+  if(variables != "all"){
+
+  }
+
 
   matrix_list <- generate_model_matrices(pre_processed_data,  model_type)
   nhop <- nrow(matrix_list$delta_model)

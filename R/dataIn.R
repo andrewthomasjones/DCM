@@ -12,6 +12,17 @@ readData  <-  function(filename, header = TRUE) {
   }else if (tools::file_ext(filename) == "xls" || file_ext(filename) == "xlsx") {
     data <- as.data.frame(readxl::read_excel(filename, sheet = 1, col_names = header))
   }
+
+  if (header == FALSE){
+    names(data) <- c("ID",
+                     "ChoiceSet",
+                     "Col3", #check these
+                     paste0("V", 1:(ncol(data)-3)))
+
+
+
+  }
+
   return(data)
 }
 
@@ -73,15 +84,116 @@ setUp <- function(data, header = TRUE) {
 
 }
 
-#' remove variable This documentation is incomplete.
+#' remove variables This documentation is incomplete.
 #' @param processed_data processes data list
-#' @param variable variable to remove, string
+#' @param variable variable to remove, string or number or vector
+#' @param verbose 1 means print more
 #' @returns a new processed data object with everything updated
 #' @export
-remove_variable <- function(processed_data, variable) {
+remove_variables <- function(processed_data, variable, verbose=0) {
   data <- processed_data$data_original
-  data <- data[, !names(data) %in% c(variable)]
+
+  if(class(variable) != "character" & class(variable) != "numeric"){
+    stop("Variables must either be named or selected by column number.")
+  }
+
+  if(class(variable) == "numeric"){
+
+    if(any(variable<=3)){
+      stop("Cannot remove first three columns.")
+    }
+
+    if(any(!variable %in% (4:ncol(data)))){
+      stop("Columns not in range.")
+    }
+
+    if(verbose>0){
+      message(paste0("Removing variables: ",  paste(names(data)[c(variable)], collapse = ", ")))
+    }
+
+    data <- data[, -c(variable)]
+  }
+
+
+  if(class(variable) == "character"){
+
+    idx <- which(names(data) %in% c(variable))
+
+    if(length(idx) != length(variable)){
+      stop("Columns not found.")
+    }
+
+    if(any(idx<=3)){
+      stop("Cannot remove first three columns.")
+    }
+
+    if(verbose>0){
+      message(paste0("Removing variables: ",  paste(names(data)[c(idx)], collapse = ", ")))
+    }
+
+    data <- data[, !names(data) %in% c(variable)]
+  }
+
+  #we actually have to regenerate each time because concepts matrix will change.
   return(setUp(data))
 }
+
+
+
+
+#' select variables This documentation is incomplete.
+#' @param processed_data processes data list
+#' @param variable variable to remove, string or number or vector
+#' @param verbose 1 means print more, 0 no print, default 1
+#' @returns a new processed data object with everything updated
+#' @export
+select_variables <- function(processed_data, variable, verbose=1) {
+  data <- processed_data$data_original
+
+  if(class(variable) != "character" & class(variable) != "numeric"){
+    stop("Variables must either be named or selected by column number.")
+  }
+
+  if(class(variable) == "numeric"){
+
+    if(any(variable<=3)){
+      stop("Cannot select first three columns - they are always included.")
+    }
+
+    if(any(!variable %in% (4:ncol(data)))){
+      stop("Selected columns not in range.")
+    }
+
+    if(verbose>0){
+      message(paste0("Selecting variables: ",  paste(names(data)[c(variable)], collapse = ", ")))
+    }
+
+    data <- cbind(data[,1:3], data[, c(variable)])
+  }
+
+
+  if(class(variable) == "character"){
+
+    idx <- which(names(data) %in% c(variable))
+
+    if(length(idx) != length(variable)){
+      stop("Selected columns not found.")
+    }
+
+    if(any(idx<=3)){
+      stop("Cannot select first three columns - they are always included.")
+    }
+
+    if(verbose>0){
+      message(paste0("Selecting variables: ",  paste(names(data)[c(idx)], collapse = ", ")))
+    }
+
+    data <- cbind(data[,1:3], data[, names(data) %in% c(variable)])
+  }
+
+  #we actually have to regenerate each time because concepts matrix will change.
+  return(setUp(data))
+}
+
 
 

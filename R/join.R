@@ -3,7 +3,7 @@
 #' @param data2 processed data list
 #' @returns joins two processed objects
 #' @export
-join  <-  function(data1,  data2) {
+join_choicedatasets  <-  function(data1,  data2) {
 
   #from each input
   data_1 <- data1$data_original
