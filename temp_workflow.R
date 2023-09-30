@@ -3,19 +3,39 @@
 #install.packages(file.choose(), repos=NULL)
 #library(tictoc)
 library(DCM)
-
-library(lintr)
-lint_package(linters = linters_with_defaults(
- line_length_linter = line_length_linter(100),
- object_name_linter= object_name_linter(c("snake_case","camelCase"))))
+#
+# library(lintr)
+# lint_package(linters = linters_with_defaults(
+#  line_length_linter = line_length_linter(100),
+#  object_name_linter= object_name_linter(c("snake_case","camelCase"))))
 
 #filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
-#filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
 
+
+#built in examples
 processedBW<-setUp(BWpriorities)
 processedDCE<-setUp(DCEpriorities)
 
+filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
+processedRP_SP<-setUp(filename, header = FALSE)
 
+
+processedRP_SP_123 <- select_variables(processedRP_SP, c("V1", "V2", "V3"))
+processedRP_SP_no20 <- remove_variables(processedRP_SP, c("V20"))
+
+
+m1RPSP_123<-model_generator(processedRP_SP_123, "fixed")
+m2RPSP_123<-model_generator(processedRP_SP_123, "random")
+m3RPSP_123<-model_generator(processedRP_SP_123, "one-factor")
+
+m1RPSP_no20<-model_generator(processedRP_SP_no20, "fixed")
+m2RPSP_no20<-model_generator(processedRP_SP_no20, "random")
+m3RPSP_no20<-model_generator(processedRP_SP_no20, "one-factor")
+
+
+m1BW<-model_generator(processedRP_SP, "fixed")
+m2BW<-model_generator(processedRP_SP, "random")
+m3BW<-model_generator(processedRP_SP, "one-factor")
 
 m1BW<-model_generator(processedBW, "fixed")
 m2BW<-model_generator(processedBW, "random")
@@ -25,12 +45,13 @@ m1DCE<-model_generator(processedDCE, "fixed")
 m2DCE<-model_generator(processedDCE, "random")
 m3DCE<-model_generator(processedDCE, "one-factor")
 
-#remove extra var and join
-processedBW2 <- remove_variable(processedBW, "Accessibility_BW")
-vif(processedBW)
-vif(processedBW2)
+#remove extra var and join - why ?
+processedBW2 <- remove_variables(processedBW, "Affordability_BW")
 
-processedBWDCE <- join(processedBW2, processedDCE)
+choice_model_vif(processedBW)
+choice_model_vif(processedBW2)
+
+processedBWDCE <- join_choicedatasets(processedBW2, processedDCE)
 
 m1BWDCE<-model_generator(processedBWDCE, "fixed")
 m2BWDCE<-model_generator(processedBWDCE, "random")
