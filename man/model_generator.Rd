@@ -4,12 +4,14 @@
 \alias{model_generator}
 \title{generate model}
 \usage{
-model_generator(pre_processed_data, model_type)
+model_generator(pre_processed_data, model_type, variables = "all")
 }
 \arguments{
 \item{pre_processed_data}{processed data list}
 
 \item{model_type}{string}
+
+\item{variables}{defaults to all, choose which variables to include}
 }
 \value{
 model
