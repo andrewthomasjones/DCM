@@ -4,14 +4,21 @@
 \alias{model_generator}
 \title{generate model}
 \usage{
-model_generator(pre_processed_data, model_type, variables = "all")
+model_generator(
+  pre_processed_data,
+  model_type,
+  file_name = NULL,
+  matrix_list = NULL
+)
 }
 \arguments{
 \item{pre_processed_data}{processed data list}
 
 \item{model_type}{string}
 
-\item{variables}{defaults to all, choose which variables to include}
+\item{file_name}{only for emi}
+
+\item{matrix_list}{only for manual}
 }
 \value{
 model
