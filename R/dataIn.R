@@ -15,10 +15,9 @@ readData  <-  function(filename, header = TRUE) {
 
   if (header == FALSE){
     names(data) <- c("ID",
-                     "ChoiceSet",
-                     "Col3", #check these
+                     "group",
+                     "choice",
                      paste0("V", 1:(ncol(data)-3)))
-
 
 
   }

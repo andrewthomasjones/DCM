@@ -17,3 +17,41 @@ knitr::opts_chunk$set(
 ```{r setup}
 library(DCM)
 ```
+
+# Data
+
+## Built in examples
+
+## Read in data
+
+## Add remove variables
+
+multicolinearity checker here
+
+## Join datasets
+
+# Models
+
+## Basic
+
+## EMI
+
+## Manual
+
+# Model Fitting
+
+Quick example here
+
+# Outputs
+
+## Tables
+
+### One model 
+
+#### Group of models
+
+## Graphs
+
+graph will eventually be able to be done from model design also
+
+
