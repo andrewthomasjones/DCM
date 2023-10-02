@@ -256,7 +256,7 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
     }
 
     name_checks <- c(
-      is.null(matrix_list[["a"]])
+      is.null(matrix_list[["a"]]),
       is.null(matrix_list[["epsilon_model"]]),
       is.null(matrix_list[["delta_model"]]),
       is.null(matrix_list[["gamma_model"]]),

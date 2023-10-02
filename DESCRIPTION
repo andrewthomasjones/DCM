@@ -19,7 +19,9 @@ Imports:
     openxlsx,
     lifecycle,
     mltools,
-    data.table
+    data.table,
+    dplyr,
+    DiagrammeR
 Suggests: 
     knitr,
     rmarkdown,

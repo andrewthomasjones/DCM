@@ -11,7 +11,6 @@ library(DCM)
 
 #filename<-'/Users/uqajon14/Downloads/values_data_waves1234.txt'
 
-
 #built in examples
 processedBW<-setUp(BWpriorities)
 processedDCE<-setUp(DCEpriorities)
@@ -19,12 +18,21 @@ processedDCE<-setUp(DCEpriorities)
 filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
 processedRP_SP<-setUp(filename, header = FALSE)
 
+processedRP_SP_12345 <- select_variables(processedRP_SP, c("V1", "V2", "V3", "V4", "V5"))
+m1RPSP<-model_generator(processedRP_SP_12345, "fixed")
+m1RPSP_fit1 <- runModel(m1RPSP)
+g<-fixed_model_graph(m1RPSP_fit1)
 
-processedRP_SP_123 <- select_variables(processedRP_SP, c("V1", "V2", "V3"))
-processedRP_SP_no20 <- remove_variables(processedRP_SP, c("V20"))
+
+BW_f<-model_generator(processedBW, "fixed")
+BW_f_1 <- runModel(BW_f)
+g<-fixed_model_graph(BW_f_1)
 
 
-m1RPSP_123<-model_generator(processedRP_SP_123, "fixed")
+
+m3RPSP_no20<-model_generator(processedRP_SP_no20, "one-factor")
+
+
 m2RPSP_123<-model_generator(processedRP_SP_123, "random")
 m3RPSP_123<-model_generator(processedRP_SP_123, "one-factor")
 
