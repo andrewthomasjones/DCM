@@ -31,7 +31,8 @@ fixed_model_graph <- function(fitted){
 
   g <- DiagrammeR::create_graph(
     nodes_df = node_set,
-    edges_df = edge_set)
+    edges_df = edge_set,
+    attr_theme="tb")
 
 
   DiagrammeR::set_node_attrs(g, node_attr = "fixedsize",values = FALSE) -> g1
