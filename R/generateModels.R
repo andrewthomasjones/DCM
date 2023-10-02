@@ -304,7 +304,7 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
     npp <- pre_processed_data$npp
     ncovariates <- pre_processed_data$ncovariates
 
-    EMI <- openxlsx::loadWorkbook(file=file_name), isUnzipped = FALSE)
+    EMI <- openxlsx::loadWorkbook(file=file_name, isUnzipped = FALSE)
     ncovariates_emi <- nrow(read.xlsx(EMI,sheet = 1))
     npp_emi  <- ncovariates
     nhop_emi <- nrow(read.xlsx(EMI, sheet = 2))
