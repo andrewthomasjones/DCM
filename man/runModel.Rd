@@ -4,7 +4,7 @@
 \alias{runModel}
 \title{Runs Model}
 \usage{
-runModel(model, model_name = "name", ndraws = 1000)
+runModel(model, model_name = "name", verbose = 0, ndraws = 1000)
 }
 \arguments{
 \item{model}{model list}

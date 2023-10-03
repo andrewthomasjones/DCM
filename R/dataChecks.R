@@ -3,7 +3,7 @@
 
 #' choice_model_vif
 #' @param processed_data processed data list
-#' @returns joins two processed objects
+#' @returns vif
 #' @export
 choice_model_vif  <-  function(processed_data) {
   #does this even make sense to do

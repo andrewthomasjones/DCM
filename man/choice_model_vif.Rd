@@ -10,7 +10,7 @@ choice_model_vif(processed_data)
 \item{processed_data}{processed data list}
 }
 \value{
-joins two processed objects
+vif
 }
 \description{
 choice_model_vif

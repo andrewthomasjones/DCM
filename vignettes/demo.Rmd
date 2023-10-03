@@ -82,6 +82,8 @@ choice_model_vif(processedBW)
 ```{r mc2}
 
 choice_model_vif(processedBW_rem)
+cor_mat(processedBW_rem)
+vif_check(processedBW_rem)
 
 ```
 

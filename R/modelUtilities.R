@@ -1,7 +1,7 @@
-#' Counts parameters
+#' vif_check
 #'
-#' @param model model list
-#' @returns list of counts
+#' @param data precprocessed data
+#' @returns vif
 #' @export
 vif_check <- function(data) {
 
@@ -21,6 +21,11 @@ vif_check <- function(data) {
   return(data.frame(Variable = names(predictors2), VIF=unlist(vals)))
 }
 
+#' cor_mat
+#'
+#' @param data precprocessed data
+#' @returns cor mat
+#' @export
 cor_mat <- function(data) {
 
   predictors <- data$data_original[, -(1:3)]
@@ -30,6 +35,11 @@ cor_mat <- function(data) {
   return(m)
 }
 
+#' cor_sig
+#'
+#' @param data precprocessed data
+#' @returns sor signficiance
+#' @export
 cor_sig <- function(data) {
   predictors <- data$data_original[, -(1:3)]
   cm <- cor(as.matrix(predictors), method = "pearson")
