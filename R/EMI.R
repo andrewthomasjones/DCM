@@ -17,7 +17,7 @@ createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder =
   }
 
   #create workbook
-  emi_name <- paste0(working_folder,  "/EMIs/EMI_",  model_type, ".xlsx")
+  emi_name <- paste0(working_folder,  "/EMI_",  model_type, ".xlsx")
   wb <- openxlsx::createWorkbook(emi_name)
 
   matrix_list <- generate_model_matrices(pre_processed_data,  model_type)
@@ -94,7 +94,7 @@ createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder =
 #' @param emi_file_name filename string
 #' @returns model
 #' @export
-loadEMIWorkbook <- function(emi_file_name, pre_processed_data) {
+loadEMIWorkbook <- function(pre_processed_data, emi_file_name) {
 
   EMI <- openxlsx::loadWorkbook(emi_file_name, isUnzipped = FALSE)
 
@@ -125,7 +125,7 @@ loadEMIWorkbook <- function(emi_file_name, pre_processed_data) {
 
   initial_values <- c(initial_e, initial_d, initial_g, initial_b)
 
-  description <- "" #need something here
+  description <- paste("read in from", emi_file_name)#need something here
 
   model <- list(description = description,
               data = pre_processed_data,

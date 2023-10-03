@@ -21,7 +21,8 @@ Imports:
     mltools,
     data.table,
     dplyr,
-    DiagrammeR
+    DiagrammeR,
+    greekLetters
 Suggests: 
     knitr,
     rmarkdown,

@@ -15,32 +15,143 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setup}
-library(DCM)
+library(DCM) #need to think of a better name eventually
 ```
+
+# Installation
+
+You can install the development version of DCM from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("andrewthomasjones/DCM")
+```
+
+Dataflow is:
+
+
+1. Read Data 
+2. Process data (generate concepts etc) 
+3. Combine processed data with a model
+4. Fit model
+5. Generate Outputs
 
 # Data
 
 ## Built in examples
 
+BW and DCE for now, probably better examples to includ with package later
+
+```{r data}
+#built in examples
+processedBW<-setUp(BWpriorities)
+
+processedDCE<-setUp(DCEpriorities)
+
+```
+
 ## Read in data
 
-## Add remove variables
+```{r data2}
 
-multicolinearity checker here
+filename<-'/Users/uqajon14/Downloads/R Code_RP SP/RP_SP.txt'
+processedRP_SP<-setUp(filename, header = FALSE)
+
+```
+
+## Add remove variables
+```{r add}
+
+processedRP_SP_12345 <- select_variables(processedRP_SP, c("V1", "V2", "V3", "V4", "V5"))
+
+processedBW_rem <- remove_variables(processedBW, "Accessibility_BW")
+
+```
+
+I made a rough multicolinearity checker (VIF), probably should add correlation to (but just make it easier can do normally anyway)
+
+```{r mc}
+
+
+choice_model_vif(processedBW)
+
+
+```
+
+```{r mc2}
+
+choice_model_vif(processedBW_rem)
+
+```
 
 ## Join datasets
 
+We can also join datasets if necessary.
+
+```{r join}
+
+processedBWDCE <- join_choicedatasets(processedBW_rem, processedDCE)
+
+```
+
 # Models
+
 
 ## Basic
 
+Fixed, random, one-factor 
+
+```{r basic}
+
+m1BWDCE<-model_generator(processedBWDCE, "fixed")
+
+m2BWDCE<-model_generator(processedBWDCE, "random")
+
+m3BWDCE<-model_generator(processedBWDCE, "one-factor")
+
+```
+
 ## EMI
+
+```{r emi}
+#create template spreadsheet
+
+createEMIWorkbook(processedRP_SP,  "fixed", "~/Desktop")
+
+createEMIWorkbook(processedRP_SP,  "random", "~/Desktop")
+
+createEMIWorkbook(processedRP_SP,  "one-factor", "~/Desktop")
+
+
+m1RP_SP <- loadEMIWorkbook(processedRP_SP, "~/Desktop/EMI_fixed.xlsx")
+m2RP_SP <- loadEMIWorkbook(processedRP_SP, "~/Desktop/EMI_random.xlsx")
+m3RP_SP <- loadEMIWorkbook(processedRP_SP, "~/Desktop/EMI_one-factor.xlsx")
+
+```
 
 ## Manual
 
 # Model Fitting
 
-Quick example here
+```{r fit, cache=TRUE}
+
+#this actually takes a few minutes maybe
+BWDCE_f <- runModel(m1BWDCE)
+
+BWDCE_r <- runModel(m2BWDCE)
+
+BWDCE_of <- runModel(m3BWDCE)
+
+
+
+RP_SP_f <- runModel(m1RP_SP)
+
+RP_SP_r <- runModel(m2RP_SP)
+
+RP_SP_of <- runModel(m3RP_SP)
+
+```
 
 # Outputs
 
@@ -48,10 +159,44 @@ Quick example here
 
 ### One model 
 
+```{r summary,results="asis" }
+cat(parPrint(BWDCE_f))
+
+x<-cat(parPrint(BWDCE_f))
+#cat(parPrint(RP_SP_r))
+#cat(parPrint(BWDCE_of))
+```
+
+`r x`
+
 #### Group of models
+
+```{r summary2}
+summariseModelList(list(BWDCE_f,BWDCE_r,BWDCE_of))
+
+summariseModelList(list(RP_SP_f ,RP_SP_r ,RP_SP_of))
+
+```
 
 ## Graphs
 
-graph will eventually be able to be done from model design also
+graph will eventually be able to be done from model design also. only works for fixed at the moment, more of a concept for now.
 
+
+```{r graph1}
+
+processedRP_SP_12345 <- select_variables(processedRP_SP, c("V1", "V2", "V3", "V4", "V5"))
+m1RPSP<-model_generator(processedRP_SP_12345, "fixed")
+m1RPSP_fit1 <- runModel(m1RPSP)
+g<-fixed_model_graph(m1RPSP_fit1)
+
+DiagrammeR::render_graph(g)
+```
+
+```{r graph2}
+BW_f <- model_generator(processedBW_rem, "fixed")
+BW_f_1 <- runModel(BW_f)
+g<-fixed_model_graph(BW_f_1)
+DiagrammeR::render_graph(g)
+```
 

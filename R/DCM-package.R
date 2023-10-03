@@ -9,6 +9,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom dplyr rename
 #' @importFrom dplyr select
+#' @importFrom greekLetters greeks
 #' @importFrom lifecycle deprecated
 #' @importFrom mltools one_hot
 #' @importFrom openxlsx addWorksheet

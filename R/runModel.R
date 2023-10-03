@@ -4,7 +4,7 @@
 #' @param ndraws default 1000
 #' @returns fitted model.
 #' @export
-runModel  <-  function(model,  model_name = "name",  ndraws = 1000) {
+runModel  <-  function(model,  model_name = "name", verbose=0, ndraws = 1000) {
 
   parcount <- parameterCount(model)
   shuffle <- FALSE
@@ -16,7 +16,10 @@ runModel  <-  function(model,  model_name = "name",  ndraws = 1000) {
   nhop <- model$nhop
 
   if (length(model$initial_values) == parcount$total) {
-    message("You have the correct number of initial values.")
+    if(verbose>0){
+      message("You have the correct number of initial values.")
+    }
+
   }else {
     stop("ERROR - you have the incorrect number of initial values.")
     return(NA)

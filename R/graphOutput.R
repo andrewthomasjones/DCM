@@ -26,7 +26,7 @@ fixed_model_graph <- function(fitted){
   paths <- dplyr::mutate(paths, style = "solid")
   paths <- dplyr::select(paths, from, to, style, label)
 
-  edge_set <- DiagrammeR::create_edge_df(fontsize = '10', from=match(paths$from, node_set$label), to=match(paths$to, node_set$label), rel="a", label=paste0(greeks("mu"),1:n,"=",round(paths$label,3)))
+  edge_set <- DiagrammeR::create_edge_df(fontsize = '10', from=match(paths$from, node_set$label), to=match(paths$to, node_set$label), rel="a", label=paste0(greekLetters::greeks("mu"),1:n,"=",round(paths$label,3)))
 
 
   g <- DiagrammeR::create_graph(
@@ -39,7 +39,7 @@ fixed_model_graph <- function(fitted){
   DiagrammeR::add_global_graph_attrs(g1,"layout", "dot", "graph") -> g2
   DiagrammeR::add_global_graph_attrs(g2, "concentrate", "true", "graph") ->g3
   DiagrammeR::add_global_graph_attrs(graph = g3, attr = "ranksep", value = 2, attr_type="graph")  ->g4
-  DiagrammeR::render_graph(g4)
+
 
   return(g4)
 

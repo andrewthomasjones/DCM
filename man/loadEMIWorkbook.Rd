@@ -4,7 +4,7 @@
 \alias{loadEMIWorkbook}
 \title{Loads an existing workbook}
 \usage{
-loadEMIWorkbook(emi_file_name, pre_processed_data)
+loadEMIWorkbook(pre_processed_data, emi_file_name)
 }
 \arguments{
 \item{emi_file_name}{filename string}
