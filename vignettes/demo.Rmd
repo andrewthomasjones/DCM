@@ -154,7 +154,7 @@ m3RP_SP <- loadEMIWorkbook(processedRP_SP, "~/Desktop/EMI_one-factor.xlsx")
 
 m1RP_SP_man <- model_generator(processedRP_SP, model_type = "manual", matrix_list = model_matrices)
 
-runModel(m1RP_SP_man)
+#runModel(m1RP_SP_man)
 #runModel(m1RP_SP)
 
 ```
@@ -186,7 +186,7 @@ RP_SP_of <- runModel(m3RP_SP)
 
 just plain output
 ```{r res}
-BWDCE_f
+RP_SP_f
 
 ```
 
