@@ -134,6 +134,31 @@ m3RP_SP <- loadEMIWorkbook(processedRP_SP, "~/Desktop/EMI_one-factor.xlsx")
 
 ## Manual
 
+```{r man}
+
+  beta <- matrix(0, nrow=1, ncol=1)
+  delta <- matrix(c(0,-1), nrow=1, ncol=2)
+  gamma <- matrix(0, nrow=21, ncol=1)
+  epsilon <- matrix(c(rep(1,21),rep(0,21)), nrow=21, ncol=2)
+
+  model_matrices  <- list(
+    epsilon_model = epsilon,
+    delta_model = delta,
+    gamma_model = gamma,
+    beta_model = beta,
+    epsilon_model_initial = matrix(0.1, nrow = 21, ncol = 1),
+    delta_model_initial = NA,
+    gamma_model_initial = NA,
+    beta_model_initial = NA
+  )
+
+m1RP_SP_man <- model_generator(processedRP_SP, model_type = "manual", matrix_list = model_matrices)
+
+runModel(m1RP_SP_man)
+#runModel(m1RP_SP)
+
+```
+
 # Model Fitting
 
 ```{r fit, cache=TRUE}
@@ -158,6 +183,12 @@ RP_SP_of <- runModel(m3RP_SP)
 # Outputs
 
 ## Tables
+
+just plain output
+```{r res}
+BWDCE_f
+
+```
 
 ### One model 
 
