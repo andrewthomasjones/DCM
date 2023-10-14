@@ -27,7 +27,7 @@ fixed_model_graph <- function(fitted){
   paths <- dplyr::filter(paths, op == "~")
   paths <- dplyr::rename(paths, to = lhs, from = rhs, label = est)
   paths <- dplyr::mutate(paths, style = "solid")
-  paths <- dplyr::select(paths, from, to, style, label)
+  paths <- dplyr::select(paths, "from", "to", "style", "label")
 
   edge_set <- DiagrammeR::create_edge_df(fontsize = '10', from=match(paths$from, node_set$label), to=match(paths$to, node_set$label), rel="a", label=paste0(greekLetters::greeks("mu"),1:n,"=",round(paths$label,3)))
 

@@ -1,6 +1,7 @@
 #' Runs Model
 #' @param model model list
 #' @param model_name string default "name"
+#' @param verbose default 0
 #' @param ndraws default 1000
 #' @returns fitted model.
 #' @export

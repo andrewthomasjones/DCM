@@ -11,6 +11,8 @@ runModel(model, model_name = "name", verbose = 0, ndraws = 1000)
 
 \item{model_name}{string default "name"}
 
+\item{verbose}{default 0}
+
 \item{ndraws}{default 1000}
 }
 \value{

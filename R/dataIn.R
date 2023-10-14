@@ -92,11 +92,11 @@ setUp <- function(data, header = TRUE) {
 remove_variables <- function(processed_data, variable, verbose=0) {
   data <- processed_data$data_original
 
-  if(class(variable) != "character" & class(variable) != "numeric"){
+  if(!inherits(variable,"character") & !inherits(variable, "numeric")){
     stop("Variables must either be named or selected by column number.")
   }
 
-  if(class(variable) == "numeric"){
+  if(inherits(variable,"numeric")){
 
     if(any(variable<=3)){
       stop("Cannot remove first three columns.")
@@ -114,7 +114,7 @@ remove_variables <- function(processed_data, variable, verbose=0) {
   }
 
 
-  if(class(variable) == "character"){
+  if(inherits(variable,"character")){
 
     idx <- which(names(data) %in% c(variable))
 
@@ -149,11 +149,11 @@ remove_variables <- function(processed_data, variable, verbose=0) {
 select_variables <- function(processed_data, variable, verbose=1) {
   data <- processed_data$data_original
 
-  if(class(variable) != "character" & class(variable) != "numeric"){
+  if(!inherits(variable, "character") & !inherits(variable,"numeric")){
     stop("Variables must either be named or selected by column number.")
   }
 
-  if(class(variable) == "numeric"){
+  if(inherits(variable, "numeric")){
 
     if(any(variable<=3)){
       stop("Cannot select first three columns - they are always included.")
@@ -171,7 +171,7 @@ select_variables <- function(processed_data, variable, verbose=1) {
   }
 
 
-  if(class(variable) == "character"){
+  if(inherits(variable,"character")){
 
     idx <- which(names(data) %in% c(variable))
 

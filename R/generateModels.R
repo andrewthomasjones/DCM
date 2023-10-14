@@ -304,9 +304,9 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
     ncovariates <- pre_processed_data$ncovariates
 
     EMI <- openxlsx::loadWorkbook(file=file_name, isUnzipped = FALSE)
-    ncovariates_emi <- nrow(read.xlsx(EMI,sheet = 1))
+    ncovariates_emi <- nrow(openxlsx::read.xlsx(EMI,sheet = 1))
     npp_emi  <- ncovariates
-    nhop_emi <- nrow(read.xlsx(EMI, sheet = 2))
+    nhop_emi <- nrow(openxlsx::read.xlsx(EMI, sheet = 2))
 
     if (npp_emi != npp) {
       stop(paste("npp from EMI does not agree with npp from data"))
@@ -317,32 +317,32 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
     } #dont need this for nhop
 
     code     <- matrix(c(1:ncovariates*npp)*0      ,ncovariates,npp)
-    epsilon  <- as.matrix(read.xlsx(EMI, sheet = 1, cols = c(2,3)))
-    delta    <- as.matrix(read.xlsx(EMI, sheet = 2, cols = c(2,3)))
-    gamma    <- as.matrix(read.xlsx(EMI, sheet = 3, cols = c(2:(1+nhop))))
-    beta     <- as.matrix(read.xlsx(EMI, sheet = 4, cols = c(2:(1+nhop))))
+    epsilon  <- as.matrix(openxlsx::read.xlsx(EMI, sheet = 1, cols = c(2,3)))
+    delta    <- as.matrix(openxlsx::read.xlsx(EMI, sheet = 2, cols = c(2,3)))
+    gamma    <- as.matrix(openxlsx::read.xlsx(EMI, sheet = 3, cols = c(2:(1+nhop))))
+    beta     <- as.matrix(openxlsx::read.xlsx(EMI, sheet = 4, cols = c(2:(1+nhop))))
     phi      <- matrix(c(1:(npp+nhop))*0,npp+nhop   ,npp+nhop)
 
     for (i in 1:(npp+nhop)){
       phi[i,i] = 1
     }
 
-    if (ncovariates==npp_eni) {
+    if (ncovariates==npp_emi) {
       for (i1 in 1:npp){
         code[i,i] = 1
       }
     }
 
-    initial_e <-  as.matrix(read.xlsx(EMI, sheet = 5, cols = c(2,3)))
+    initial_e <-  as.matrix(openxlsx::read.xlsx(EMI, sheet = 5, cols = c(2,3)))
     initial_e <-  na.omit(as.vector(initial_e))
 
-    initial_d <-  as.matrix(read.xlsx(EMI, sheet = 6, cols = c(2,3)))
+    initial_d <-  as.matrix(openxlsx::read.xlsx(EMI, sheet = 6, cols = c(2,3)))
     initial_d <-  na.omit(as.vector(initial_d))
 
-    initial_g <-  as.matrix(read.xlsx(EMI, sheet = 7, cols = c(2:(1+nhop))))
+    initial_g <-  as.matrix(openxlsx::read.xlsx(EMI, sheet = 7, cols = c(2:(1+nhop))))
     initial_g <-  na.omit(as.vector(initial_g))
 
-    initial_b <-  as.matrix(read.xlsx(EMI, sheet = 8, cols = c(2:(1+nhop))))
+    initial_b <-  as.matrix(openxlsx::read.xlsx(EMI, sheet = 8, cols = c(2:(1+nhop))))
     initial_b <-  na.omit(as.vector(initial_b))
 
     initial_values <- c(initial_e,initial_d,initial_g,initial_b)
