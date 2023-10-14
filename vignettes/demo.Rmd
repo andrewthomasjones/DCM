@@ -32,6 +32,7 @@ Dataflow is:
 
 
 1. Read Data 
+
 2. Process data (generate concepts etc) 
 3. Combine processed data with a model
 4. Fit model
