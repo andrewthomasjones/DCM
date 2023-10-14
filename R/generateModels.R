@@ -306,7 +306,8 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
     EMI <- openxlsx::loadWorkbook(file = file_name, isUnzipped = FALSE)
     ncovariates_emi <- nrow(openxlsx::read.xlsx(EMI, sheet = 1))
     npp_emi  <- ncovariates
-    #nhop_emi <- nrow(openxlsx::read.xlsx(EMI, sheet = 2))
+    nhop_emi <- nrow(openxlsx::read.xlsx(EMI, sheet = 2))
+    nhop <- nhop_emi
 
     if (npp_emi != npp) {
       stop(paste("npp from EMI does not agree with npp from data"))
@@ -346,6 +347,12 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
     initial_b <-  na.omit(as.vector(initial_b))
 
     initial_values <- c(initial_e, initial_d, initial_g, initial_b)
+
+    matrix_list[["epsilon_model"]] <- epsilon
+    matrix_list[["delta_model"]] <- delta
+    matrix_list[["gamma_model"]] <- gamma
+    matrix_list[["beta_model"]] <- beta
+
 
   }else if (model_type == "mtmm") {
     #FIX
