@@ -39,6 +39,12 @@ Dataflow is:
 
 # Data
 
+```{r quit}
+
+knitr::knit_exit()
+
+```
+
 ## Built in examples
 
 BW and DCE for now, probably better examples to includ with package later
