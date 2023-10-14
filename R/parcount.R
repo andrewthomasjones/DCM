@@ -18,7 +18,8 @@ parameterCount <- function(model) {
     delta_sig = 0,
     gamma = 0,
     beta = 0,
-    phi = 0)
+    phi = 0
+  )
 
   # 1 is total
   # 2 is number of epsilon mu

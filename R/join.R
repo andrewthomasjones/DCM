@@ -66,21 +66,21 @@ join_choicedatasets  <-  function(data1,  data2) {
   data_1 <- data1$data_original
   data_2 <- data2$data_original
 
-  data_1_info <- data_1[,1:3]
-  data_2_info <- data_2[,1:3]
+  data_1_info <- data_1[, 1:3]
+  data_2_info <- data_2[, 1:3]
 
-  data_1_data <- data_1[,4:ncol(data_1)]
-  data_2_data <- data_2[,4:ncol(data_2)]
+  data_1_data <- data_1[, 4:ncol(data_1)]
+  data_2_data <- data_2[, 4:ncol(data_2)]
 
-  if(length(setdiff(data_1_info$ID, data_2_info$ID))!=0){
+  if (length(setdiff(data_1_info$ID, data_2_info$ID)) != 0) {
     message("ERROR - datasets to be joined need to have the same IDs")
   }
 
-  names1<-names(data_1_data)
-  names2<-names(data_2_data)
+  names1 <- names(data_1_data)
+  names2 <- names(data_2_data)
 
-  data_1_fill <- data.frame(matrix(NA, nrow=nrow(data_1), ncol=length(names2), dimnames=list(NULL, names2)))
-  data_2_fill <- data.frame(matrix(NA, nrow=nrow(data_2), ncol=length(names1), dimnames=list(NULL, names1)))
+  data_1_fill <- data.frame(matrix(NA, nrow = nrow(data_1), ncol = length(names2), dimnames = list(NULL, names2)))
+  data_2_fill <- data.frame(matrix(NA, nrow = nrow(data_2), ncol = length(names1), dimnames = list(NULL, names1)))
 
 
   data_original <- rbind(cbind(data_1_info, data_1_data, data_1_fill), cbind(data_2_info, data_2_fill, data_2_data))
