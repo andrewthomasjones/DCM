@@ -12,7 +12,7 @@ on:
       - '**.R'
       - '**.cpp'
 
-name: R-CMD-check and Lint
+name: R-CMD-check
 
 jobs:
   lint:
