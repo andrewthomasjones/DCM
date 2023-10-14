@@ -93,13 +93,17 @@ We can also join datasets if necessary.
 
 ```{r join}
 
-#processedBWDCE <- join_choicedatasets(processedBW_rem, processedDCE)
-processedBWDCE <- row_join_choicedatasets(processedBW_rem, processedDCE)
+#simple row join, i know this example doesnt make sense
+processedBW_1 <- setUp(BWpriorities[BWpriorities$ID <= 1176,])
+processedBW_2 <- setUp(BWpriorities[BWpriorities$ID > 1176,])
+processedBW_all <- row_join_choicedatasets(processedBW_1,processedBW_2)
 
+#processedBW <- setUp(BWpriorities)
+# for( i in 1:length(processedBW)){
+#   print(paste(i, identical(processedBW[[i]], processedBW_all[[i]])))
+# }
 
-processedBW_1krows<-setUp(BWpriorities[1:1000,])
-processedDCE_1krows<-setUp(DCEpriorities[1:1000,])
-processedBWDCE2 <- col_join_choicedatasets(processedBW_1krows, processedDCE_1krows)
+processedBWDCE <- join_choicedatasets(processedBW, processedDCE)
 
 ```
 

@@ -58,20 +58,32 @@ row_join_choicedatasets  <-  function(data1,  data2) {
 #' join
 #' @param data1 processed data list
 #' @param data2 processed data list
-#' @returns joins two processed objects by cols. only takes  ID ChoiceSet Choice from data1
+#' @returns joins two processed objects by cols. need same IDs. cols are NA for the other half of data set
 #' @export
-col_join_choicedatasets  <-  function(data1,  data2) {
+join_choicedatasets  <-  function(data1,  data2) {
 
   #from each input
   data_1 <- data1$data_original
   data_2 <- data2$data_original
 
-  if (nrow(data_1) == nrow(data_2)) {
-    data_original <- data.frame(data_1, data_2[,4:ncol(data_2)])
-  }else {
-    print("ERROR - datasets to be joined need to have the same number of rows.")
-    return(NA)
+  data_1_info <- data_1[,1:3]
+  data_2_info <- data_2[,1:3]
+
+  data_1_data <- data_1[,4:ncol(data_1)]
+  data_2_data <- data_2[,4:ncol(data_2)]
+
+  if(length(setdiff(data_1_info$ID, data_2_info$ID))!=0){
+    message("ERROR - datasets to be joined need to have the same IDs")
   }
+
+  names1<-names(data_1_data)
+  names2<-names(data_2_data)
+
+  data_1_fill <- data.frame(matrix(NA, nrow=nrow(data_1), ncol=length(names2), dimnames=list(NULL, names2)))
+  data_2_fill <- data.frame(matrix(NA, nrow=nrow(data_2), ncol=length(names1), dimnames=list(NULL, names1)))
+
+
+  data_original <- rbind(cbind(data_1_info, data_1_data, data_1_fill), cbind(data_2_info, data_2_fill, data_2_data))
 
   #from Kobe code
   nmax_choiceset_size <- as.numeric(max(unlist(rle(data_original[, 2])[1])))
