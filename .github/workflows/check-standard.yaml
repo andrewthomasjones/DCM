@@ -15,6 +15,27 @@ on:
 name: R-CMD-check
 
 jobs:
+  lint:
+      runs-on: ubuntu-latest
+      env:
+        GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      steps:
+        - uses: actions/checkout@v3
+  
+        - uses: r-lib/actions/setup-r@v2
+          with:
+            use-public-rspm: true
+  
+        - uses: r-lib/actions/setup-r-dependencies@v2
+          with:
+            extra-packages: any::lintr, local::.
+            needs: lint
+  
+        - name: Lint
+          run: lintr::lint_package()
+          shell: Rscript {0}
+          env:
+            LINTR_ERROR_ON_LINT: true
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
@@ -51,3 +72,4 @@ jobs:
           args: 'c("--no-vignettes", "--no-build-vignettes", "--ignore-vignettes")'
           build_args: 'c("--no-build-vignettes")'
           upload-snapshots: true
+
