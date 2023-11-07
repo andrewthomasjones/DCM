@@ -13,11 +13,11 @@ readData  <-  function(filename, header = TRUE) {
     data <- as.data.frame(readxl::read_excel(filename, sheet = 1, col_names = header))
   }
 
-  if (header == FALSE){
+  if (header == FALSE) {
     names(data) <- c("ID",
                      "group",
                      "choice",
-                     paste0("V", 1:(ncol(data)-3)))
+                     paste0("V", 1:(ncol(data) - 3)))
 
 
   }
@@ -34,7 +34,7 @@ readData  <-  function(filename, header = TRUE) {
 setUp <- function(data, header = TRUE) {
 
 
-  if (inherits(data,"character")) {
+  if (inherits(data, "character")) {
     #read in data
     data_matrix <- readData(data, header = header)
     filename  <-  data
@@ -67,17 +67,17 @@ setUp <- function(data, header = TRUE) {
 
   #all the initial stuff packaged up
   processed <- list(data_original = data_matrix,
-                  data_name = filename,
-                  data = concept_list$data,
-                  ncovariates = concept_list$ncovariates,
-                  npp = concept_list$ncovariates,
-                  nmax_choiceset_size = nmax_choiceset_size,
-                  ndecisionmakers = ndecisionmakers,
-                  concept = concept_list$concept,
-                  lcovariates = lcovariates,
-                  fdd = fdd,
-                  attribute_names  =  names(data_matrix)[-(1:3)]
-                  )
+                    data_name = filename,
+                    data = concept_list$data,
+                    ncovariates = concept_list$ncovariates,
+                    npp = concept_list$ncovariates,
+                    nmax_choiceset_size = nmax_choiceset_size,
+                    ndecisionmakers = ndecisionmakers,
+                    concept = concept_list$concept,
+                    lcovariates = lcovariates,
+                    fdd = fdd,
+                    attribute_names  =  names(data_matrix)[-(1:3)]
+  )
 
   return(processed)
 
@@ -89,24 +89,24 @@ setUp <- function(data, header = TRUE) {
 #' @param verbose 1 means print more
 #' @returns a new processed data object with everything updated
 #' @export
-remove_variables <- function(processed_data, variable, verbose=0) {
+remove_variables <- function(processed_data, variable, verbose = 0) {
   data <- processed_data$data_original
 
-  if(class(variable) != "character" & class(variable) != "numeric"){
+  if (!inherits(variable, "character") && !inherits(variable, "numeric")) {
     stop("Variables must either be named or selected by column number.")
   }
 
-  if(class(variable) == "numeric"){
+  if (inherits(variable, "numeric")) {
 
-    if(any(variable<=3)){
+    if (any(variable <= 3)) {
       stop("Cannot remove first three columns.")
     }
 
-    if(any(!variable %in% (4:ncol(data)))){
+    if (any(!variable %in% (4:ncol(data)))) {
       stop("Columns not in range.")
     }
 
-    if(verbose>0){
+    if (verbose > 0) {
       message(paste0("Removing variables: ",  paste(names(data)[c(variable)], collapse = ", ")))
     }
 
@@ -114,19 +114,19 @@ remove_variables <- function(processed_data, variable, verbose=0) {
   }
 
 
-  if(class(variable) == "character"){
+  if (inherits(variable, "character")) {
 
     idx <- which(names(data) %in% c(variable))
 
-    if(length(idx) != length(variable)){
+    if (length(idx) != length(variable)) {
       stop("Columns not found.")
     }
 
-    if(any(idx<=3)){
+    if (any(idx <= 3)) {
       stop("Cannot remove first three columns.")
     }
 
-    if(verbose>0){
+    if (verbose > 0) {
       message(paste0("Removing variables: ",  paste(names(data)[c(idx)], collapse = ", ")))
     }
 
@@ -146,53 +146,50 @@ remove_variables <- function(processed_data, variable, verbose=0) {
 #' @param verbose 1 means print more, 0 no print, default 1
 #' @returns a new processed data object with everything updated
 #' @export
-select_variables <- function(processed_data, variable, verbose=1) {
+select_variables <- function(processed_data, variable, verbose = 1) {
   data <- processed_data$data_original
 
-  if(class(variable) != "character" & class(variable) != "numeric"){
+  if (!inherits(variable, "character") && !inherits(variable, "numeric")) {
     stop("Variables must either be named or selected by column number.")
   }
 
-  if(class(variable) == "numeric"){
+  if (inherits(variable, "numeric")) {
 
-    if(any(variable<=3)){
+    if (any(variable <= 3)) {
       stop("Cannot select first three columns - they are always included.")
     }
 
-    if(any(!variable %in% (4:ncol(data)))){
+    if (any(!variable %in% (4:ncol(data)))) {
       stop("Selected columns not in range.")
     }
 
-    if(verbose>0){
+    if (verbose > 0) {
       message(paste0("Selecting variables: ",  paste(names(data)[c(variable)], collapse = ", ")))
     }
 
-    data <- cbind(data[,1:3], data[, c(variable)])
+    data <- cbind(data[, 1:3], data[, c(variable)])
   }
 
 
-  if(class(variable) == "character"){
+  if (inherits(variable, "character")) {
 
     idx <- which(names(data) %in% c(variable))
 
-    if(length(idx) != length(variable)){
+    if (length(idx) != length(variable)) {
       stop("Selected columns not found.")
     }
 
-    if(any(idx<=3)){
+    if (any(idx <= 3)) {
       stop("Cannot select first three columns - they are always included.")
     }
 
-    if(verbose>0){
+    if (verbose > 0) {
       message(paste0("Selecting variables: ",  paste(names(data)[c(idx)], collapse = ", ")))
     }
 
-    data <- cbind(data[,1:3], data[, names(data) %in% c(variable)])
+    data <- cbind(data[, 1:3], data[, names(data) %in% c(variable)])
   }
 
   #we actually have to regenerate each time because concepts matrix will change.
   return(setUp(data))
 }
-
-
-

@@ -32,12 +32,19 @@ Dataflow is:
 
 
 1. Read Data 
+
 2. Process data (generate concepts etc) 
 3. Combine processed data with a model
 4. Fit model
 5. Generate Outputs
 
 # Data
+
+```{r quit}
+
+knitr::knit_exit()
+
+```
 
 ## Built in examples
 
@@ -92,7 +99,6 @@ vif_check(processedBW_rem)
 We can also join datasets if necessary.
 
 ```{r join}
-
 library(DCM)
 processedBW<-setUp(BWpriorities)
 processedDCE<-setUp(DCEpriorities)

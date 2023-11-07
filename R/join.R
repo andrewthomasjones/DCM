@@ -29,10 +29,9 @@ join_choicedatasets  <-  function(data1,  data2) {
   concept_merge[(nconcepts_data1+1):nrows_concept_merge, (ncovariates_data1+1):ncols_concept_merge] <- data2$concept
 
   nrows_data_merge <- nrows_data1 + nrows_data2
-  ncols_data_merge  <- max(ncols_data1, ncols_data2) #why
+  ncols_data_merge  <- max(ncols_data1, ncols_data2) 
 
   data_merge  <- matrix(0, nrow = nrows_data_merge, ncol = ncols_data_merge)
-
   data_merge[1:nrows_data1, 1:ncols_data1] <- data1$data
   data_merge[1:nrows_data1,3] <- 1
 

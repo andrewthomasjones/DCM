@@ -31,42 +31,42 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
     epsilon_model  <-  matrix(cbind(default_muep, default_musig),
                               ncol = 2,
                               dimnames = list(attribute_names, c("mu", "sigma"))
-                              )
+    )
 
     delta_model  <-  matrix(cbind(default_deltaep, default_deltasig),
                             ncol = 2,
                             dimnames = list("HoP_1", c("mu", "sigma"))
-                            )
+    )
 
     gamma_model  <-  matrix(default_gamma,
                             ncol = 1,
                             dimnames = list(attribute_names, "HoP_1")
-                            )
+    )
 
     beta_model  <-  matrix(default_beta,
                            ncol = 1,
                            dimnames = list("HoP_1", "HoP_1")
-                           )
+    )
 
     epsilon_model_initial  <-  matrix(cbind(default_muep_initial, default_musig_initial),
                                       ncol = 2,
                                       dimnames = list(attribute_names, c("mu", "sigma"))
-                                      )
+    )
 
     delta_model_initial  <-  matrix(cbind(default_deltaep_initial, default_deltasig_initial),
                                     ncol = 2,
                                     dimnames = list("HoP_1", c("mu", "sigma"))
-                                    )
+    )
 
     gamma_model_initial  <-  matrix(default_gamma_initial,
                                     ncol = 1,
                                     dimnames = list(attribute_names, "HoP_1")
-                                    )
+    )
 
     beta_model_initial  <-  matrix(default_beta_initial,
                                    ncol = 1,
                                    dimnames = list("HoP_1", "HoP_1")
-                                   )
+    )
 
   }else if (model_type == "random") {
 
@@ -89,46 +89,46 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
     epsilon_model  <-  matrix(cbind(default_muep, default_musig),
                               ncol = 2,
                               dimnames = list(attribute_names,  c("mu", "sigma"))
-                              )
+    )
 
     delta_model  <-  matrix(cbind(default_deltaep, default_deltasig),
                             ncol = 2,
                             dimnames = list(paste("HoP_", 1:nhop, sep = ""),  c("mu", "sigma"))
-                            )
+    )
 
     gamma_model  <-  matrix(default_gamma,
                             ncol = nhop,
                             dimnames = list(attribute_names,  paste("HoP_", 1:nhop, sep = ""))
-                            )
+    )
 
     beta_model  <-  matrix(default_beta,
                            ncol = nhop,
                            dimnames = list(paste("HoP_", 1:nhop, sep = ""),
                                            paste("HoP_", 1:nhop, sep = ""))
-                           )
+    )
 
     epsilon_model_initial  <-  matrix(cbind(default_muep_initial, default_musig_initial),
                                       ncol = 2,
                                       dimnames = list(attribute_names, c("mu", "sigma"))
-                                      )
+    )
 
     delta_model_initial  <-  matrix(cbind(default_deltaep_initial, default_deltasig_initial),
                                     ncol = 2,
                                     dimnames = list(paste("HoP_", 1:nhop, sep = ""),
                                                     c("mu", "sigma"))
-                                    )
+    )
 
     gamma_model_initial  <-  matrix(default_gamma_initial,
                                     ncol = nhop,
                                     dimnames = list(attribute_names,
                                                     paste("HoP_", 1:nhop, sep = ""))
-                                    )
+    )
 
     beta_model_initial  <-  matrix(default_beta_initial,
                                    ncol = nhop,
                                    dimnames = list(paste("HoP_", 1:nhop, sep = ""),
                                                    paste("HoP_", 1:nhop, sep = ""))
-                                   )
+    )
 
   }else if (model_type == "one-factor") {
 
@@ -151,42 +151,42 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
     epsilon_model  <-  matrix(cbind(default_muep, default_musig),
                               ncol = 2,
                               dimnames = list(attribute_names, c("mu", "sigma"))
-                              )
+    )
 
     delta_model  <-  matrix(cbind(default_deltaep, default_deltasig),
                             ncol = 2,
                             dimnames = list("HoP_1", c("mu", "sigma"))
-                            )
+    )
 
     gamma_model  <-  matrix(default_gamma,
                             ncol = 1,
                             dimnames = list(attribute_names, "HoP_1")
-                            )
+    )
 
     beta_model <-  matrix(default_beta,
                           ncol = 1,
                           dimnames = list("HoP_1", "HoP_1")
-                          )
+    )
 
     epsilon_model_initial  <-  matrix(cbind(default_muep_initial, default_musig_initial),
                                       ncol = 2,
                                       dimnames = list(attribute_names, c("mu", "sigma"))
-                                      )
+    )
 
     delta_model_initial  <-  matrix(cbind(default_deltaep_initial, default_deltasig_initial),
                                     ncol = 2,
                                     dimnames = list("HoP_1", c("mu", "sigma"))
-                                    )
+    )
 
     gamma_model_initial  <-  matrix(default_gamma_initial,
                                     ncol = 1,
                                     dimnames = list(attribute_names, "HoP_1")
-                                    )
+    )
 
     beta_model_initial  <-  matrix(default_beta_initial,
                                    ncol = 1,
                                    dimnames = list("HoP_1", "HoP_1")
-                                   )
+    )
 
 
 
@@ -224,7 +224,7 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
     stop(paste("model_type not one of ",  paste(model_types,  collapse = ",  ")))
   }
 
-  if(model_type %in% c("fixed",  "random",  "one-factor")){
+  if (model_type %in% c("fixed",  "random",  "one-factor")) {
 
     matrix_list <- generate_model_matrices(pre_processed_data,  model_type)
     description  <-  paste0("Generated model of type ", model_type)
@@ -250,7 +250,7 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
       diag(code) <- 1
     }
 
-  }else if (model_type=="manual"){
+  }else if (model_type == "manual") {
     if (is.null(matrix_list)) {
       stop("Need to supply matrix_list for manual model design.")
     }
@@ -264,9 +264,9 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
       is.null(matrix_list[["delta_model_initial"]]),
       is.null(matrix_list[["gamma_model_initial"]]),
       is.null(matrix_list[["beta_model_initial"]])
-      )
+    )
 
-    if(any(name_checks)){
+    if (any(name_checks)) {
       stop("Matrix list does not contain all required model elements.")
     }
 
@@ -294,7 +294,7 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
       diag(code) <- 1
     }
 
-  }else if (model_type=="emi"){
+  }else if (model_type == "emi") {
     if (is.null(file_name)) {
       stop(paste("Need to supply file_name for EMI model design."))
     }
@@ -303,10 +303,11 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
     npp <- pre_processed_data$npp
     ncovariates <- pre_processed_data$ncovariates
 
-    EMI <- openxlsx::loadWorkbook(file=file_name, isUnzipped = FALSE)
-    ncovariates_emi <- nrow(read.xlsx(EMI,sheet = 1))
+    EMI <- openxlsx::loadWorkbook(file = file_name, isUnzipped = FALSE)
+    ncovariates_emi <- nrow(openxlsx::read.xlsx(EMI, sheet = 1))
     npp_emi  <- ncovariates
-    nhop_emi <- nrow(read.xlsx(EMI, sheet = 2))
+    nhop_emi <- nrow(openxlsx::read.xlsx(EMI, sheet = 2))
+    nhop <- nhop_emi
 
     if (npp_emi != npp) {
       stop(paste("npp from EMI does not agree with npp from data"))
@@ -316,53 +317,59 @@ model_generator  <-  function(pre_processed_data, model_type, file_name = NULL, 
       stop(paste("ncovariates from EMI does not agree with npp from data"))
     } #dont need this for nhop
 
-    code     <- matrix(c(1:ncovariates*npp)*0      ,ncovariates,npp)
-    epsilon  <- as.matrix(read.xlsx(EMI, sheet = 1, cols = c(2,3)))
-    delta    <- as.matrix(read.xlsx(EMI, sheet = 2, cols = c(2,3)))
-    gamma    <- as.matrix(read.xlsx(EMI, sheet = 3, cols = c(2:(1+nhop))))
-    beta     <- as.matrix(read.xlsx(EMI, sheet = 4, cols = c(2:(1+nhop))))
-    phi      <- matrix(c(1:(npp+nhop))*0,npp+nhop   ,npp+nhop)
+    code     <- matrix(c(1:ncovariates * npp) * 0, ncovariates, npp)
+    epsilon  <- as.matrix(openxlsx::read.xlsx(EMI, sheet = 1, cols = c(2, 3)))
+    delta    <- as.matrix(openxlsx::read.xlsx(EMI, sheet = 2, cols = c(2, 3)))
+    gamma    <- as.matrix(openxlsx::read.xlsx(EMI, sheet = 3, cols = c(2:(1 + nhop))))
+    beta     <- as.matrix(openxlsx::read.xlsx(EMI, sheet = 4, cols = c(2:(1 + nhop))))
+    phi      <- matrix(c(1:(npp + nhop)) * 0, npp + nhop, npp + nhop)
 
-    for (i in 1:(npp+nhop)){
-      phi[i,i] = 1
+    for (i in 1:(npp + nhop)){
+      phi[i, i] <- 1
     }
 
-    if (ncovariates==npp_eni) {
+    if (ncovariates == npp_emi) {
       for (i1 in 1:npp){
-        code[i,i] = 1
+        code[i, i] <- 1
       }
     }
 
-    initial_e <-  as.matrix(read.xlsx(EMI, sheet = 5, cols = c(2,3)))
+    initial_e <-  as.matrix(openxlsx::read.xlsx(EMI, sheet = 5, cols = c(2, 3)))
     initial_e <-  na.omit(as.vector(initial_e))
 
-    initial_d <-  as.matrix(read.xlsx(EMI, sheet = 6, cols = c(2,3)))
+    initial_d <-  as.matrix(openxlsx::read.xlsx(EMI, sheet = 6, cols = c(2, 3)))
     initial_d <-  na.omit(as.vector(initial_d))
 
-    initial_g <-  as.matrix(read.xlsx(EMI, sheet = 7, cols = c(2:(1+nhop))))
+    initial_g <-  as.matrix(openxlsx::read.xlsx(EMI, sheet = 7, cols = c(2:(1 + nhop))))
     initial_g <-  na.omit(as.vector(initial_g))
 
-    initial_b <-  as.matrix(read.xlsx(EMI, sheet = 8, cols = c(2:(1+nhop))))
+    initial_b <-  as.matrix(openxlsx::read.xlsx(EMI, sheet = 8, cols = c(2:(1 + nhop))))
     initial_b <-  na.omit(as.vector(initial_b))
 
-    initial_values <- c(initial_e,initial_d,initial_g,initial_b)
+    initial_values <- c(initial_e, initial_d, initial_g, initial_b)
 
-  }else if (model_type=="mtmm"){
-   #FIX
+    matrix_list[["epsilon_model"]] <- epsilon
+    matrix_list[["delta_model"]] <- delta
+    matrix_list[["gamma_model"]] <- gamma
+    matrix_list[["beta_model"]] <- beta
+
+
+  }else if (model_type == "mtmm") {
+    #FIX
   }
 
   model <- list(description = description,
-              data = pre_processed_data,
-              ncovariates = ncovariates,
-              npp = npp,
-              nhop = nhop,
-              code = code,
-              epsilon = matrix_list$epsilon_model,
-              delta = matrix_list$delta_model,
-              gamma = matrix_list$gamma_model,
-              beta = matrix_list$beta_model,
-              phi = phi,
-              initial_values = initial_values)
+                data = pre_processed_data,
+                ncovariates = ncovariates,
+                npp = npp,
+                nhop = nhop,
+                code = code,
+                epsilon = matrix_list$epsilon_model,
+                delta = matrix_list$delta_model,
+                gamma = matrix_list$gamma_model,
+                beta = matrix_list$beta_model,
+                phi = phi,
+                initial_values = initial_values)
 
   return(model)
 }

@@ -12,7 +12,7 @@ join_choicedatasets(data1, data2)
 \item{data2}{processed data list}
 }
 \value{
-joins two processed objects by cols. only takes  ID ChoiceSet Choice from data1
+joins two processed objects by cols
 }
 \description{
 join

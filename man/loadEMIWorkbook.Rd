@@ -7,6 +7,8 @@
 loadEMIWorkbook(pre_processed_data, emi_file_name)
 }
 \arguments{
+\item{pre_processed_data}{processed data list}
+
 \item{emi_file_name}{filename string}
 }
 \value{

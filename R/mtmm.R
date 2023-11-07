@@ -24,8 +24,10 @@
 #   default_musig_initial  <-  rep(NA, ncovariates)
 #   default_deltaep_initial  <-  rep(NA, nhop)
 #   default_deltasig_initial  <-  rep(NA, nhop)
-#   default_gamma_initial  <-  rbind(cbind(diag(ncovariates_d2) * .1, matrix(cbind(rep(.1, ncovariates_d2), rep(NA, ncovariates_d2)), ncol = 2)),
-#                                    cbind(diag(ncovariates_d2) * .1, matrix(cbind(rep(NA, ncovariates_d2), rep(.1, ncovariates_d2)), ncol = 2)))
+#   default_gamma_initial  <-  rbind(cbind(diag(ncovariates_d2) * .1, matrix(cbind(rep(.1, ncovariates_d2),
+#rep(NA, ncovariates_d2)), ncol = 2)),
+#                                    cbind(diag(ncovariates_d2) * .1, matrix(cbind(rep(NA, ncovariates_d2),
+#rep(.1, ncovariates_d2)), ncol = 2)))
 #   default_beta_initial  <-  diag(nhop_d2_p2) * NA
 #
 #   epsilon_model  <-  matrix(cbind(default_muep, default_musig),

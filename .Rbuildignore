@@ -6,3 +6,4 @@
 ^\.github$
 ^temp_workflow.R
 ^misc$
+^.lintr$

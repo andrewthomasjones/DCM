@@ -1,5 +1,4 @@
-inform_startup <- function()
-{
+inform_startup <- function() {
   msg <- c(paste0("
 
 ###################################################################################
@@ -22,20 +21,16 @@ inform_startup <- function()
 ###################################################################################
 
 version ",
-    packageVersion("DCM")),
-    "\n\nType 'citation(\"DCM\")' for citing this R package in publications.
-
-    ")
+                  packageVersion("DCM")
+           ),
+           "\n\nType 'citation(\"DCM\")' for citing this R package in publications.\n\n"
+  )
   return(msg)
 }
 
 
-.onAttach <- function(lib, pkg)
-{
-
+.onAttach <- function(lib, pkg) {
   msg <- inform_startup()
   packageStartupMessage(msg)
   invisible()
 }
-
-

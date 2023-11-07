@@ -8,8 +8,8 @@
 llMax  <- function(model,  processed,  draws_matrix) {
 
   loglik  <-  nlm(llCalc,  p = model$initial_values,
-                model,  processed,  draws_matrix,
-                hessian = TRUE,  print.level = 0)
+                  model,  processed,  draws_matrix,
+                  hessian = TRUE,  print.level = 0)
 
   return(loglik)
 }

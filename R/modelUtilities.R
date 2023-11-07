@@ -11,14 +11,14 @@ vif_check <- function(data) {
 
   vals <- list()
 
-  for (i in 1:ncol(predictors2)) {
-      a <- lm(as.formula(paste(colnames(predictors2)[i], "~ .")), data=predictors2)
-      r <- summary(a)$r.squared
-      vif <- 1 / (1 - r)
-      vals[[i]] <- vif
+  for (i in seq_len(ncol(predictors2))) {
+    a <- lm(as.formula(paste(colnames(predictors2)[i], "~ .")), data = predictors2)
+    r <- summary(a)$r.squared
+    vif <- 1 / (1 - r)
+    vals[[i]] <- vif
   }
 
-  return(data.frame(Variable = names(predictors2), VIF=unlist(vals)))
+  return(data.frame(Variable = names(predictors2), VIF = unlist(vals)))
 }
 
 #' cor_mat
@@ -30,8 +30,8 @@ cor_mat <- function(data) {
 
   predictors <- data$data_original[, -(1:3)]
 
-  r<-cor(as.matrix(predictors), method = "pearson")
-  m<-round(r, 4)
+  r <- cor(as.matrix(predictors), method = "pearson")
+  m <- round(r, 4)
   return(m)
 }
 
@@ -46,4 +46,3 @@ cor_sig <- function(data) {
   res <- Hmisc::rcorr(cm)
   return(res)
 }
-
