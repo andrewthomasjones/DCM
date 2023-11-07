@@ -93,13 +93,12 @@ We can also join datasets if necessary.
 
 ```{r join}
 
-#processedBWDCE <- join_choicedatasets(processedBW_rem, processedDCE)
-processedBWDCE <- row_join_choicedatasets(processedBW_rem, processedDCE)
-
-
-processedBW_1krows<-setUp(BWpriorities[1:1000,])
-processedDCE_1krows<-setUp(DCEpriorities[1:1000,])
-processedBWDCE2 <- col_join_choicedatasets(processedBW_1krows, processedDCE_1krows)
+library(DCM)
+processedBW<-setUp(BWpriorities)
+processedDCE<-setUp(DCEpriorities)
+processedBWDCE2 <- join_choicedatasets(processedBW, processedDCE)
+m1BWDCE<-model_generator(processedBWDCE2, "fixed")
+test <- runModel(m1BWDCE)
 
 ```
 
@@ -112,11 +111,12 @@ Fixed, random, one-factor
 
 ```{r basic}
 
-m1BWDCE<-model_generator(processedBWDCE, "fixed")
+m1BWDCE<-model_generator(processedBWDCE2, "fixed")
+test <- runModel(m1BWDCE)
 
-m2BWDCE<-model_generator(processedBWDCE, "random")
-
-m3BWDCE<-model_generator(processedBWDCE, "one-factor")
+# m2BWDCE<-model_generator(processedBWDCE, "random")
+# 
+# m3BWDCE<-model_generator(processedBWDCE, "one-factor")
 
 ```
 

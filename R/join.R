@@ -1,111 +1,77 @@
 #' join
 #' @param data1 processed data list
 #' @param data2 processed data list
-#' @returns joins two processed objects by rows
-#' @export
-row_join_choicedatasets  <-  function(data1,  data2) {
-
-  #from each input
-  data_1 <- data1$data_original
-  data_2 <- data2$data_original
-
-  if (ncol(data_1) == ncol(data_2)) {
-    data_original <- data.frame(Map(c, data_1, data_2))
-  }else {
-    print("ERROR - datasets to be joined need to have the same number of atributes.")
-    return(NA)
-  }
-
-  #from Kobe code
-  nmax_choiceset_size <- as.numeric(max(unlist(rle(data_original[, 2])[1])))
-
-  #concept list
-  concept_list <- createConcepts(data_original, nmax_choiceset_size)
-
-  #fdd
-  fdd <- frequencyDistribution(concept_list)
-
-  #some more intermediate processing
-  ndecisionmakers <- dim(fdd)[1]
-
-  lcovariates <- array(0, concept_list$ncovariates)
-
-  for (i in 1:concept_list$ncovariates) {
-    lcovariates[i] <- paste("Cov", i)
-  }
-
-  n1 <- deparse(substitute(data1))
-  n2 <- deparse(substitute(data2))
-
-  #all the initial stuff packaged up
-  processed <- list(data_original = data_original,
-                    data_name = paste0("Joined_from_", n1, "_and_", n2),
-                    data = concept_list$data,
-                    ncovariates = concept_list$ncovariates,
-                    npp = concept_list$ncovariates,
-                    nmax_choiceset_size = nmax_choiceset_size,
-                    ndecisionmakers = ndecisionmakers,
-                    concept = concept_list$concept,
-                    lcovariates = lcovariates,
-                    fdd = fdd,
-                    attribute_names  =  names(data_original)[-(1:3)]
-  )
-
-  return(processed)
-}
-
-
-#' join
-#' @param data1 processed data list
-#' @param data2 processed data list
 #' @returns joins two processed objects by cols. only takes  ID ChoiceSet Choice from data1
 #' @export
-col_join_choicedatasets  <-  function(data1,  data2) {
+join_choicedatasets  <-  function(data1,  data2) {
 
-  #from each input
-  data_1 <- data1$data_original
-  data_2 <- data2$data_original
+  nconcepts_data1 <- dim(data1$concept)[1]
+  nconcepts_data2 <- dim(data2$concept)[1]
+  ncovariates_data1 <- data1$ncovariates
+  ncovariates_data2 <- data2$ncovariates
 
-  if (nrow(data_1) == nrow(data_2)) {
-    data_original <- data.frame(data_1, data_2[,4:ncol(data_2)])
-  }else {
-    print("ERROR - datasets to be joined need to have the same number of rows.")
-    return(NA)
-  }
+  nrows_data1 <- dim(data1$data)[1]
+  nrows_data2 <- dim(data2$data)[1]
+  ncols_data1 <- dim(data1$data)[2]
+  ncols_data2 <- dim(data2$data)[2]
 
-  #from Kobe code
-  nmax_choiceset_size <- as.numeric(max(unlist(rle(data_original[, 2])[1])))
 
-  #concept list
-  concept_list <- createConcepts(data_original, nmax_choiceset_size)
+  data_original_merge <- data.frame(data1$data_original, data2$data_original[,4:ncol(data2$data_original)])
+
+  nmaxchoicesetsize_merge <- max(data1$nmax_choiceset_size, data2$nmax_choiceset_size)
+
+  nrows_concept_merge <- nconcepts_data1 + nconcepts_data2
+  ncols_concept_merge <- ncovariates_data1 + ncovariates_data2
+
+  concept_merge <- matrix(0, nrow = nrows_concept_merge, ncol = ncols_concept_merge)
+
+  concept_merge[1:nconcepts_data1, 1:ncovariates_data1] <- data1$concept
+  concept_merge[(nconcepts_data1+1):nrows_concept_merge, (ncovariates_data1+1):ncols_concept_merge] <- data2$concept
+
+  nrows_data_merge <- nrows_data1 + nrows_data2
+  ncols_data_merge  <- max(ncols_data1, ncols_data2) #why
+
+  data_merge  <- matrix(0, nrow = nrows_data_merge, ncol = ncols_data_merge)
+
+  data_merge[1:nrows_data1, 1:ncols_data1] <- data1$data
+  data_merge[1:nrows_data1,3] <- 1
+
+  data_merge[(nrows_data1+1):nrows_data_merge, 1] <- data2$data[,1]
+  data_merge[(nrows_data1+1):nrows_data_merge, 2] <- data2$data[,2] + nconcepts_data1
+  data_merge[(nrows_data1+1):nrows_data_merge, 3] <- 2
+  data_merge[(nrows_data1+1):nrows_data_merge, 4] <- data2$data[,4]
+
+  data_merge[(nrows_data1+1):nrows_data_merge, 5:ncols_data2] <- data2$data[,5:ncols_data2] + nconcepts_data1
+
+  data_merge <- data_merge[order(data_merge[,1]),]
 
   #fdd
-  fdd <- frequencyDistribution(concept_list)
+  fdd <- frequencyDistribution_simple(data_merge[,1])
 
   #some more intermediate processing
   ndecisionmakers <- dim(fdd)[1]
 
-  lcovariates <- array(0, concept_list$ncovariates)
-
-  for (i in 1:concept_list$ncovariates) {
-    lcovariates[i] <- paste("Cov", i)
-  }
-
   n1 <- deparse(substitute(data1))
   n2 <- deparse(substitute(data2))
 
+  lcovariates <- array(0, dim(concept_merge)[2])
+
+  for (i in 1:dim(concept_merge)[2]) {
+    lcovariates[i] <- paste("Cov", i)
+  }
+
   #all the initial stuff packaged up
-  processed <- list(data_original = data_original,
+  processed <- list(data_original = data_original_merge,
                     data_name = paste0("Joined_from_", n1, "_and_", n2),
-                    data = concept_list$data,
-                    ncovariates = concept_list$ncovariates,
-                    npp = concept_list$ncovariates,
-                    nmax_choiceset_size = nmax_choiceset_size,
+                    data = data_merge,
+                    ncovariates = ncovariates_data1 + ncovariates_data2,
+                    npp = dim(concept_merge)[2],
+                    nmax_choiceset_size = nmaxchoicesetsize_merge,
                     ndecisionmakers = ndecisionmakers,
-                    concept = concept_list$concept,
+                    concept = concept_merge,
                     lcovariates = lcovariates,
                     fdd = fdd,
-                    attribute_names  =  names(data_original)[-(1:3)]
+                    attribute_names  =  names(data_original_merge)[-(1:3)]
   )
 
   return(processed)
