@@ -12,7 +12,7 @@ createConcepts(data_matrix, nmax_choiceset_size = 31)
 \item{nmax_choiceset_size}{int default 31}
 }
 \value{
-List of outputs.
+List  of outputs .
 }
 \description{
 create concepts.

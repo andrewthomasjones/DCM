@@ -3,7 +3,7 @@
 \name{frequencyDistribution}
 \alias{frequencyDistribution}
 \title{Frequency distribution
-this probably shouldnt be exported to be honest}
+this probably shouldnt be exported to be honest this whole file needs refactoring}
 \usage{
 frequencyDistribution(cs)
 }
@@ -15,5 +15,5 @@ fdd
 }
 \description{
 Frequency distribution
-this probably shouldnt be exported to be honest
+this probably shouldnt be exported to be honest this whole file needs refactoring
 }

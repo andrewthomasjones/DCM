@@ -55,7 +55,7 @@ join_choicedatasets  <-  function(data1,  data2) {
 
   lcovariates <- array(0, dim(concept_merge)[2])
 
-  for (i in seq_len(dim(concept_merge)[2]) {
+  for (i in seq_len(dim(concept_merge)[2])) {
     lcovariates[i] <- paste("Cov", i)
   }
 

@@ -5,10 +5,10 @@
 \title{Frequency distribution
 this probably shouldnt be exported to be honest}
 \usage{
-frequencyDistribution_simple(coldd)
+frequencyDistribution_simple(data_column)
 }
 \arguments{
-\item{cs}{data}
+\item{data_column}{data, just a single column}
 }
 \value{
 fdd
