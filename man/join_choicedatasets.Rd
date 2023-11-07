@@ -12,7 +12,7 @@ join_choicedatasets(data1, data2)
 \item{data2}{processed data list}
 }
 \value{
-joins two processed objects by cols. need same IDs. cols are NA for the other half of data set
+joins two processed objects by cols
 }
 \description{
 join

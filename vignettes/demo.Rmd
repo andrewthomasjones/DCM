@@ -99,18 +99,12 @@ vif_check(processedBW_rem)
 We can also join datasets if necessary.
 
 ```{r join}
-
-#simple row join, i know this example doesnt make sense
-processedBW_1 <- setUp(BWpriorities[BWpriorities$ID <= 1176,])
-processedBW_2 <- setUp(BWpriorities[BWpriorities$ID > 1176,])
-processedBW_all <- row_join_choicedatasets(processedBW_1,processedBW_2)
-
-#processedBW <- setUp(BWpriorities)
-# for( i in 1:length(processedBW)){
-#   print(paste(i, identical(processedBW[[i]], processedBW_all[[i]])))
-# }
-
-processedBWDCE <- join_choicedatasets(processedBW, processedDCE)
+library(DCM)
+processedBW<-setUp(BWpriorities)
+processedDCE<-setUp(DCEpriorities)
+processedBWDCE2 <- join_choicedatasets(processedBW, processedDCE)
+m1BWDCE<-model_generator(processedBWDCE2, "fixed")
+test <- runModel(m1BWDCE)
 
 ```
 
@@ -123,11 +117,12 @@ Fixed, random, one-factor
 
 ```{r basic}
 
-m1BWDCE<-model_generator(processedBWDCE, "fixed")
+m1BWDCE<-model_generator(processedBWDCE2, "fixed")
+test <- runModel(m1BWDCE)
 
-m2BWDCE<-model_generator(processedBWDCE, "random")
-
-m3BWDCE<-model_generator(processedBWDCE, "one-factor")
+# m2BWDCE<-model_generator(processedBWDCE, "random")
+# 
+# m3BWDCE<-model_generator(processedBWDCE, "one-factor")
 
 ```
 
