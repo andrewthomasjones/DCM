@@ -1,5 +1,5 @@
 #' Frequency distribution
-#' this probably shouldnt be exported to be honest
+#' this probably shouldnt be exported to be honest this whole file needs refactoring
 #' @param cs data
 #' @returns fdd
 #' @export
@@ -16,15 +16,14 @@ frequencyDistribution <- function(cs) {
 
 #' Frequency distribution
 #' this probably shouldnt be exported to be honest
-#' @param cs data
+#' @param data_column data, just a single column
 #' @returns fdd
 #' @export
-frequencyDistribution_simple <- function(coldd) {
+frequencyDistribution_simple <- function(data_column) {
 
-  cold <- matrix(coldd, length(coldd), 1)
+  cold <- matrix(data_column, length(data_column), 1)
 
   fdd <- frequencyDistributionCpp(cold)
 
   return(fdd)
 }
-

@@ -16,7 +16,7 @@ join_choicedatasets  <-  function(data1,  data2) {
   ncols_data2 <- dim(data2$data)[2]
 
 
-  data_original_merge <- data.frame(data1$data_original, data2$data_original[,4:ncol(data2$data_original)])
+  data_original_merge <- data.frame(data1$data_original, data2$data_original[, 4:ncol(data2$data_original)])
 
   nmaxchoicesetsize_merge <- max(data1$nmax_choiceset_size, data2$nmax_choiceset_size)
 
@@ -26,26 +26,26 @@ join_choicedatasets  <-  function(data1,  data2) {
   concept_merge <- matrix(0, nrow = nrows_concept_merge, ncol = ncols_concept_merge)
 
   concept_merge[1:nconcepts_data1, 1:ncovariates_data1] <- data1$concept
-  concept_merge[(nconcepts_data1+1):nrows_concept_merge, (ncovariates_data1+1):ncols_concept_merge] <- data2$concept
+  concept_merge[(nconcepts_data1 + 1):nrows_concept_merge, (ncovariates_data1 + 1):ncols_concept_merge] <- data2$concept
 
   nrows_data_merge <- nrows_data1 + nrows_data2
-  ncols_data_merge  <- max(ncols_data1, ncols_data2) 
+  ncols_data_merge <- max(ncols_data1, ncols_data2)
 
   data_merge  <- matrix(0, nrow = nrows_data_merge, ncol = ncols_data_merge)
   data_merge[1:nrows_data1, 1:ncols_data1] <- data1$data
-  data_merge[1:nrows_data1,3] <- 1
+  data_merge[1:nrows_data1, 3] <- 1
 
-  data_merge[(nrows_data1+1):nrows_data_merge, 1] <- data2$data[,1]
-  data_merge[(nrows_data1+1):nrows_data_merge, 2] <- data2$data[,2] + nconcepts_data1
-  data_merge[(nrows_data1+1):nrows_data_merge, 3] <- 2
-  data_merge[(nrows_data1+1):nrows_data_merge, 4] <- data2$data[,4]
+  data_merge[(nrows_data1 + 1):nrows_data_merge, 1] <- data2$data[, 1]
+  data_merge[(nrows_data1 + 1):nrows_data_merge, 2] <- data2$data[, 2] + nconcepts_data1
+  data_merge[(nrows_data1 + 1):nrows_data_merge, 3] <- 2
+  data_merge[(nrows_data1 + 1):nrows_data_merge, 4] <- data2$data[, 4]
 
-  data_merge[(nrows_data1+1):nrows_data_merge, 5:ncols_data2] <- data2$data[,5:ncols_data2] + nconcepts_data1
+  data_merge[(nrows_data1 + 1):nrows_data_merge, 5:ncols_data2] <- data2$data[, 5:ncols_data2] + nconcepts_data1
 
-  data_merge <- data_merge[order(data_merge[,1]),]
+  data_merge <- data_merge[order(data_merge[, 1]), ]
 
   #fdd
-  fdd <- frequencyDistribution_simple(data_merge[,1])
+  fdd <- frequencyDistribution_simple(data_merge[, 1])
 
   #some more intermediate processing
   ndecisionmakers <- dim(fdd)[1]
@@ -55,7 +55,7 @@ join_choicedatasets  <-  function(data1,  data2) {
 
   lcovariates <- array(0, dim(concept_merge)[2])
 
-  for (i in 1:dim(concept_merge)[2]) {
+  for (i in seq_len(dim(concept_merge)[2]) {
     lcovariates[i] <- paste("Cov", i)
   }
 
