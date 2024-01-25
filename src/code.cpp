@@ -453,13 +453,13 @@ double llCalc3a(const arma::vec& working_values,
   arma::mat phiparameters(arma::size(phimatrix), arma::fill::zeros);
 
   int ndraws = draws_matrix.n_rows;
-  int m=-1;
+  int m = 0;
 
   for(int i=0; i<npp; i++){
 
-    if(epsilonmatrix(i,0)==1){
+    if(epsilonmatrix(i,0) == 1){
+      muepsilonparameters(i) = working_values[m];
       m++;
-      muepsilonparameters(i) = working_values(m);
     }
 
     if(epsilonmatrix(i,0) == -1){
@@ -470,12 +470,12 @@ double llCalc3a(const arma::vec& working_values,
 
   for(int i=0; i<nhop; i++){
 
-    if(deltamatrix(i,0)==1){
-      m++;
+    if(deltamatrix(i,0) == 1){
       mudeltaparameters(i) = working_values[m];
+      m++;
     }
 
-    if(deltamatrix(i,0)==-1){
+    if(deltamatrix(i,0) == -1){
       deltaepsilonparameters(i) = 1;
     }
   }
@@ -483,23 +483,23 @@ double llCalc3a(const arma::vec& working_values,
   for(int i=0; i<npp; i++){
 
     if(epsilonmatrix(i,1)==1){
-      m++;
       sigmaepsilonparameters(i) = abs(working_values[m]);
+      m++;
     }
 
-    if(epsilonmatrix(i,1)==-1){
+    if(epsilonmatrix(i,1) == -1){
       sigmaepsilonparameters(i) = 1;
     }
   }
 
   for(int i=0; i<nhop; i++){
 
-    if(deltamatrix(i, 1)==1){
-      m++;
+    if(deltamatrix(i, 1) == 1){
       sigmadeltaparameters(i) = abs(working_values[m]);
+      m++;
     }
 
-    if(deltamatrix(i,1)==-1){
+    if(deltamatrix(i, 1) == -1){
       sigmadeltaparameters(i) = 1;
     }
   }
@@ -507,11 +507,11 @@ double llCalc3a(const arma::vec& working_values,
   for(int j=0; j<nhop; j++){
     for(int i=0; i<npp; i++){
 
-      if(gammamatrix(i,j)==1){
-        m++;
+      if(gammamatrix(i,j) == 1){
         gammaparameters(i,j) = working_values[m];
+        m++;
       }
-      if(gammamatrix(i,j)==-1){
+      if(gammamatrix(i,j) == -1){
         gammaparameters(i,j) = 1;
       }
     }
@@ -521,23 +521,24 @@ double llCalc3a(const arma::vec& working_values,
     for(int i=0; i<nhop; i++){
 
       if(betamatrix(i,j)==1){
-        m++;
         betaparameters(i,j) = working_values[m];
+                m++;
       }
       if(betamatrix(i,j)==-1){
         betaparameters(i,j) = 1;
       }
     }
   }
+
   phiparameters.diag().ones();
 
-  for(int i=0; i<(npp+nhop-1); i++){
-    for(int j=i+1; j<(npp+nhop); j++){
-      if(phimatrix(i,j)==1){
-        if(phimatrix(j,i)==1){
+  for(int i=0; i < (npp+nhop-2); i++){
+    for(int j=i+1; j < (npp+nhop-1); j++){
+      if(phimatrix(i, j) == 1){
+        if(phimatrix(j, i) == 1){
+          phiparameters(i, j) = working_values[m];
+          phiparameters(j, i) = working_values[m];
           m++;
-          phiparameters(i,j) = working_values[m];
-          phiparameters(j,i) = working_values[m];
         }
       }
     }
