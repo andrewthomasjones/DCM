@@ -129,7 +129,6 @@ runModel  <-  function(model,  model_name = "name", verbose = 0) {
 #' @param ndraws int number of draws
 #' @param nrc int number of columns
 #' @returns draws matrix
-#' @export
 drawsMatrix <- function(ndraws, nrc) {
 
   draws_range <- (1:(ndraws)) / (ndraws + 1)
