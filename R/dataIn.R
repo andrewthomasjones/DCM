@@ -146,7 +146,7 @@ remove_variables <- function(processed_data, variable, verbose = 0) {
 #' @param verbose 1 means print more, 0 no print, default 1
 #' @returns a new processed data object with everything updated
 #' @export
-select_variables <- function(processed_data, variable, verbose = 1) {
+select_variables <- function(processed_data, variable, verbose = 0) {
   data <- processed_data$data_original
 
   if (!inherits(variable, "character") && !inherits(variable, "numeric")) {
@@ -192,4 +192,20 @@ select_variables <- function(processed_data, variable, verbose = 1) {
 
   #we actually have to regenerate each time because concepts matrix will change.
   return(setUp(data))
+}
+
+
+#' Frequency distribution
+#' this probably shouldnt be exported to be honest this whole file needs refactoring
+#' @param cs data
+#' @returns fdd
+#' @export
+frequencyDistribution <- function(cs) {
+
+  coldd <- cs$data[, 1]
+  cold <- matrix(coldd, length(coldd), 1)
+
+  fdd <- frequencyDistributionCpp(cold)
+
+  return(fdd)
 }

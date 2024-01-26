@@ -4,7 +4,7 @@
 \alias{select_variables}
 \title{select variables This documentation is incomplete.}
 \usage{
-select_variables(processed_data, variable, verbose = 1)
+select_variables(processed_data, variable, verbose = 0)
 }
 \arguments{
 \item{processed_data}{processes data list}

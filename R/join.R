@@ -44,8 +44,8 @@ join_choicedatasets  <-  function(data1,  data2) {
 
   data_merge <- data_merge[order(data_merge[, 1]), ]
 
-  #fdd
-  fdd <- frequencyDistribution_simple(data_merge[, 1])
+  #fdd - direct use of cpp
+  fdd <- frequencyDistributionCpp(matrix(data_merge[, 1], length(data_merge[, 1]), 1))
 
   #some more intermediate processing
   ndecisionmakers <- dim(fdd)[1]

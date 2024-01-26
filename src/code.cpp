@@ -532,8 +532,8 @@ double llCalc3a(const arma::vec& working_values,
 
   phiparameters.diag().ones();
 
-  for(int i=0; i < (npp+nhop-2); i++){
-    for(int j=i+1; j < (npp+nhop-1); j++){
+  for(int i=0; i < (npp+nhop-1); i++){
+    for(int j=i+1; j < (npp+nhop); j++){
       if(phimatrix(i, j) == 1){
         if(phimatrix(j, i) == 1){
           phiparameters(i, j) = working_values[m];
