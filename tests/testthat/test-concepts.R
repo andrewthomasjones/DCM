@@ -10,5 +10,3 @@ test_that("nmax_choiceset_size is correct", {
   test_data_matrix <- readRDS(test_path("fixtures", "test_data_matrix.rds"))
   expect_equal(max(unlist(rle(test_data_matrix [, 2])[1])), 12)
 })
-
-
