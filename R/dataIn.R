@@ -146,7 +146,7 @@ remove_variables <- function(processed_data, variable, verbose = 0) {
 #' @param verbose 1 means print more, 0 no print, default 1
 #' @returns a new processed data object with everything updated
 #' @export
-select_variables <- function(processed_data, variable, verbose = 1) {
+select_variables <- function(processed_data, variable, verbose = 0) {
   data <- processed_data$data_original
 
   if (!inherits(variable, "character") && !inherits(variable, "numeric")) {
