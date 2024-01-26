@@ -117,7 +117,7 @@ Fixed, random, one-factor
 
 ```{r basic}
 
-m1BWDCE<-model_generator(processedBWDCE2, "fixed")
+m1BWDCE<-model_generator(processedBW, "fixed")
 test <- runModel(m1BWDCE)
 
 # m2BWDCE<-model_generator(processedBWDCE, "random")

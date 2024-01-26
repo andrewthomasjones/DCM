@@ -4,7 +4,7 @@
 \alias{runModel}
 \title{Runs Model}
 \usage{
-runModel(model, model_name = "name", verbose = 0, ndraws = 1000)
+runModel(model, model_name = "name", verbose = 0)
 }
 \arguments{
 \item{model}{model list}
@@ -12,8 +12,6 @@ runModel(model, model_name = "name", verbose = 0, ndraws = 1000)
 \item{model_name}{string default "name"}
 
 \item{verbose}{default 0}
-
-\item{ndraws}{default 1000}
 }
 \value{
 fitted model.

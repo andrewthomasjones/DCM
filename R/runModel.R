@@ -2,13 +2,11 @@
 #' @param model model list
 #' @param model_name string default "name"
 #' @param verbose default 0
-#' @param ndraws default 1000
 #' @returns fitted model.
 #' @export
-runModel  <-  function(model,  model_name = "name", verbose = 0, ndraws = 1000) {
+runModel  <-  function(model,  model_name = "name", verbose = 0) {
 
   parcount <- parameterCount(model)
-  shuffle <- FALSE
   processed <- model$data
 
   model_name <- model$description
@@ -27,7 +25,7 @@ runModel  <-  function(model,  model_name = "name", verbose = 0, ndraws = 1000) 
   }
 
   nrc <- dim(model$epsilon)[1] + dim(model$delta)[1]
-  draws_matrix <- drawsMatrix(ndraws,  nrc,  shuffle)
+  draws_matrix <- drawsMatrix(1000,  nrc)
 
   loglik1 <- suppressWarnings(llMax2(model,  processed,  draws_matrix))
 
@@ -119,11 +117,24 @@ runModel  <-  function(model,  model_name = "name", verbose = 0, ndraws = 1000) 
                          model_name = model_name,
                          LL = loglik1$minimum,
                          loglikf = loglik1,
-                         ndraws = ndraws,
                          results = results,
                          AIC = AIC,
                          BIC = BIC,
                          par_count = parcount)
 
   return(fitted_model)
+}
+
+#' Draws matrix
+#' @param ndraws int number of draws
+#' @param nrc int number of columns
+#' @returns draws matrix
+#' @export
+drawsMatrix <- function(ndraws, nrc) {
+
+  draws_range <- (1:(ndraws)) / (ndraws + 1)
+  q <- qnorm(draws_range)
+  draws1 <- matrix(rep(q, nrc), ndraws, nrc)
+  return(draws1)
+
 }
