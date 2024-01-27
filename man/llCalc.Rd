@@ -5,7 +5,7 @@
 \title{does LL calc
 not used - C++ version is}
 \usage{
-llCalc(working_values, model, processed, draws_matrix)
+llCalc(working_values, model, processed, gq_int_matrix)
 }
 \arguments{
 \item{working_values}{vector}
@@ -14,7 +14,7 @@ llCalc(working_values, model, processed, draws_matrix)
 
 \item{processed}{data list}
 
-\item{draws_matrix}{mat}
+\item{gq_int_matrix}{mat}
 }
 \value{
 loglik

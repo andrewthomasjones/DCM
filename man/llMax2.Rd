@@ -5,14 +5,14 @@
 \title{llMax2
 does the maximisation}
 \usage{
-llMax2(model, processed, draws_matrix)
+llMax2(model, processed, gq_int_matrix)
 }
 \arguments{
 \item{model}{list}
 
 \item{processed}{list}
 
-\item{draws_matrix}{matrix}
+\item{gq_int_matrix}{matrix}
 }
 \value{
 opt_results

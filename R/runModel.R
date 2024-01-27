@@ -25,9 +25,9 @@ runModel  <-  function(model,  model_name = "name", verbose = 0) {
   }
 
   nrc <- dim(model$epsilon)[1] + dim(model$delta)[1]
-  draws_matrix <- drawsMatrix(1000,  nrc)
+  gq_int_matrix <- gqIntMatrix(1000,  nrc)
 
-  loglik1 <- suppressWarnings(llMax2(model,  processed,  draws_matrix))
+  loglik1 <- suppressWarnings(llMax2(model,  processed,  gq_int_matrix))
 
   standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
 
@@ -125,15 +125,15 @@ runModel  <-  function(model,  model_name = "name", verbose = 0) {
   return(fitted_model)
 }
 
-#' Draws matrix
-#' @param ndraws int number of draws
+#' Integral matrix
+#' @param integral_size int number steps for integral using Gaussian quadrature
 #' @param nrc int number of columns
-#' @returns draws matrix
-drawsMatrix <- function(ndraws, nrc) {
+#' @returns integral matrix
+gqIntMatrix <- function(integral_size, nrc) {
 
-  draws_range <- (1:(ndraws)) / (ndraws + 1)
-  q <- qnorm(draws_range)
-  draws1 <- matrix(rep(q, nrc), ndraws, nrc)
-  return(draws1)
+  int_range <- (1:(integral_size)) / (integral_size + 1)
+  q <- qnorm(int_range)
+  int_mat <- matrix(rep(q, nrc), integral_size, nrc)
+  return(int_mat)
 
 }

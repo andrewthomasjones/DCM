@@ -5,14 +5,14 @@
 \title{calculates optimum model fit
 not used - C++ version is}
 \usage{
-llMax(model, processed, draws_matrix)
+llMax(model, processed, gq_int_matrix)
 }
 \arguments{
 \item{model}{model list}
 
 \item{processed}{data list}
 
-\item{draws_matrix}{mat}
+\item{gq_int_matrix}{mat}
 }
 \value{
 max loglik

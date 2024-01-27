@@ -6,7 +6,7 @@
 does the calc
 actually llCalc3a does, this is same but other cant export}
 \usage{
-llCalc3(working_values, model, processed, draws_matrix)
+llCalc3(working_values, model, processed, gq_int_matrix)
 }
 \arguments{
 \item{working_values}{vector}
@@ -15,7 +15,7 @@ llCalc3(working_values, model, processed, draws_matrix)
 
 \item{processed}{List}
 
-\item{draws_matrix}{matrix}
+\item{gq_int_matrix}{matrix}
 }
 \value{
 loglike
