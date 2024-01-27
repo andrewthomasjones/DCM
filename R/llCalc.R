@@ -2,13 +2,13 @@
 #' not used - C++ version is
 #' @param model model list
 #' @param processed data list
-#' @param draws_matrix mat
+#' @param gq_int_matrix mat
 #' @returns max loglik
 #' @export
-llMax  <- function(model,  processed,  draws_matrix) {
+llMax  <- function(model,  processed,  gq_int_matrix) {
 
   loglik  <-  nlm(llCalc,  p = model$initial_values,
-                  model,  processed,  draws_matrix,
+                  model,  processed,  gq_int_matrix,
                   hessian = TRUE,  print.level = 0)
 
   return(loglik)
@@ -19,10 +19,10 @@ llMax  <- function(model,  processed,  draws_matrix) {
 #' @param working_values vector
 #' @param model model list
 #' @param processed data list
-#' @param draws_matrix mat
+#' @param gq_int_matrix mat
 #' @returns loglik
 #' @export
-llCalc <- function(working_values,  model,  processed,  draws_matrix) {
+llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
 
   concept  <-  processed$concept
   nmax_choiceset_size  <- processed$nmax_choiceset_size
@@ -38,7 +38,7 @@ llCalc <- function(working_values,  model,  processed,  draws_matrix) {
 
   npp <- model$npp
   nhop <- model$nhop
-  ndraws <- dim(draws_matrix)[1]
+  integral_size <- dim(gq_int_matrix)[1]
 
   muepsilonparameters <- array(0, npp)
   mudeltaparameters <- array(0, nhop)
@@ -137,29 +137,29 @@ llCalc <- function(working_values,  model,  processed,  draws_matrix) {
     }
   }
 
-  draws_matrix <- draws_matrix %*% (phiparameters^0.5)
-  drawsepsilon <- cbind(draws_matrix[, 1])
+  gq_int_matrix <- gq_int_matrix %*% (phiparameters^0.5)
+  int_epsilon <- cbind(gq_int_matrix[, 1])
 
   if (npp > 1) {
     for (i in 2:npp) {
-      drawsepsilon <- cbind(drawsepsilon, draws_matrix[, i])
+      int_epsilon <- cbind(int_epsilon, gq_int_matrix[, i])
     }
   }
 
-  drawsdelta <- cbind(draws_matrix[, npp + 1])
+  int_delta <- cbind(gq_int_matrix[, npp + 1])
 
   if (nhop > 1) {
     for (i in 2:nhop) {
-      drawsdelta <- cbind(drawsdelta, draws_matrix[, i + npp])
+      int_delta <- cbind(int_delta, gq_int_matrix[, i + npp])
     }
   }
 
-  for (i in 1:ndraws) {
+  for (i in 1:integral_size) {
     for (j in 1:npp) {
-      drawsepsilon[i, j] <- drawsepsilon[i, j] * sigmaepsilonparameters[j] + muepsilonparameters[j]
+      int_epsilon[i, j] <- int_epsilon[i, j] * sigmaepsilonparameters[j] + muepsilonparameters[j]
     }
     for (j in 1:nhop) {
-      drawsdelta[i, j] <- drawsdelta[i, j] * sigmadeltaparameters[j] + mudeltaparameters[j]
+      int_delta[i, j] <- int_delta[i, j] * sigmadeltaparameters[j] + mudeltaparameters[j]
     }
   }
 
@@ -170,14 +170,14 @@ llCalc <- function(working_values,  model,  processed,  draws_matrix) {
   gb <- solve(gb)
   gb  <-  gammaparameters %*% gb
 
-  gb  <-  gb %*% t(drawsdelta)
-  gb <- gb + t(drawsepsilon)
+  gb  <-  gb %*% t(int_delta)
+  gb <- gb + t(int_epsilon)
   conceptuse <- concept %*% model$code
   gb <- conceptuse %*% gb
   gb <- exp(gb)
 
-  pthisdm  <-  matrix(1, 1, ndraws)
-  pthiscs  <-  matrix(0, 1, ndraws)
+  pthisdm  <-  matrix(1, 1, integral_size)
+  pthiscs  <-  matrix(0, 1, integral_size)
 
 
   ploglike  <-  array(0,  ndecisionmakers)
@@ -196,21 +196,21 @@ llCalc <- function(working_values,  model,  processed,  draws_matrix) {
       }
     }
 
-    pthiscs  <-  matrix(gb[data[i, 2], ] / bottom, 1, ndraws)
+    pthiscs  <-  matrix(gb[data[i, 2], ] / bottom, 1, integral_size)
 
     if (data[i, 1] == iddm) {
       pthisdm  <-  pthisdm * pthiscs
     }
 
     if (data[i, 1] > iddm) {
-      ploglike[n] <- sum(pthisdm) / ndraws
+      ploglike[n] <- sum(pthisdm) / integral_size
       n  <-  n  +  1
       pthisdm  <-  pthiscs
       iddm  <-  data[i, 1]
     }
   }
 
-  ploglike[n] <- sum(pthisdm) / ndraws
+  ploglike[n] <- sum(pthisdm) / integral_size
 
   ploglike  <-  log(ploglike)
   loglike  <-  sum(ploglike)
