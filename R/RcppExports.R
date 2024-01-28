@@ -31,9 +31,10 @@ llCalc3 <- function(working_values, model, processed, gq_int_matrix) {
 #' @param model list
 #' @param processed  list
 #' @param gq_int_matrix matrix
+#' @param nlm_params list of params
 #' @returns opt_results
 #' @export
-llMax2 <- function(model, processed, gq_int_matrix) {
-    .Call('_DCM_llMax2', PACKAGE = 'DCM', model, processed, gq_int_matrix)
+llMax2 <- function(model, processed, gq_int_matrix, nlm_params) {
+    .Call('_DCM_llMax2', PACKAGE = 'DCM', model, processed, gq_int_matrix, nlm_params)
 }
 

@@ -4,7 +4,14 @@
 \alias{runModel}
 \title{Runs Model}
 \usage{
-runModel(model, model_name = "name", verbose = 0)
+runModel(
+  model,
+  model_name = "name",
+  verbose = 0,
+  gradtol = 1e-06,
+  stepmax = NULL,
+  steptol = 1e-06
+)
 }
 \arguments{
 \item{model}{model list}
