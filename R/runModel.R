@@ -6,9 +6,10 @@
 #' @param stepmax default as in nlm
 #' @param steptol default 1e-6
 #' @param ghq_steps default 1000, formerly known asn draws
+#' @param extra_hess default false for testing standard errors
 #' @returns fitted model.
 #' @export
-runModel  <-  function(model,  model_name = "name", verbose = 0, gradtol = 1e-6, stepmax = NULL, steptol = 1e-6, ghq_steps = 1000) {
+runModel  <-  function(model,  model_name = "name", verbose = 0, gradtol = 1e-6, stepmax = NULL, steptol = 1e-6, ghq_steps = 1000, extra_hess = FALSE) {
 
   parcount <- parameterCount(model)
   processed <- model$data
@@ -47,10 +48,16 @@ runModel  <-  function(model,  model_name = "name", verbose = 0, gradtol = 1e-6,
 
   standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
 
-  tictoc::tic()
-  hessian2 <- numDeriv::hessian(func = llCalc3, x = loglik1$estimate, model = model, processed = processed , gq_int_matrix = gq_int_matrix)
-  standard_errors2 <- sqrt(diag(solve(hessian2)))
-  hessian_time <- tictoc::toc()
+  if (extra_hess){
+    tictoc::tic()
+    hessian2 <- numDeriv::hessian(func = llCalc3, x = loglik1$estimate, model = model, processed = processed , gq_int_matrix = gq_int_matrix)
+    standard_errors2 <- sqrt(diag(solve(hessian2)))
+    hessian_time <- tictoc::toc()
+  }else{
+    hessian2 <- NA
+    standard_errors2 <- NA
+    hessian_time <- NA
+  }
 
   printpara  <-  matrix(0,  7,  1)
   row.names(printpara)  <-  c("epsilon_mu",

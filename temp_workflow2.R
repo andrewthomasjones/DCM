@@ -11,17 +11,15 @@ processedBWDCE2 <- join_choicedatasets(processedBW_rem, processedDCE)
 
 #these should all give same result? the first two at leats
 
-
-
 mtmm_emi_model1 <- loadEMIWorkbook(processedBWDCE2, "C:/Projects/EMI_BWprioritiesDCEpriorities_MTMM_18.xlsx")
 
 tic()
-mtmm1 <- runModel(mtmm_emi_model1)
+mtmm1 <- runModel(mtmm_emi_model1, ghq_steps = 100)
 toc()
-#487.78 sec elapsed
+#487.78 sec elapsed 1000
 #456.8 sec elapsed
 
-mtmm_emi_model2 <- loadEMIWorkbook(processedBWDCE, "C:/Projects/EMI_BWprioritiesDCEpriorities_MTMM_19_zero.xlsx")
+mtmm_emi_model2 <- loadEMIWorkbook(processedBWDCE, "C:/Projects/EMI_BWprioritiesDCEpriorities_MTMM_19_zero.xlsx", ghq_steps = 100)
 tic()
 mtmm2 <- runModel(mtmm_emi_model2)
 toc()

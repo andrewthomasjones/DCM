@@ -11,7 +11,8 @@ runModel(
   gradtol = 1e-06,
   stepmax = NULL,
   steptol = 1e-06,
-  ghq_steps = 1000
+  ghq_steps = 1000,
+  extra_hess = FALSE
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ runModel(
 \item{steptol}{default 1e-6}
 
 \item{ghq_steps}{default 1000, formerly known asn draws}
+
+\item{extra_hess}{default false for testing standard errors}
 }
 \value{
 fitted model.
