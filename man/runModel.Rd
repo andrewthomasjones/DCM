@@ -10,7 +10,8 @@ runModel(
   verbose = 0,
   gradtol = 1e-06,
   stepmax = NULL,
-  steptol = 1e-06
+  steptol = 1e-06,
+  ghq_steps = 1000
 )
 }
 \arguments{
@@ -19,6 +20,14 @@ runModel(
 \item{model_name}{string default "name"}
 
 \item{verbose}{default 0}
+
+\item{gradtol}{default 1e-6}
+
+\item{stepmax}{default as in nlm}
+
+\item{steptol}{default 1e-6}
+
+\item{ghq_steps}{default 1000, formerly known asn draws}
 }
 \value{
 fitted model.

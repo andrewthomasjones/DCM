@@ -646,10 +646,10 @@ Rcpp::List llMax2( Rcpp::List model,
                                Rcpp::_["model"] = model,
                                Rcpp::_["processed,"] = processed,
                                Rcpp::_["gq_int_matrix"] = gq_int_matrix,
-                               Rcpp::_["hessian"] = true,
                                Rcpp::_["gradtol"] = nlm_params["gradtol"],
                                Rcpp::_["stepmax"] = nlm_params["stepmax"],
-                               Rcpp::_["steptol"] = nlm_params["steptol"]);
+                               Rcpp::_["steptol"] = nlm_params["steptol"],
+                               Rcpp::_["hessian"] = true);
 
   // Return estimated values
   return opt_results ;

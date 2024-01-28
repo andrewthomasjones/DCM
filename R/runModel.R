@@ -2,9 +2,13 @@
 #' @param model model list
 #' @param model_name string default "name"
 #' @param verbose default 0
+#' @param gradtol default 1e-6
+#' @param stepmax default as in nlm
+#' @param steptol default 1e-6
+#' @param ghq_steps default 1000, formerly known asn draws
 #' @returns fitted model.
 #' @export
-runModel  <-  function(model,  model_name = "name", verbose = 0, gradtol = 1e-6, stepmax = NULL, steptol = 1e-6) {
+runModel  <-  function(model,  model_name = "name", verbose = 0, gradtol = 1e-6, stepmax = NULL, steptol = 1e-6, ghq_steps = 1000) {
 
   parcount <- parameterCount(model)
   processed <- model$data
@@ -25,13 +29,14 @@ runModel  <-  function(model,  model_name = "name", verbose = 0, gradtol = 1e-6,
   }
 
   nrc <- dim(model$epsilon)[1] + dim(model$delta)[1]
-  gq_int_matrix <- gqIntMatrix(1000,  nrc)
+  gq_int_matrix <- gqIntMatrix(ghq_steps,  nrc)
 
   if (is.null(stepmax)){
     stepmax <- max(1000 * sqrt(sum((model$initial_values)^2)), 1000)
+
   }
 
-
+  #pass through in case these need to be accessed
   nlm_params <- list(
       gradtol = gradtol,
       stepmax = stepmax,
@@ -42,10 +47,10 @@ runModel  <-  function(model,  model_name = "name", verbose = 0, gradtol = 1e-6,
 
   standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
 
+  tictoc::tic()
   hessian2 <- numDeriv::hessian(func = llCalc3, x = loglik1$estimate, model = model, processed = processed , gq_int_matrix = gq_int_matrix)
-
   standard_errors2 <- sqrt(diag(solve(hessian2)))
-
+  hessian_time <- tictoc::toc()
 
   printpara  <-  matrix(0,  7,  1)
   row.names(printpara)  <-  c("epsilon_mu",
@@ -136,9 +141,10 @@ runModel  <-  function(model,  model_name = "name", verbose = 0, gradtol = 1e-6,
                          results = results,
                          AIC = AIC,
                          BIC = BIC,
-                         par_count = parcount,
                          hessian2 = hessian2,
-                         standard_errors2 = standard_errors2
+                         standard_errors2 = standard_errors2,
+                         hessian_time = hessian_time,
+                         par_count = parcount
                          )
 
   return(fitted_model)
