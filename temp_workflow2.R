@@ -1,20 +1,26 @@
 library(DCM)
 
-processedBW<-setUp(BWpriorities)
-processedDCE<-setUp(DCEpriorities)
+processedBW <- setUp(BWpriorities)
+processedDCE <- setUp(DCEpriorities)
+
+processedBWDCE <- join_choicedatasets(processedBW, processedDCE)
+
 processedBW_rem <- remove_variables(processedBW, "Accessibility_BW")
 processedBWDCE2 <- join_choicedatasets(processedBW_rem, processedDCE)
 
-m1BWDCE<-model_generator(processedBWDCE2, "one-factor")
-
-test <- runModel(m1BWDCE)
-test$results
+#these should all give same result? the first two at leats
 
 
-processedBWDCE <- join_choicedatasets(processedBW, processedDCE)
-createEMIWorkbook(processedBWDCE,  "one-factor", "~/Desktop")
-#edit here
-m1BWDCE_EMI <- loadEMIWorkbook(processedBWDCE, "~/Desktop/EMI_one-factor.xlsx")
+mtmm_emi_model1 <- loadEMIWorkbook(processedBWDCE2, "C:/Projects/EMI_BWprioritiesDCEpriorities_MTMM_18.xlsx")
 
-test2 <- runModel(m1BWDCE_EMI)
-test2$results
+mtmm1 <- runModel(mtmm_emi_model1)
+
+
+mtmm_emi_model2 <- loadEMIWorkbook(processedBWDCE, "C:/Projects/EMI_BWprioritiesDCEpriorities_MTMM_19_zero.xlsx")
+
+mtmm2 <- runModel(mtmm_emi_model2)
+
+
+mtmm_emi_model3 <- loadEMIWorkbook(processedBWDCE, "C:/Projects/EMI_BWprioritiesDCEpriorities_MTMM_19_blank.xlsx")
+
+mtmm3 <- runModel(mtmm_emi_model3)
