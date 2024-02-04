@@ -623,12 +623,14 @@ double llCalc3a(const arma::vec& working_values,
 //' @param model list
 //' @param processed  list
 //' @param gq_int_matrix matrix
+//' @param nlm_params list of params
 //' @returns opt_results
 //' @export
 // [[Rcpp::export]]
 Rcpp::List llMax2( Rcpp::List model,
                    Rcpp::List processed,
-                   const arma::mat& gq_int_matrix){
+                   const arma::mat& gq_int_matrix,
+                   Rcpp::List nlm_params){
 
 
   arma::vec working_values =  as<arma::vec>(model["initial_values"]);
@@ -644,8 +646,10 @@ Rcpp::List llMax2( Rcpp::List model,
                                Rcpp::_["model"] = model,
                                Rcpp::_["processed,"] = processed,
                                Rcpp::_["gq_int_matrix"] = gq_int_matrix,
-                               Rcpp::_["hessian"] = true,
-                               Rcpp::_["print.level"] = 0);
+                               Rcpp::_["gradtol"] = nlm_params["gradtol"],
+                               Rcpp::_["stepmax"] = nlm_params["stepmax"],
+                               Rcpp::_["steptol"] = nlm_params["steptol"],
+                               Rcpp::_["hessian"] = true);
 
   // Return estimated values
   return opt_results ;

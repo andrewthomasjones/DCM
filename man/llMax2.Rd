@@ -5,7 +5,7 @@
 \title{llMax2
 does the maximisation}
 \usage{
-llMax2(model, processed, gq_int_matrix)
+llMax2(model, processed, gq_int_matrix, nlm_params)
 }
 \arguments{
 \item{model}{list}
@@ -13,6 +13,8 @@ llMax2(model, processed, gq_int_matrix)
 \item{processed}{list}
 
 \item{gq_int_matrix}{matrix}
+
+\item{nlm_params}{list of params}
 }
 \value{
 opt_results

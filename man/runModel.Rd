@@ -4,7 +4,16 @@
 \alias{runModel}
 \title{Runs Model}
 \usage{
-runModel(model, model_name = "name", verbose = 0)
+runModel(
+  model,
+  model_name = "name",
+  verbose = 0,
+  gradtol = 1e-06,
+  stepmax = NULL,
+  steptol = 1e-06,
+  ghq_steps = 1000,
+  extra_hess = FALSE
+)
 }
 \arguments{
 \item{model}{model list}
@@ -12,6 +21,16 @@ runModel(model, model_name = "name", verbose = 0)
 \item{model_name}{string default "name"}
 
 \item{verbose}{default 0}
+
+\item{gradtol}{default 1e-6}
+
+\item{stepmax}{default as in nlm}
+
+\item{steptol}{default 1e-6}
+
+\item{ghq_steps}{default 1000, formerly known asn draws}
+
+\item{extra_hess}{default false for testing standard errors}
 }
 \value{
 fitted model.
