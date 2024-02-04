@@ -35,7 +35,6 @@ createEMIWorkbook(processedBWDCE2,  "mtmm", "~/Desktop/new2")
 #old data (as close as possible), old emi
 m1BWDCE_EMI_old <- loadEMIWorkbook(processedBWDCE_old, "~/Desktop/old/EMI_BWprioritiesDCEpriorities_MTMM-2.xlsx")
 test_old <- runModel(m1BWDCE_EMI_old)
-test_old$results
 
 #new data (19), old emi
 m1BWDCE_EMI_mix <- loadEMIWorkbook(processedBWDCE, "~/Desktop/old/EMI_BWprioritiesDCEpriorities_MTMM-2.xlsx")

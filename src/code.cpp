@@ -364,7 +364,7 @@ double llCalc3(const arma::vec& working_values,
 
   }
 
-  arma::mat imatrix = arma::eye(nhop);
+  arma::mat imatrix = arma::eye(nhop, nhop);
   arma::mat gb(nhop, nhop, arma::fill::zeros);
 
   gb = gammaparameters*arma::inv(imatrix-betaparameters);
