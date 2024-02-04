@@ -18,23 +18,49 @@ processedBWDCE_old$attribute_names <- processed$attributenames
 processedBWDCE_old$ncovariates <- processed$ncovariates
 processedBWDCE_old$nmax_choiceset_size <-  processed$nmaxchoicesetsize
 
-
+#these arent direct copy but as close as possible
 processedBWDCE_old$data_name <- "convert over old data from Tom"
-
-processedBWDCE_old$lcovariates <- processedBWDCE2$lcovariates
-processedBWDCE_old$npp <- processedBWDCE2$npp
+processedBWDCE_old$npp <- processed$ncovariates #19
+processedBWDCE_old$lcovariates <- paste("Cov", 1:processedBWDCE_old$npp)
 
 createEMIWorkbook(processedBWDCE2,  "mtmm", "~/Desktop/new2")
 
+
+
+#manual edits
+#new2/EMI_mtmm_init.xlsx is new2/EMI_mtmm.xlsx with init values from EMI_BWprioritiesDCEpriorities_MTMM-2.xlsx
+#new/EMI_mtmm_manual.xls is new2/EMI_mtmm.xlsx with manual zeroing (which actually means adding rows)
+
+
+#old data (as close as possible), old emi
+m1BWDCE_EMI_old <- loadEMIWorkbook(processedBWDCE_old, "~/Desktop/old/EMI_BWprioritiesDCEpriorities_MTMM-2.xlsx")
+test_old <- runModel(m1BWDCE_EMI_old)
+test_old$results
+
+#new data (19), old emi
+m1BWDCE_EMI_mix <- loadEMIWorkbook(processedBWDCE, "~/Desktop/old/EMI_BWprioritiesDCEpriorities_MTMM-2.xlsx")
+test_mix <- runModel(m1BWDCE_EMI_mix)
+
+#new data (18), new emi
 m1BWDCE_EMI_new2 <- loadEMIWorkbook(processedBWDCE2, "~/Desktop/new2/EMI_mtmm.xlsx")
 test_new <- runModel(m1BWDCE_EMI_new2)
 
-m1BWDCE_EMI_old <- loadEMIWorkbook(processedBWDCE_old, "~/Desktop/old/EMI_BWprioritiesDCEpriorities_MTMM-2.xlsx")
-test_old <- runModel(m1BWDCE_EMI_old)
+#new data (19), new emi (manually remove as in old emi)
+m1BWDCE_EMI_mix2 <- loadEMIWorkbook(processedBWDCE, "~/Desktop/new/EMI_mtmm_manual.xlsx")
+test_mix2 <- runModel(m1BWDCE_EMI_mix2)
 
-m1BWDCE_EMI_mix <- loadEMIWorkbook(processedBWDCE, "~/Desktop/old/EMI_BWprioritiesDCEpriorities_MTMM-2.xlsx")
-test_mix <- runModel(m1BWDCE_EMI_mix)
+#old data, new emi (manually remove as in old emi)
+m1BWDCE_EMI_mix3 <- loadEMIWorkbook(processedBWDCE_old, "~/Desktop/new/EMI_mtmm_manual.xlsx")
+test_mix3 <- runModel(m1BWDCE_EMI_mix3)
+
+#new data, 18 vars, new EMI but with old init values
+m1BWDCE_EMI_new_init <- loadEMIWorkbook(processedBWDCE2, "~/Desktop/new2/EMI_mtmm_init.xlsx")
+test_new_old_inits <- runModel(m1BWDCE_EMI_new_init)
 
 test_new$results
 test_old$results
 test_mix$results
+test_mix2$results
+test_mix3$results
+test_new_old_inits$results
+read.csv("/Users/uqajon14/Downloads/RESULTS_BWprioritiesDCEpriorities_mtmm1000 (1).csv")

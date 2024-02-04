@@ -220,7 +220,7 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
                                      nrow = n_methods + n_traits + nhop
     )
 
-    default_beta[(n_methods + 1):(n_methods + 1 + n_traits), (n_methods + n_traits + 1):(n_methods + n_traits + nhop)] <- 1
+    default_beta[(n_methods + 1):(n_methods + n_traits), (n_methods + n_traits + 1):(n_methods + n_traits + nhop)] <- 1
 
 
 
@@ -244,7 +244,7 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
                                      nrow = n_methods + n_traits + nhop
     )
 
-    default_beta_initial[(n_methods + 1):(n_methods + 1 + n_traits), (n_methods + n_traits + 1):(n_methods + n_traits + nhop)] <- 0.1
+    default_beta_initial[(n_methods + 1):(n_methods + n_traits), (n_methods + n_traits + 1):(n_methods + n_traits + nhop)] <- 0.1
 
     epsilon_model  <-  matrix(cbind(default_muep, default_musig),
                               ncol = 2,
