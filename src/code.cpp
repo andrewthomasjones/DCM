@@ -646,7 +646,8 @@ Rcpp::List llMax2( Rcpp::List model,
                                Rcpp::_["processed,"] = processed,
                                Rcpp::_["draws_matrix"] = draws_matrix,
                                Rcpp::_["hessian"] = true,
-                               Rcpp::_["print.level"] = 0);
+                               Rcpp::_["print.level"] = 0,
+                               Rcpp::_["iterlim"] = 10000);
 
   // Return estimated values
   return opt_results ;
