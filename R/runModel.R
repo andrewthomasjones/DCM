@@ -9,7 +9,9 @@
 #' @param extra_hess default false for testing standard errors
 #' @returns fitted model.
 #' @export
-runModel  <-  function(model,  model_name = "name", verbose = 0, gradtol = 1e-6, stepmax = NULL, steptol = 1e-6, ghq_steps = 1000, extra_hess = FALSE) {
+runModel  <-  function(model,  model_name = "name", verbose = 0,
+                       gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
+                       ghq_steps = 1000, extra_hess = FALSE) {
 
   parcount <- parameterCount(model)
   processed <- model$data
@@ -30,30 +32,36 @@ runModel  <-  function(model,  model_name = "name", verbose = 0, gradtol = 1e-6,
   }
 
   nrc <- dim(model$epsilon)[1] + dim(model$delta)[1]
-  gq_int_matrix <- gqIntMatrix(ghq_steps,  nrc)
+  gq_int_matrix <- gqIntMatrix(ghq_steps, nrc)
 
-  if (is.null(stepmax)){
+  if (is.null(stepmax)) {
     stepmax <- max(1000 * sqrt(sum((model$initial_values)^2)), 1000)
 
   }
 
   #pass through in case these need to be accessed
   nlm_params <- list(
-      gradtol = gradtol,
-      stepmax = stepmax,
-      steptol = steptol
-    )
+    gradtol = gradtol,
+    stepmax = stepmax,
+    steptol = steptol
+  )
 
   loglik1 <- suppressWarnings(llMax2(model,  processed,  gq_int_matrix, nlm_params))
 
   standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
 
-  if (extra_hess){
+  if (extra_hess) {
     tictoc::tic()
-    hessian2 <- numDeriv::hessian(func = llCalc3, x = loglik1$estimate, model = model, processed = processed , gq_int_matrix = gq_int_matrix)
+    hessian2 <- numDeriv::hessian(func = llCalc3,
+                                  x = loglik1$estimate,
+                                  model = model,
+                                  processed = processed,
+                                  gq_int_matrix = gq_int_matrix
+    )
+
     standard_errors2 <- sqrt(diag(solve(hessian2)))
     hessian_time <- tictoc::toc()
-  }else{
+  }else {
     hessian2 <- NA
     standard_errors2 <- NA
     hessian_time <- NA
@@ -152,7 +160,7 @@ runModel  <-  function(model,  model_name = "name", verbose = 0, gradtol = 1e-6,
                          standard_errors2 = standard_errors2,
                          hessian_time = hessian_time,
                          par_count = parcount
-                         )
+  )
 
   return(fitted_model)
 }
