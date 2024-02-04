@@ -209,18 +209,19 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
 
     default_gamma  <-  cbind(
       rbind(
-        cbind(matrix(cbind(rep(1, n_traits), rep(0, n_traits)), ncol=2), diag(n_traits)*1),
-        cbind(matrix(cbind(rep(0, n_traits), rep(1, n_traits)), ncol=2), diag(n_traits)*1)
+        cbind(matrix(cbind(rep(1, n_traits), rep(0, n_traits)), ncol = 2), diag(n_traits) * 1),
+        cbind(matrix(cbind(rep(0, n_traits), rep(1, n_traits)), ncol = 2), diag(n_traits) * 1)
       ),
       matrix(0, ncol = nhop, nrow = ncovariates)
     )
 
     default_beta  <-  matrix(0,
-                                     ncol = n_methods + n_traits + nhop,
-                                     nrow = n_methods + n_traits + nhop
+                             ncol = n_methods + n_traits + nhop,
+                             nrow = n_methods + n_traits + nhop
     )
 
-    default_beta[(n_methods + 1):(n_methods + n_traits), (n_methods + n_traits + 1):(n_methods + n_traits + nhop)] <- 1
+    default_beta[(n_methods + 1):(n_methods + n_traits),
+                 (n_methods + n_traits + 1):(n_methods + n_traits + nhop)] <- 1
 
 
 
@@ -230,11 +231,11 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
     default_deltasig_initial  <-  rep(NA, n_methods + n_traits + nhop)
 
     default_gamma_initial  <-  cbind(
-                                rbind(
-                                     cbind(matrix(cbind(rep(.1, n_traits), rep(NA, n_traits)), ncol=2), diag(n_traits)*.1),
-                                     cbind(matrix(cbind(rep(NA, n_traits), rep(.1, n_traits)), ncol=2), diag(n_traits)*.1)
-                                ),
-                                matrix(NA, ncol = nhop, nrow = ncovariates)
+      rbind(
+        cbind(matrix(cbind(rep(.1, n_traits), rep(NA, n_traits)), ncol = 2), diag(n_traits) * .1),
+        cbind(matrix(cbind(rep(NA, n_traits), rep(.1, n_traits)), ncol = 2), diag(n_traits) * .1)
+      ),
+      matrix(NA, ncol = nhop, nrow = ncovariates)
     )
 
     default_gamma_initial[default_gamma_initial == 0] <- NA
@@ -244,7 +245,8 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
                                      nrow = n_methods + n_traits + nhop
     )
 
-    default_beta_initial[(n_methods + 1):(n_methods + n_traits), (n_methods + n_traits + 1):(n_methods + n_traits + nhop)] <- 0.1
+    default_beta_initial[(n_methods + 1):(n_methods + n_traits),
+                         (n_methods + n_traits + 1):(n_methods + n_traits + nhop)] <- 0.1
 
     epsilon_model  <-  matrix(cbind(default_muep, default_musig),
                               ncol = 2,
@@ -253,52 +255,68 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
 
     delta_model  <-  matrix(cbind(default_deltaep, default_deltasig),
                             ncol = 2,
-                            dimnames = list(c(paste0("Method_", 1:n_methods), paste0("Trait_", 1:(n_traits)), paste0("HoP_", 1:nhop)),
+                            dimnames = list(c(paste0("Method_", 1:n_methods),
+                                              paste0("Trait_", 1:(n_traits)),
+                                              paste0("HoP_", 1:nhop)),
                                             c("mu", "sigma"))
     )
 
     gamma_model  <-   matrix(default_gamma,
-                             ncol = n_methods + n_traits+1,
+                             ncol = n_methods + n_traits + 1,
                              nrow = ncovariates,
                              dimnames = list(attribute_names,
-                                             c(paste0("Method_", 1:n_methods), paste0("Trait_", 1:(n_traits)), paste0("HoP_", 1:nhop))
+                                             c(paste0("Method_", 1:n_methods),
+                                               paste0("Trait_", 1:(n_traits)),
+                                               paste0("HoP_", 1:nhop))
                              )
     )
 
     beta_model <-  matrix(default_beta,
                           ncol = n_methods + n_traits + nhop,
-                          dimnames = list(c(paste0("Method_", 1:n_methods), paste0("Trait_", 1:(n_traits)), paste0("HoP_", 1:nhop)),
-                                          c(paste0("Method_", 1:n_methods), paste0("Trait_", 1:(n_traits)), paste0("HoP_", 1:nhop))
+                          dimnames = list(c(paste0("Method_", 1:n_methods),
+                                            paste0("Trait_", 1:(n_traits)),
+                                            paste0("HoP_", 1:nhop)),
+                                          c(paste0("Method_", 1:n_methods),
+                                            paste0("Trait_", 1:(n_traits)),
+                                            paste0("HoP_", 1:nhop))
                           )
-                          )
+    )
 
     epsilon_model_initial  <-  matrix(cbind(default_muep_initial, default_musig_initial),
                                       ncol = 2,
                                       dimnames = list(attribute_names, c("mu", "sigma"))
-                                      )
+    )
 
     delta_model_initial  <-  matrix(cbind(default_deltaep_initial, default_deltasig_initial),
                                     ncol = 2,
-                                    dimnames = list(c(paste0("Method_", 1:n_methods), paste0("Trait_", 1:(n_traits)), paste0("HoP_", 1:nhop)),
+                                    dimnames = list(c(paste0("Method_", 1:n_methods),
+                                                      paste0("Trait_", 1:(n_traits)),
+                                                      paste0("HoP_", 1:nhop)),
                                                     c("mu", "sigma"))
-                                    )
+    )
 
     gamma_model_initial  <- matrix(default_gamma_initial,
-                                   ncol = n_methods + n_traits+1,
+                                   ncol = n_methods + n_traits + 1,
                                    nrow = ncovariates,
                                    dimnames = list(attribute_names,
-                                                   c(paste0("Method_", 1:n_methods), paste0("Trait_", 1:(n_traits)), paste0("HoP_", 1:nhop))
-                                              )
+                                                   c(paste0("Method_", 1:n_methods),
+                                                     paste0("Trait_", 1:(n_traits)),
+                                                     paste0("HoP_", 1:nhop))
                                    )
+    )
 
 
 
     beta_model_initial  <-  matrix(default_beta_initial,
                                    ncol = n_methods + n_traits + nhop,
-                                   dimnames = list(c(paste0("Method_", 1:n_methods), paste0("Trait_", 1:(n_traits)), paste0("HoP_", 1:nhop)),
-                                                   c(paste0("Method_", 1:n_methods), paste0("Trait_", 1:(n_traits)), paste0("HoP_", 1:nhop))
+                                   dimnames = list(c(paste0("Method_", 1:n_methods),
+                                                     paste0("Trait_", 1:(n_traits)),
+                                                     paste0("HoP_", 1:nhop)),
+                                                   c(paste0("Method_", 1:n_methods),
+                                                     paste0("Trait_", 1:(n_traits)),
+                                                     paste0("HoP_", 1:nhop))
                                    )
-                            )
+    )
 
 
 
