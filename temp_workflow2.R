@@ -1,5 +1,5 @@
 library(DCM)
-library(tictoc)
+#library(tictoc)
 
 processedBW <- setUp(BWpriorities)
 processedDCE <- setUp(DCEpriorities)

@@ -51,7 +51,6 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
   standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
 
   if (extra_hess) {
-    tictoc::tic()
     hessian2 <- numDeriv::hessian(func = llCalc3,
                                   x = loglik1$estimate,
                                   model = model,
@@ -60,11 +59,9 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
     )
 
     standard_errors2 <- sqrt(diag(solve(hessian2)))
-    hessian_time <- tictoc::toc()
   }else {
     hessian2 <- NA
     standard_errors2 <- NA
-    hessian_time <- NA
   }
 
   printpara  <-  matrix(0,  7,  1)
@@ -158,7 +155,6 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
                          BIC = BIC,
                          hessian2 = hessian2,
                          standard_errors2 = standard_errors2,
-                         hessian_time = hessian_time,
                          par_count = parcount
   )
 

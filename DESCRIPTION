@@ -23,7 +23,8 @@ Imports:
     greekLetters,
     stats,
     utils,
-    Hmisc
+    Hmisc,
+    numDeriv
 Suggests: 
     knitr,
     rmarkdown,
