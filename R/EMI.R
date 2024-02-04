@@ -125,7 +125,7 @@ loadEMIWorkbook <- function(pre_processed_data, emi_file_name) {
 
   initial_values <- c(initial_e, initial_d, initial_g, initial_b)
 
-  description <- paste("read in from", emi_file_name)#need something here
+  description <- paste("read in from", emi_file_name) #need something here
 
   model <- list(description = description,
                 data = pre_processed_data,

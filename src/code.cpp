@@ -220,14 +220,14 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
 //' @param working_values vector
 //' @param model List
 //' @param processed List
-//' @param draws_matrix matrix
+//' @param gq_int_matrix matrix
 //' @returns loglike
 //' @export
 // [[Rcpp::export]]
 double llCalc3(const arma::vec& working_values,
                   Rcpp::List model,
                   Rcpp::List processed,
-                  const arma::mat& draws_matrix){
+                  const arma::mat& gq_int_matrix){
 
 
   arma::mat concept =  as<arma::mat>(processed["concept"]);
@@ -256,8 +256,9 @@ double llCalc3(const arma::vec& working_values,
   arma::mat betaparameters(arma::size(betamatrix), arma::fill::zeros);
   arma::mat phiparameters(arma::size(phimatrix), arma::fill::zeros);
 
-  int ndraws = draws_matrix.n_rows;
   int m = 0;
+  int integral_size = gq_int_matrix.n_rows;
+
 
   for(int i=0; i<npp; i++){
 
@@ -348,18 +349,18 @@ double llCalc3(const arma::vec& working_values,
     }
   }
 
-  arma::mat draws_matrix2 = draws_matrix * pow( phiparameters, 0.5);
-  arma::mat draws_epsilon = draws_matrix2.cols(0, npp-1);
-  arma::mat draws_delta = draws_matrix2.cols(npp, npp+nhop-1);
+  arma::mat gq_int_matrix2 = gq_int_matrix * pow( phiparameters, 0.5);
+  arma::mat int_epsilon = gq_int_matrix2.cols(0, npp-1);
+  arma::mat int_delta = gq_int_matrix2.cols(npp, npp+nhop-1);
 
-  for(int i=0; i<ndraws; i++){
+  for(int i=0; i<integral_size; i++){
 
     for(int j=0; j<npp; j++){
-      draws_epsilon(i,j) = draws_epsilon(i,j)*sigmaepsilonparameters[j]+muepsilonparameters[j];
+      int_epsilon(i,j) = int_epsilon(i,j)*sigmaepsilonparameters[j]+muepsilonparameters[j];
     }
 
     for(int j=0; j<nhop; j++){
-      draws_delta(i,j) = draws_delta(i,j)*sigmadeltaparameters[j]+mudeltaparameters[j];
+      int_delta(i,j) = int_delta(i,j)*sigmadeltaparameters[j]+mudeltaparameters[j];
     }
 
   }
@@ -368,14 +369,14 @@ double llCalc3(const arma::vec& working_values,
   arma::mat gb(nhop, nhop, arma::fill::zeros);
 
   gb = gammaparameters*arma::inv(imatrix-betaparameters);
-  gb = gb*draws_delta.t() + draws_epsilon.t();
+  gb = gb*int_delta.t() + int_epsilon.t();
 
   arma::mat concept_use = concept * code;
   gb = concept_use*gb;
   gb = arma::exp(gb);
 
-  arma::vec pthisdm(ndraws, arma::fill::ones);
-  arma::vec pthiscs(ndraws, arma::fill::zeros);
+  arma::vec pthisdm(integral_size, arma::fill::ones);
+  arma::vec pthiscs(integral_size, arma::fill::zeros);
   arma::vec ploglike(ndecisionmakers, arma::fill::zeros);
   arma::vec bottom(gb.n_cols, arma::fill::zeros);
 
@@ -403,7 +404,7 @@ double llCalc3(const arma::vec& working_values,
 
 
     if(data(i, 0)>iddm){
-      ploglike(n) = arma::accu(pthisdm)/ndraws;
+      ploglike(n) = arma::accu(pthisdm)/integral_size;
       n++;
       pthisdm  =  pthiscs;
       iddm  =  data(i, 0);
@@ -412,7 +413,7 @@ double llCalc3(const arma::vec& working_values,
 
   }
 
-  ploglike(n) = arma::accu(pthisdm)/ndraws;
+  ploglike(n) = arma::accu(pthisdm)/integral_size;
 
 
   double loglike  =  -1.0 * arma::accu(arma::log(ploglike));
@@ -425,7 +426,7 @@ double llCalc3(const arma::vec& working_values,
 double llCalc3a(const arma::vec& working_values,
                Rcpp::List model,
                Rcpp::List processed,
-               const arma::mat& draws_matrix){
+               const arma::mat& gq_int_matrix){
 
   arma::mat concept =  as<arma::mat>(processed["concept"]);
   arma::mat data =  as<arma::mat>(processed["data"]);
@@ -453,7 +454,7 @@ double llCalc3a(const arma::vec& working_values,
   arma::mat betaparameters(arma::size(betamatrix), arma::fill::zeros);
   arma::mat phiparameters(arma::size(phimatrix), arma::fill::zeros);
 
-  int ndraws = draws_matrix.n_rows;
+  int integral_size = gq_int_matrix.n_rows;
   int m = 0;
 
   for(int i=0; i<npp; i++){
@@ -545,18 +546,18 @@ double llCalc3a(const arma::vec& working_values,
     }
   }
 
-  arma::mat draws_matrix2 = draws_matrix * pow( phiparameters, 0.5);
-  arma::mat draws_epsilon = draws_matrix2.cols(0, npp-1);
-  arma::mat draws_delta = draws_matrix2.cols(npp, npp+nhop-1);
+  arma::mat gq_int_matrix2 = gq_int_matrix * pow( phiparameters, 0.5);
+  arma::mat int_epsilon = gq_int_matrix2.cols(0, npp-1);
+  arma::mat int_delta = gq_int_matrix2.cols(npp, npp+nhop-1);
 
-  for(int i=0; i<ndraws; i++){
+  for(int i=0; i<integral_size; i++){
 
     for(int j=0; j<npp; j++){
-      draws_epsilon(i,j) = draws_epsilon(i,j)*sigmaepsilonparameters[j]+muepsilonparameters[j];
+      int_epsilon(i,j) = int_epsilon(i,j)*sigmaepsilonparameters[j]+muepsilonparameters[j];
     }
 
     for(int j=0; j<nhop; j++){
-      draws_delta(i,j) = draws_delta(i,j)*sigmadeltaparameters[j]+mudeltaparameters[j];
+      int_delta(i,j) = int_delta(i,j)*sigmadeltaparameters[j]+mudeltaparameters[j];
     }
 
   }
@@ -565,14 +566,14 @@ double llCalc3a(const arma::vec& working_values,
   arma::mat gb(nhop, nhop, arma::fill::zeros);
 
   gb = gammaparameters*arma::inv(imatrix-betaparameters);
-  gb = gb*draws_delta.t() + draws_epsilon.t();
+  gb = gb*int_delta.t() + int_epsilon.t();
 
   arma::mat concept_use = concept * code;
   gb = concept_use*gb;
   gb = arma::exp(gb);
 
-  arma::vec pthisdm(ndraws, arma::fill::ones);
-  arma::vec pthiscs(ndraws, arma::fill::zeros);
+  arma::vec pthisdm(integral_size, arma::fill::ones);
+  arma::vec pthiscs(integral_size, arma::fill::zeros);
   arma::vec ploglike(ndecisionmakers, arma::fill::zeros);
   arma::vec bottom(gb.n_cols, arma::fill::zeros);
 
@@ -600,7 +601,7 @@ double llCalc3a(const arma::vec& working_values,
 
 
     if(data(i, 0)>iddm){
-      ploglike(n) = arma::accu(pthisdm)/ndraws;
+      ploglike(n) = arma::accu(pthisdm)/integral_size;
       n++;
       pthisdm  =  pthiscs;
       iddm  =  data(i, 0);
@@ -609,7 +610,7 @@ double llCalc3a(const arma::vec& working_values,
 
   }
 
-  ploglike(n) = arma::accu(pthisdm)/ndraws;
+  ploglike(n) = arma::accu(pthisdm)/integral_size;
 
 
   double loglike  =  -1.0 * arma::accu(arma::log(ploglike));
@@ -623,13 +624,15 @@ double llCalc3a(const arma::vec& working_values,
 //' does the maximisation
 //' @param model list
 //' @param processed  list
-//' @param draws_matrix matrix
+//' @param gq_int_matrix matrix
+//' @param nlm_params list of params
 //' @returns opt_results
 //' @export
 // [[Rcpp::export]]
 Rcpp::List llMax2( Rcpp::List model,
                    Rcpp::List processed,
-                   const arma::mat& draws_matrix){
+                   const arma::mat& gq_int_matrix,
+                   Rcpp::List nlm_params){
 
 
   arma::vec working_values =  as<arma::vec>(model["initial_values"]);
@@ -643,11 +646,14 @@ Rcpp::List llMax2( Rcpp::List model,
   Rcpp::List opt_results = nlm(Rcpp::_["f"] = Rcpp::InternalFunction(&llCalc3a),
                                Rcpp::_["p"] = working_values,
                                Rcpp::_["model"] = model,
-                               Rcpp::_["processed,"] = processed,
-                               Rcpp::_["draws_matrix"] = draws_matrix,
+                               Rcpp::_["processed"] = processed,
                                Rcpp::_["hessian"] = true,
                                Rcpp::_["print.level"] = 0,
-                               Rcpp::_["iterlim"] = 10000);
+                               Rcpp::_["iterlim"] = 10000, 
+                               Rcpp::_["gq_int_matrix"] = gq_int_matrix,
+                               Rcpp::_["gradtol"] = nlm_params["gradtol"],
+                               Rcpp::_["stepmax"] = nlm_params["stepmax"],
+                               Rcpp::_["steptol"] = nlm_params["steptol"]);
 
   // Return estimated values
   return opt_results ;
