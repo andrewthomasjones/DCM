@@ -257,13 +257,13 @@ double llCalc3(const arma::vec& working_values,
   arma::mat phiparameters(arma::size(phimatrix), arma::fill::zeros);
 
   int ndraws = draws_matrix.n_rows;
-  int m=-1;
+  int m = 0;
 
   for(int i=0; i<npp; i++){
 
     if(epsilonmatrix(i,0)==1){
-      m++;
       muepsilonparameters(i) = working_values(m);
+      m++;
     }
 
     if(epsilonmatrix(i,0) == -1){
@@ -275,8 +275,8 @@ double llCalc3(const arma::vec& working_values,
   for(int i=0; i<nhop; i++){
 
     if(deltamatrix(i,0)==1){
-      m++;
       mudeltaparameters(i) = working_values[m];
+      m++;
     }
 
     if(deltamatrix(i,0)==-1){
@@ -287,8 +287,8 @@ double llCalc3(const arma::vec& working_values,
   for(int i=0; i<npp; i++){
 
     if(epsilonmatrix(i,1)==1){
-      m++;
       sigmaepsilonparameters(i) = abs(working_values[m]);
+      m++;
     }
 
     if(epsilonmatrix(i,1)==-1){
@@ -299,8 +299,8 @@ double llCalc3(const arma::vec& working_values,
   for(int i=0; i<nhop; i++){
 
     if(deltamatrix(i, 1)==1){
-      m++;
       sigmadeltaparameters(i) = abs(working_values[m]);
+      m++;
     }
 
     if(deltamatrix(i,1)==-1){
@@ -312,8 +312,8 @@ double llCalc3(const arma::vec& working_values,
     for(int i=0; i<npp; i++){
 
       if(gammamatrix(i,j)==1){
-        m++;
         gammaparameters(i,j) = working_values[m];
+        m++;
       }
       if(gammamatrix(i,j)==-1){
         gammaparameters(i,j) = 1;
@@ -325,23 +325,24 @@ double llCalc3(const arma::vec& working_values,
     for(int i=0; i<nhop; i++){
 
       if(betamatrix(i,j)==1){
-        m++;
         betaparameters(i,j) = working_values[m];
+        m++;
       }
       if(betamatrix(i,j)==-1){
         betaparameters(i,j) = 1;
       }
     }
   }
+
   phiparameters.diag().ones();
 
   for(int i=0; i<(npp+nhop-1); i++){
     for(int j=i+1; j<(npp+nhop); j++){
       if(phimatrix(i,j)==1){
         if(phimatrix(j,i)==1){
-          m++;
           phiparameters(i,j) = working_values[m];
           phiparameters(j,i) = working_values[m];
+          m++;
         }
       }
     }
@@ -363,7 +364,7 @@ double llCalc3(const arma::vec& working_values,
 
   }
 
-  arma::mat imatrix = arma::eye(nhop, nhop);
+  arma::mat imatrix = arma::eye(nhop);
   arma::mat gb(nhop, nhop, arma::fill::zeros);
 
   gb = gammaparameters*arma::inv(imatrix-betaparameters);
@@ -522,7 +523,7 @@ double llCalc3a(const arma::vec& working_values,
 
       if(betamatrix(i,j)==1){
         betaparameters(i,j) = working_values[m];
-                m++;
+        m++;
       }
       if(betamatrix(i,j)==-1){
         betaparameters(i,j) = 1;
