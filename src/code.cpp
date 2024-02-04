@@ -256,14 +256,15 @@ double llCalc3(const arma::vec& working_values,
   arma::mat betaparameters(arma::size(betamatrix), arma::fill::zeros);
   arma::mat phiparameters(arma::size(phimatrix), arma::fill::zeros);
 
+  int m = 0;
   int integral_size = gq_int_matrix.n_rows;
-  int m=-1;
+
 
   for(int i=0; i<npp; i++){
 
     if(epsilonmatrix(i,0)==1){
-      m++;
       muepsilonparameters(i) = working_values(m);
+      m++;
     }
 
     if(epsilonmatrix(i,0) == -1){
@@ -275,8 +276,8 @@ double llCalc3(const arma::vec& working_values,
   for(int i=0; i<nhop; i++){
 
     if(deltamatrix(i,0)==1){
-      m++;
       mudeltaparameters(i) = working_values[m];
+      m++;
     }
 
     if(deltamatrix(i,0)==-1){
@@ -287,8 +288,8 @@ double llCalc3(const arma::vec& working_values,
   for(int i=0; i<npp; i++){
 
     if(epsilonmatrix(i,1)==1){
-      m++;
       sigmaepsilonparameters(i) = abs(working_values[m]);
+      m++;
     }
 
     if(epsilonmatrix(i,1)==-1){
@@ -299,8 +300,8 @@ double llCalc3(const arma::vec& working_values,
   for(int i=0; i<nhop; i++){
 
     if(deltamatrix(i, 1)==1){
-      m++;
       sigmadeltaparameters(i) = abs(working_values[m]);
+      m++;
     }
 
     if(deltamatrix(i,1)==-1){
@@ -312,8 +313,8 @@ double llCalc3(const arma::vec& working_values,
     for(int i=0; i<npp; i++){
 
       if(gammamatrix(i,j)==1){
-        m++;
         gammaparameters(i,j) = working_values[m];
+        m++;
       }
       if(gammamatrix(i,j)==-1){
         gammaparameters(i,j) = 1;
@@ -325,23 +326,24 @@ double llCalc3(const arma::vec& working_values,
     for(int i=0; i<nhop; i++){
 
       if(betamatrix(i,j)==1){
-        m++;
         betaparameters(i,j) = working_values[m];
+        m++;
       }
       if(betamatrix(i,j)==-1){
         betaparameters(i,j) = 1;
       }
     }
   }
+
   phiparameters.diag().ones();
 
   for(int i=0; i<(npp+nhop-1); i++){
     for(int j=i+1; j<(npp+nhop); j++){
       if(phimatrix(i,j)==1){
         if(phimatrix(j,i)==1){
-          m++;
           phiparameters(i,j) = working_values[m];
           phiparameters(j,i) = working_values[m];
+          m++;
         }
       }
     }
@@ -522,7 +524,7 @@ double llCalc3a(const arma::vec& working_values,
 
       if(betamatrix(i,j)==1){
         betaparameters(i,j) = working_values[m];
-                m++;
+        m++;
       }
       if(betamatrix(i,j)==-1){
         betaparameters(i,j) = 1;
@@ -644,12 +646,14 @@ Rcpp::List llMax2( Rcpp::List model,
   Rcpp::List opt_results = nlm(Rcpp::_["f"] = Rcpp::InternalFunction(&llCalc3a),
                                Rcpp::_["p"] = working_values,
                                Rcpp::_["model"] = model,
-                               Rcpp::_["processed,"] = processed,
+                               Rcpp::_["processed"] = processed,
+                               Rcpp::_["hessian"] = true,
+                               Rcpp::_["print.level"] = 0,
+                               Rcpp::_["iterlim"] = 10000, 
                                Rcpp::_["gq_int_matrix"] = gq_int_matrix,
                                Rcpp::_["gradtol"] = nlm_params["gradtol"],
                                Rcpp::_["stepmax"] = nlm_params["stepmax"],
-                               Rcpp::_["steptol"] = nlm_params["steptol"],
-                               Rcpp::_["hessian"] = true);
+                               Rcpp::_["steptol"] = nlm_params["steptol"]);
 
   // Return estimated values
   return opt_results ;
