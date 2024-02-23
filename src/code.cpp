@@ -14,7 +14,7 @@ arma::mat frequencyDistributionCpp(const arma::mat& cold) {
   int i4, temp1, temp2;
 
   int s1_r = cold.n_rows;
-  int s1_c = cold.n_cols;
+  //int s1_c = cold.n_cols;
   bool not_found = false;
 
   arma::mat  fd = arma::zeros<arma::mat>(s1_r,2);
@@ -35,7 +35,7 @@ arma::mat frequencyDistributionCpp(const arma::mat& cold) {
       fd(i3,1) = 1;
     }
   }
-  double x = accu(fd);
+  //double x = accu(fd);
 
   arma::mat  fdd = arma::zeros<arma::mat>(i3+1,2);
   fdd(0,0) = fd(0,0);
@@ -67,7 +67,7 @@ arma::mat frequencyDistributionCpp(const arma::mat& cold) {
 Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_size = 31) {
 
   int nconcepts, nlines_data, ncovariates, nlines_data_matrix, match_number, match_count;
-  int i1, i2, i3, i4, i5, i6;
+  int i1, i2, i4, i5, i6;
   int iddm, idcs;
 
   int ncs4 = nmax_choiceset_size + 4;
@@ -649,7 +649,7 @@ Rcpp::List llMax2( Rcpp::List model,
                                Rcpp::_["processed"] = processed,
                                Rcpp::_["hessian"] = true,
                                Rcpp::_["print.level"] = 0,
-                               Rcpp::_["iterlim"] = 10000, 
+                               Rcpp::_["iterlim"] = 10000,
                                Rcpp::_["gq_int_matrix"] = gq_int_matrix,
                                Rcpp::_["gradtol"] = nlm_params["gradtol"],
                                Rcpp::_["stepmax"] = nlm_params["stepmax"],
@@ -660,7 +660,266 @@ Rcpp::List llMax2( Rcpp::List model,
 }
 
 
+// cant export
+double llCalc_ghq(const arma::vec& working_values,
+                Rcpp::List model,
+                Rcpp::List processed,
+                const arma::mat& gqh_matrix1,
+                const arma::mat& gqh_matrix2
+                ){
 
+  arma::mat concept =  as<arma::mat>(processed["concept"]);
+  arma::mat data =  as<arma::mat>(processed["data"]);
+
+  int ndecisionmakers = as<int>(processed["ndecisionmakers"]);
+  int nmax_choiceset_size = as<int>(processed["nmax_choiceset_size"]);
+
+  int npp = as<int>(model["npp"]);
+  int nhop = as<int>(model["nhop"]);
+
+  arma::mat epsilonmatrix =  as<arma::mat>(model["epsilon"]);
+  arma::mat gammamatrix =  as<arma::mat>(model["gamma"]);
+  arma::mat deltamatrix =  as<arma::mat>(model["delta"]);
+  arma::mat betamatrix =  as<arma::mat>(model["beta"]);
+  arma::mat phimatrix =  as<arma::mat>(model["phi"]);
+  arma::mat code =  as<arma::mat>(model["code"]);
+
+  arma::vec muepsilonparameters(npp, arma::fill::zeros);
+  arma::vec mudeltaparameters(nhop, arma::fill::zeros);
+  arma::vec sigmaepsilonparameters(npp, arma::fill::zeros);
+  arma::vec sigmadeltaparameters(nhop, arma::fill::zeros);
+  arma::vec deltaepsilonparameters(nhop, arma::fill::zeros);
+
+  arma::mat gammaparameters(arma::size(gammamatrix), arma::fill::zeros);
+  arma::mat betaparameters(arma::size(betamatrix), arma::fill::zeros);
+  arma::mat phiparameters(arma::size(phimatrix), arma::fill::zeros);
+
+  int integral_size1 = gqh_matrix1.n_rows;
+  int integral_size2 = gqh_matrix2.n_rows;
+
+  int data_size = data.n_rows;
+
+
+  int m = 0;
+
+  for(int i=0; i<npp; i++){
+
+    if(epsilonmatrix(i,0) == 1){
+      muepsilonparameters(i) = working_values[m];
+      m++;
+    }
+
+    if(epsilonmatrix(i,0) == -1){
+      muepsilonparameters(i) = 1;
+    }
+
+  }
+
+  for(int i=0; i<nhop; i++){
+
+    if(deltamatrix(i,0) == 1){
+      mudeltaparameters(i) = working_values[m];
+      m++;
+    }
+
+    if(deltamatrix(i,0) == -1){
+      deltaepsilonparameters(i) = 1;
+    }
+  }
+
+  for(int i=0; i<npp; i++){
+
+    if(epsilonmatrix(i,1)==1){
+      sigmaepsilonparameters(i) = abs(working_values[m]);
+      m++;
+    }
+
+    if(epsilonmatrix(i,1) == -1){
+      sigmaepsilonparameters(i) = 1;
+    }
+  }
+
+  for(int i=0; i<nhop; i++){
+
+    if(deltamatrix(i, 1) == 1){
+      sigmadeltaparameters(i) = abs(working_values[m]);
+      m++;
+    }
+
+    if(deltamatrix(i, 1) == -1){
+      sigmadeltaparameters(i) = 1;
+    }
+  }
+
+  for(int j=0; j<nhop; j++){
+    for(int i=0; i<npp; i++){
+
+      if(gammamatrix(i,j) == 1){
+        gammaparameters(i,j) = working_values[m];
+        m++;
+      }
+      if(gammamatrix(i,j) == -1){
+        gammaparameters(i,j) = 1;
+      }
+    }
+  }
+
+  for(int j=0; j<nhop; j++){
+    for(int i=0; i<nhop; i++){
+
+      if(betamatrix(i,j)==1){
+        betaparameters(i,j) = working_values[m];
+        m++;
+      }
+      if(betamatrix(i,j)==-1){
+        betaparameters(i,j) = 1;
+      }
+    }
+  }
+
+
+  // phiparameters.diag().ones();
+  //
+  // for(int i=0; i < (npp+nhop-1); i++){
+  //   for(int j=i+1; j < (npp+nhop); j++){
+  //     if(phimatrix(i, j) == 1){
+  //       if(phimatrix(j, i) == 1){
+  //         phiparameters(i, j) = working_values[m];
+  //         phiparameters(j, i) = working_values[m];
+  //         m++;
+  //       }
+  //     }
+  //   }
+  // }
+  //
+  // arma::mat gq_int_matrix2 = gq_int_matrix * pow(phiparameters, 0.5);
+
+  arma::mat int_delta = gqh_matrix1.cols(1, nhop);
+  arma::mat int_epsilon = gqh_matrix2.cols(1, npp);
+
+  int_epsilon *= arma::diagmat(sigmaepsilonparameters);
+  int_epsilon.each_row() += muepsilonparameters;
+
+  int_delta *= arma::diagmat(sigmadeltaparameters);
+  int_delta.each_row() += mudeltaparameters;
+
+  arma::mat imatrix = arma::eye(nhop, nhop);
+  arma::mat gb(nhop, nhop, arma::fill::zeros);
+  arma::mat ec(arma::size(int_epsilon.t()), arma::fill::zeros);
+  arma::mat concept_use = concept * code;
+
+  gb = gammaparameters*arma::inv(imatrix-betaparameters);
+  gb = gb*int_delta.t();
+  gb = concept_use*gb;
+
+  ec = int_epsilon.t();
+  ec = concept_use*ec;
+
+  arma::vec decisionmakers = unique(data.col(0));
+  arma::mat prob_temp_gb(ndecisionmakers, integral_size1, arma::fill::zeros);
+  arma::mat prob_temp_ec(ndecisionmakers, integral_size2, arma::fill::zeros);
+
+  int span_range = nmax_choiceset_size + 3;
+
+  for(int i=0; i<data_size; i++){
+
+        arma::uvec desc_idx_a  = arma::find(decisionmakers == data(i, 0));
+        int desc_idx = desc_idx_a(0); //should only be one
+
+        arma::uvec set_list_a = arma::conv_to<arma::uvec>::from(data(i, arma::span(0, span_range)));
+        arma::uvec set_list =  set_list_a.elem(find(set_list_a >0));
+
+        arma::vec pthiscs_gb = gb.row(data(i, 1)) - arma::log(arma::sum(arma::exp(gb.rows(set_list)), 0));
+        prob_temp_gb.row(desc_idx) +=  pthiscs_gb;
+
+        arma::vec pthiscs_ec = gb.row(data(i, 1)) - arma::log(arma::sum(arma::exp(ec.rows(set_list)), 0));
+        prob_temp_ec.row(desc_idx) +=  pthiscs_ec;
+
+  }
+
+  arma::vec w1 = gqh_matrix1.col(0);
+  arma::vec w2 = gqh_matrix2.col(0);
+
+  prob_temp_gb = arma::exp(prob_temp_gb);
+  arma::mat prob_temp_gb2 = prob_temp_gb * arma::diagmat(w1);
+  arma::vec nd_prob_gb = arma::sum(prob_temp_gb2, 0) / sum(w1);
+
+  prob_temp_ec = arma::exp(prob_temp_ec);
+  arma::mat prob_temp_ec2 = prob_temp_ec * arma::diagmat(w2);
+  arma::vec nd_prob_ec = arma::sum(prob_temp_ec2, 0) / sum(w2);
+
+  arma::vec nd_prob = nd_prob_gb + nd_prob_ec;
+
+  double loglike = -1.0*arma::sum(arma::log(nd_prob));
+
+  return(loglike);
+
+}
+
+
+
+//' llCalc_ghq_e
+ //' does the calc
+ //' llCalc_ghq does, this is same but other cant export
+ //' @param working_values vector
+ //' @param model List
+ //' @param processed List
+ //' @param gqh_matrix1 matrix
+ //' @param gqh_matrix2 matrix
+ //' @returns loglike
+ //' @export
+ // [[Rcpp::export]]
+ double llCalc_ghq_e(const arma::vec& working_values,
+                     Rcpp::List model,
+                     Rcpp::List processed,
+                     const arma::mat& gqh_matrix1,
+                     const arma::mat& gqh_matrix2){
+
+   return(llCalc_ghq(working_values, model,processed, gqh_matrix1, gqh_matrix2));
+
+ }
+
+//' llMax3
+ //' does the maximisation
+ //' @param model list
+ //' @param processed  list
+ //' @param ghq_matrix1 matrix
+ //' @param ghq_matrix2 matrix
+ //' @param nlm_params list of params
+ //' @returns opt_results
+ //' @export
+ // [[Rcpp::export]]
+ Rcpp::List llMax_ghq(Rcpp::List model,
+                    Rcpp::List processed,
+                    const arma::mat& ghq_matrix1,
+                    const arma::mat& ghq_matrix2,
+                    Rcpp::List nlm_params){
+
+
+   arma::vec working_values =  as<arma::vec>(model["initial_values"]);
+
+   // Extract R's optim function
+   Rcpp::Environment stats("package:stats");
+   Rcpp::Function nlm = stats["nlm"];
+
+
+   // Call the optim function from R in C++
+   Rcpp::List opt_results = nlm(Rcpp::_["f"] = Rcpp::InternalFunction(&llCalc_ghq),
+                                Rcpp::_["p"] = working_values,
+                                Rcpp::_["model"] = model,
+                                Rcpp::_["processed"] = processed,
+                                Rcpp::_["hessian"] = true,
+                                Rcpp::_["print.level"] = 0,
+                                Rcpp::_["iterlim"] = 1000,
+                                Rcpp::_["ghq_matrix1"] = ghq_matrix1,
+                                Rcpp::_["ghq_matrix2"] = ghq_matrix2,
+                                Rcpp::_["gradtol"] = nlm_params["gradtol"],
+                                Rcpp::_["stepmax"] = nlm_params["stepmax"],
+                                Rcpp::_["steptol"] = nlm_params["steptol"]);
+
+   // Return estimated values
+   return opt_results ;
+ }
 
 
 

@@ -12,7 +12,7 @@ runModel(
   stepmax = NULL,
   steptol = 1e-06,
   ghq_steps = 1000,
-  extra_hess = FALSE
+  dev_mode = "orig"
 )
 }
 \arguments{
@@ -30,7 +30,7 @@ runModel(
 
 \item{ghq_steps}{default 1000, formerly known asn draws}
 
-\item{extra_hess}{default false for testing standard errors}
+\item{dev_mode}{default "orig"}
 }
 \value{
 fitted model.

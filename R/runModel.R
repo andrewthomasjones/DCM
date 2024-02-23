@@ -6,12 +6,12 @@
 #' @param stepmax default as in nlm
 #' @param steptol default 1e-6
 #' @param ghq_steps default 1000, formerly known asn draws
-#' @param extra_hess default false for testing standard errors
+#' @param dev_mode default "orig"
 #' @returns fitted model.
 #' @export
 runModel  <-  function(model,  model_name = "name", verbose = 0,
                        gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
-                       ghq_steps = 1000, extra_hess = FALSE) {
+                       ghq_steps = 1000, dev_mode = "orig") {
 
   parcount <- parameterCount(model)
   processed <- model$data
@@ -46,23 +46,25 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
     steptol = steptol
   )
 
-  loglik1 <- suppressWarnings(llMax2(model,  processed,  gq_int_matrix, nlm_params))
+  if(dev_mode == "orig"){
+    loglik1 <- suppressWarnings(llMax2(model,  processed,  gq_int_matrix, nlm_params))
+  }else if (dev_mode == "ghq"){
+
+    delta_grid <- mvQuad::createNIGrid(dim=nhop, type="GHN", level=6, ndConstruction ="sparse")
+    ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
+
+    #epsilons are purely addiditve so we dont actually need a 'grid'
+    epsilon_grid <- mvQuad::createNIGrid(dim=1, type="GHN", level=10, ndConstruction ="sparse")
+    ghq_matrix2 <- as.matrix(cbind(epsilon_grid$weights, matrix(rep(epsilon_grid$nodes[,1], npp), ncol=npp)))
+
+    loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, ghq_matrix2, nlm_params))
+  }
 
   standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
 
-  if (extra_hess) {
-    hessian2 <- numDeriv::hessian(func = llCalc3,
-                                  x = loglik1$estimate,
-                                  model = model,
-                                  processed = processed,
-                                  gq_int_matrix = gq_int_matrix
-    )
+  hessian2 <- NA
+  standard_errors2 <- NA
 
-    standard_errors2 <- sqrt(diag(solve(hessian2)))
-  }else {
-    hessian2 <- NA
-    standard_errors2 <- NA
-  }
 
   printpara  <-  matrix(0,  7,  1)
   row.names(printpara)  <-  c("epsilon_mu",
@@ -153,8 +155,6 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
                          results = results,
                          AIC = AIC,
                          BIC = BIC,
-                         hessian2 = hessian2,
-                         standard_errors2 = standard_errors2,
                          par_count = parcount
   )
 
