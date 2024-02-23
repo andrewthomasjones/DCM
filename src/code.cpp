@@ -798,10 +798,10 @@ double llCalc_ghq(const arma::vec& working_values,
   arma::mat int_epsilon = gqh_matrix2.cols(1, npp);
 
   int_epsilon *= arma::diagmat(sigmaepsilonparameters);
-  int_epsilon.each_row() += muepsilonparameters;
+  int_epsilon.each_row() += muepsilonparameters.t();
 
   int_delta *= arma::diagmat(sigmadeltaparameters);
-  int_delta.each_row() += mudeltaparameters;
+  int_delta.each_row() += mudeltaparameters.t();
 
   arma::mat imatrix = arma::eye(nhop, nhop);
   arma::mat gb(nhop, nhop, arma::fill::zeros);
@@ -821,18 +821,33 @@ double llCalc_ghq(const arma::vec& working_values,
 
   int span_range = nmax_choiceset_size + 3;
 
+
+
   for(int i=0; i<data_size; i++){
 
         arma::uvec desc_idx_a  = arma::find(decisionmakers == data(i, 0));
         int desc_idx = desc_idx_a(0); //should only be one
 
-        arma::uvec set_list_a = arma::conv_to<arma::uvec>::from(data(i, arma::span(0, span_range)));
-        arma::uvec set_list =  set_list_a.elem(find(set_list_a >0));
+        arma::uvec set_list_a = arma::conv_to<arma::uvec>::from(data(i, arma::span(4, span_range)));
+        arma::uvec set_list =  set_list_a.elem(find(set_list_a > 0)) - 1;
 
-        arma::vec pthiscs_gb = gb.row(data(i, 1)) - arma::log(arma::sum(arma::exp(gb.rows(set_list)), 0));
+        // Rcout << "i " << data(i, 1) <<  std::endl;
+        // Rcout << "data(i, 1) " << data(i, 1) <<  std::endl;
+        // Rcout << "set_list " << set_list.t() <<  std::endl;
+        // Rcout << "gb.n_rows " << gb.n_rows <<  std::endl;
+        // Rcout << "gb.n_cols " << gb.n_cols <<  std::endl;
+        //
+        // arma::mat temp = gb.rows(set_list);
+        //
+        // Rcout << "temp.n_rows " << temp.n_rows <<  std::endl;
+        // Rcout << "temp.n_cols " << temp.n_cols <<  std::endl;
+
+        //arma::mat temp2 = arma::log(arma::sum(arma::exp(temp)));
+
+        arma::rowvec pthiscs_gb = gb.row(data(i, 1) - 1) - arma::log(arma::sum(arma::exp(gb.rows(set_list)), 0));
         prob_temp_gb.row(desc_idx) +=  pthiscs_gb;
 
-        arma::vec pthiscs_ec = gb.row(data(i, 1)) - arma::log(arma::sum(arma::exp(ec.rows(set_list)), 0));
+        arma::rowvec pthiscs_ec = ec.row(data(i, 1) - 1) - arma::log(arma::sum(arma::exp(ec.rows(set_list)), 0));
         prob_temp_ec.row(desc_idx) +=  pthiscs_ec;
 
   }
@@ -842,11 +857,11 @@ double llCalc_ghq(const arma::vec& working_values,
 
   prob_temp_gb = arma::exp(prob_temp_gb);
   arma::mat prob_temp_gb2 = prob_temp_gb * arma::diagmat(w1);
-  arma::vec nd_prob_gb = arma::sum(prob_temp_gb2, 0) / sum(w1);
+  arma::vec nd_prob_gb = arma::sum(prob_temp_gb2, 1) / sum(w1);
 
   prob_temp_ec = arma::exp(prob_temp_ec);
   arma::mat prob_temp_ec2 = prob_temp_ec * arma::diagmat(w2);
-  arma::vec nd_prob_ec = arma::sum(prob_temp_ec2, 0) / sum(w2);
+  arma::vec nd_prob_ec = arma::sum(prob_temp_ec2, 1) / sum(w2);
 
   arma::vec nd_prob = nd_prob_gb + nd_prob_ec;
 
@@ -909,7 +924,7 @@ double llCalc_ghq(const arma::vec& working_values,
                                 Rcpp::_["model"] = model,
                                 Rcpp::_["processed"] = processed,
                                 Rcpp::_["hessian"] = true,
-                                Rcpp::_["print.level"] = 0,
+                                Rcpp::_["print.level"] = 2,
                                 Rcpp::_["iterlim"] = 1000,
                                 Rcpp::_["ghq_matrix1"] = ghq_matrix1,
                                 Rcpp::_["ghq_matrix2"] = ghq_matrix2,

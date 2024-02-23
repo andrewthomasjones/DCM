@@ -50,21 +50,17 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
     loglik1 <- suppressWarnings(llMax2(model,  processed,  gq_int_matrix, nlm_params))
   }else if (dev_mode == "ghq"){
 
-    delta_grid <- mvQuad::createNIGrid(dim=nhop, type="GHN", level=6, ndConstruction ="sparse")
+    delta_grid <- suppressMessages(mvQuad::createNIGrid(dim=nhop, type="GHN", level=4, ndConstruction ="sparse"))
     ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
 
     #epsilons are purely addiditve so we dont actually need a 'grid'
-    epsilon_grid <- mvQuad::createNIGrid(dim=1, type="GHN", level=10, ndConstruction ="sparse")
+    epsilon_grid <- suppressMessages(mvQuad::createNIGrid(dim=1, type="GHN", level=10, ndConstruction ="sparse"))
     ghq_matrix2 <- as.matrix(cbind(epsilon_grid$weights, matrix(rep(epsilon_grid$nodes[,1], npp), ncol=npp)))
 
     loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, ghq_matrix2, nlm_params))
   }
 
   standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
-
-  hessian2 <- NA
-  standard_errors2 <- NA
-
 
   printpara  <-  matrix(0,  7,  1)
   row.names(printpara)  <-  c("epsilon_mu",
