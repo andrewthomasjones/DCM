@@ -5,10 +5,7 @@
 #' @useDynLib DCM
 NULL
 
-#' llCalc_ghq_e
-NULL
-
-#' llMax3
+#' llMax_ghq
 NULL
 
 frequencyDistributionCpp <- function(cold) {
@@ -44,11 +41,7 @@ llMax2 <- function(model, processed, gq_int_matrix, nlm_params) {
     .Call('_DCM_llMax2', PACKAGE = 'DCM', model, processed, gq_int_matrix, nlm_params)
 }
 
-llCalc_ghq_e <- function(working_values, model, processed, gqh_matrix1, gqh_matrix2) {
-    .Call('_DCM_llCalc_ghq_e', PACKAGE = 'DCM', working_values, model, processed, gqh_matrix1, gqh_matrix2)
-}
-
-llMax_ghq <- function(model, processed, ghq_matrix1, ghq_matrix2, nlm_params) {
-    .Call('_DCM_llMax_ghq', PACKAGE = 'DCM', model, processed, ghq_matrix1, ghq_matrix2, nlm_params)
+llMax_ghq <- function(model, processed, ghq_matrix1, nlm_params) {
+    .Call('_DCM_llMax_ghq', PACKAGE = 'DCM', model, processed, ghq_matrix1, nlm_params)
 }
 

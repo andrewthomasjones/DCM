@@ -7,11 +7,13 @@
 #' @param steptol default 1e-6
 #' @param ghq_steps default 1000, formerly known asn draws
 #' @param dev_mode default "orig"
+#' @param ghq_size 4
+#' @param shuffle default TRUE, for testing purposes
 #' @returns fitted model.
 #' @export
 runModel  <-  function(model,  model_name = "name", verbose = 0,
                        gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
-                       ghq_steps = 1000, dev_mode = "orig") {
+                       ghq_steps = 1000, dev_mode = "orig", ghq_size = 3, shuffle = TRUE) {
 
   parcount <- parameterCount(model)
   processed <- model$data
@@ -32,7 +34,7 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
   }
 
   nrc <- dim(model$epsilon)[1] + dim(model$delta)[1]
-  gq_int_matrix <- gqIntMatrix(ghq_steps, nrc)
+  gq_int_matrix <- gqIntMatrix(ghq_steps, nrc, shuffle)
 
   if (is.null(stepmax)) {
     stepmax <- max(1000 * sqrt(sum((model$initial_values)^2)), 1000)
@@ -43,21 +45,25 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
   nlm_params <- list(
     gradtol = gradtol,
     stepmax = stepmax,
-    steptol = steptol
+    steptol = steptol,
+    verbose = verbose
   )
 
   if(dev_mode == "orig"){
     loglik1 <- suppressWarnings(llMax2(model,  processed,  gq_int_matrix, nlm_params))
   }else if (dev_mode == "ghq"){
 
-    delta_grid <- suppressMessages(mvQuad::createNIGrid(dim=nhop, type="GHN", level=4, ndConstruction ="sparse"))
+    delta_grid <- suppressMessages(mvQuad::createNIGrid(dim=nhop+npp, type="GHN", level=ghq_size, ndConstruction ="sparse"))
     ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
 
     #epsilons are purely addiditve so we dont actually need a 'grid'
-    epsilon_grid <- suppressMessages(mvQuad::createNIGrid(dim=1, type="GHN", level=10, ndConstruction ="sparse"))
-    ghq_matrix2 <- as.matrix(cbind(epsilon_grid$weights, matrix(rep(epsilon_grid$nodes[,1], npp), ncol=npp)))
+    #epsilon_grid <- suppressMessages(mvQuad::createNIGrid(dim=1, type="GHN", level=6, ndConstruction ="sparse"))
+    #ghq_matrix2 <- as.matrix(cbind(epsilon_grid$weights, matrix(rep(epsilon_grid$nodes[,1], npp), ncol=npp)))
 
-    loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, ghq_matrix2, nlm_params))
+    # epsilon_grid <- suppressMessages(mvQuad::createNIGrid(dim=npp, type="GHN", level=ghq_size, ndConstruction ="sparse"))
+    # ghq_matrix2 <- as.matrix(cbind(epsilon_grid$weights, epsilon_grid$nodes))
+
+    loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, nlm_params))
   }
 
   standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
@@ -160,12 +166,17 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
 #' Integral matrix
 #' @param integral_size int number steps for integral using Gaussian quadrature
 #' @param nrc int number of columns
+#' @param shuffle default true
 #' @returns integral matrix
-gqIntMatrix <- function(integral_size, nrc) {
+gqIntMatrix <- function(integral_size, nrc, shuffle = TRUE) {
 
   int_range <- (1:(integral_size)) / (integral_size + 1)
   q <- qnorm(int_range)
   int_mat <- matrix(rep(q, nrc), integral_size, nrc)
+
+  if(shuffle){
+    int_mat <- apply(int_mat, 2, sample)
+  }
   return(int_mat)
 
 }

@@ -12,7 +12,9 @@ runModel(
   stepmax = NULL,
   steptol = 1e-06,
   ghq_steps = 1000,
-  dev_mode = "orig"
+  dev_mode = "orig",
+  ghq_size = 3,
+  shuffle = TRUE
 )
 }
 \arguments{
@@ -31,6 +33,10 @@ runModel(
 \item{ghq_steps}{default 1000, formerly known asn draws}
 
 \item{dev_mode}{default "orig"}
+
+\item{ghq_size}{4}
+
+\item{shuffle}{default TRUE, for testing purposes}
 }
 \value{
 fitted model.

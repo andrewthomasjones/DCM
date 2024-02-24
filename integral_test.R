@@ -10,11 +10,11 @@ h3 <- function(x){
   cos(x)+x^2+exp(x)
 }
 
-h<-h3
+h<-h1
 
 u <- 0
-s <- 1
-m1 <- 10^8
+s <- 3
+m1 <- 10^6
 
 mean(rep(mean(h(rnorm(m1,u,s))),1000))
 
@@ -30,13 +30,19 @@ x
 
 gh <- fastGHQuad::gaussHermiteData(16)
 
-x2 <- gh$x[which(gh$w>10^-10)]
-w2 <- gh$w[which(gh$w>10^-10)]
+nw <- createNIGrid(dim=1, type="GHN", level=6)
 
-sum(h(sqrt(2)*gh$x*s+u)*gh$w)/sum(gh$w)
-sum(h(sqrt(2)*x2*s+u)*w2)/sum(w2)
 
-length(w2)
+# x2 <- gh$x[which(gh$w>10^-10)]
+# w2 <- gh$w[which(gh$w>10^-10)]
+#
+# sum(h(sqrt(2)*gh$x*s+u)*gh$w)/sum(gh$w)
+
+w2<- nw$weights
+x2<- nw$nodes[,1]
+sum(h(x2*s+u)*w2)/sum(w2)
+mean(rep(mean(h(rnorm(m1,u,s))),1000))
+#length(w2)
 
 
 
@@ -73,46 +79,48 @@ r2 <- q[sample(m2)]*sqrt(s[2,2])+u[2]
 
 r3 <- q*sqrt(s[1,1])+u[1]
 r4 <- q*sqrt(s[2,2])+u[2]
-
-
-gh <- fastGHQuad::gaussHermiteData(16)
-
-x2 <- gh$x[which(gh$w>10^-10)]
-w2 <- gh$w[which(gh$w>10^-10)]
+#
+#
+# gh <- fastGHQuad::gaussHermiteData(16)
+#
+# x2 <- gh$x[which(gh$w>10^-10)]
+# w2 <- gh$w[which(gh$w>10^-10)]
 #length(w2)
 library(mvQuad)
 
 
-nw <- createNIGrid(dim=9, type="GHN", level=6, ndConstruction ="sparse")
-nrow(nw$weights)
+nw <- createNIGrid(dim=1, type="GHN", level=6, ndConstruction ="sparse")
 
 
-nodes <- nw$nodes[which(nw$weights > 10^-6),]
-weights <- nw$weights[which(nw$weights > 10^-6)]
+#nrow(nw$weights)
 
-length(weights)
-length(nw$weights)
+#
+# nodes <- nw$nodes[which(nw$weights > 10^-6),]
+# weights <- nw$weights[which(nw$weights > 10^-6)]
+
+# length(weights)
+# length(nw$weights)
 
 #rescale(nw, m=u, C=s)
 
 
 mean(g(rands[,1], rands[,2]))
 mean(g(r1, r2))
-
 mean(g(r3, r4))
-sum(g(sqrt(2)*x2*sqrt(s[1,1])+u[1],
-      sqrt(2)*x2*sqrt(s[2,2])+u[2])*w2)/sum(w2)
 
-rescale(nw, m=u, C=s)
+# sum(g(sqrt(2)*x2*sqrt(s[1,1])+u[1],
+#       sqrt(2)*x2*sqrt(s[2,2])+u[2])*w2)/sum(w2)
 
-nodes <- nw$nodes[which(nw$weights > 10^-10),]
-weights <- nw$weights[which(nw$weights > 10^-10)]
+#rescale(nw, m=u, C=s)
+
+nodes <- nw$nodes
+weights <- nw$weights
 
 sum(g(nodes[,1]*sqrt(s[1,1])+u[1],
-      nodes[,2]*sqrt(s[2,2])+u[2])*weights)/sum(weights)
+      nodes[,1]*sqrt(s[2,2])+u[2])*weights)/sum(weights)
 
-length(weights)
-length(nw$weights)
+# length(weights)
+# length(nw$weights)
 
 
 
