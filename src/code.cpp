@@ -1026,7 +1026,6 @@ double llCalc_ghq2(const arma::vec& working_values,
   // arma::mat prob_temp_ec(ndecisionmakers, integral_size2, arma::fill::zeros);
 
   arma::vec w1 = gqh_matrix1.col(0);
-  //arma::vec w2 = gqh_matrix2.col(0);
 
   arma::vec ll_n(decisionmakers_n, arma::fill::zeros);
 
@@ -1034,24 +1033,16 @@ double llCalc_ghq2(const arma::vec& working_values,
     arma::mat subset = data.rows(arma::find(data.col(0) == decisionmakers(n)));
     int a_n = subset.n_rows;
 
-    arma::mat prob_temp_A(a_n, integral_size1, arma::fill::zeros);
-    arma::mat prob_temp_B(a_n, integral_size1, arma::fill::zeros);
+    arma::mat prob_temp(a_n, integral_size1, arma::fill::zeros);
 
     for(int j=0; j<subset.n_rows; j++){
-
-      prob_temp_A.row(j) = gb.row(subset(j, 1) - 1);
-
       arma::uvec set_list_a = arma::conv_to<arma::uvec>::from(subset(j, arma::span(3, nmax_choiceset_size + 3)));
       arma::uvec set_list =  set_list_a.elem(arma::find(set_list_a > 0)) - 1;
 
-      prob_temp_B.row(j) = arma::log(arma::sum(arma::exp(gb.rows(set_list)), 0));
-
+      prob_temp.row(j) = gb.row(subset(j, 1) - 1) - arma::log(arma::sum(arma::exp(gb.rows(set_list)), 0));
     }
 
-    arma::rowvec A = arma::sum(prob_temp_A, 0);
-    arma::rowvec B = arma::sum(prob_temp_B, 0);
-
-    ll_n(n) = arma::dot(arma::exp(A - B), w1)/arma::accu(w1);
+    ll_n(n) = arma::dot(arma::exp(arma::sum(prob_temp_A, 0)), w1)/arma::accu(w1);
 
   }
 
