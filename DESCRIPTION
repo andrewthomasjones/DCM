@@ -24,7 +24,7 @@ Imports:
     stats,
     utils,
     Hmisc,
-    numDeriv
+    mvQuad
 Suggests: 
     knitr,
     rmarkdown,

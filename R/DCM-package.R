@@ -13,6 +13,7 @@
 #' @importFrom Hmisc rcorr
 #' @importFrom lifecycle deprecated
 #' @importFrom mltools one_hot
+#' @importFrom mvQuad createNIGrid
 #' @importFrom openxlsx addWorksheet
 #' @importFrom openxlsx createWorkbook
 #' @importFrom openxlsx loadWorkbook

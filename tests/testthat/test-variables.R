@@ -17,5 +17,6 @@ test_that("VIF wrapper behaves as expected", {
   test_processed_set2 <- readRDS(test_path("fixtures", "test_processed_set2.rds"))
 
   expect_equal(length(choice_model_vif(test_processed_set2)), 2)
-  expect_equal(choice_model_vif(test_processed_set2)$VIF, c(1.8, 1.8, 1.8, 2.1, 1.8, 1.8, 1.8, 2.1, 2.1))
+  expect_equal(choice_model_vif(test_processed_set2)$VIF,
+               c(1.8, 1.8, 1.8, 2.1, 1.8, 1.8, 1.8, 2.1, 2.1))
 })

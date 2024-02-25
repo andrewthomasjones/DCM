@@ -4,12 +4,14 @@
 \alias{gqIntMatrix}
 \title{Integral matrix}
 \usage{
-gqIntMatrix(integral_size, nrc)
+gqIntMatrix(integral_size, nrc, shuffle = TRUE)
 }
 \arguments{
 \item{integral_size}{int number steps for integral using Gaussian quadrature}
 
 \item{nrc}{int number of columns}
+
+\item{shuffle}{default true}
 }
 \value{
 integral matrix

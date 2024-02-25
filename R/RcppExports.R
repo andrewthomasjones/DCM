@@ -5,6 +5,9 @@
 #' @useDynLib DCM
 NULL
 
+#' llMax_ghq
+NULL
+
 frequencyDistributionCpp <- function(cold) {
     .Call('_DCM_frequencyDistributionCpp', PACKAGE = 'DCM', cold)
 }
@@ -13,28 +16,7 @@ createConceptsCpp <- function(data_matrix, nmax_choiceset_size = 31L) {
     .Call('_DCM_createConceptsCpp', PACKAGE = 'DCM', data_matrix, nmax_choiceset_size)
 }
 
-#' llCalc3
-#' does the calc
-#' actually llCalc3a does, this is same but other cant export
-#' @param working_values vector
-#' @param model List
-#' @param processed List
-#' @param gq_int_matrix matrix
-#' @returns loglike
-#' @export
-llCalc3 <- function(working_values, model, processed, gq_int_matrix) {
-    .Call('_DCM_llCalc3', PACKAGE = 'DCM', working_values, model, processed, gq_int_matrix)
-}
-
-#' llMax2
-#' does the maximisation
-#' @param model list
-#' @param processed  list
-#' @param gq_int_matrix matrix
-#' @param nlm_params list of params
-#' @returns opt_results
-#' @export
-llMax2 <- function(model, processed, gq_int_matrix, nlm_params) {
-    .Call('_DCM_llMax2', PACKAGE = 'DCM', model, processed, gq_int_matrix, nlm_params)
+llMax_ghq <- function(model, processed, ghq_matrix1, nlm_params) {
+    .Call('_DCM_llMax_ghq', PACKAGE = 'DCM', model, processed, ghq_matrix1, nlm_params)
 }
 

@@ -5,13 +5,13 @@
 #' @param gradtol default 1e-6
 #' @param stepmax default as in nlm
 #' @param steptol default 1e-6
-#' @param ghq_steps default 1000, formerly known asn draws
-#' @param extra_hess default false for testing standard errors
+#' @param dev_mode default "orig"
+#' @param ghq_size 3
 #' @returns fitted model.
 #' @export
 runModel  <-  function(model,  model_name = "name", verbose = 0,
                        gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
-                       ghq_steps = 1000, extra_hess = FALSE) {
+                       dev_mode = "ghq", ghq_size = 3) {
 
   parcount <- parameterCount(model)
   processed <- model$data
@@ -32,7 +32,7 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
   }
 
   nrc <- dim(model$epsilon)[1] + dim(model$delta)[1]
-  gq_int_matrix <- gqIntMatrix(ghq_steps, nrc)
+
 
   if (is.null(stepmax)) {
     stepmax <- max(1000 * sqrt(sum((model$initial_values)^2)), 1000)
@@ -43,26 +43,42 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
   nlm_params <- list(
     gradtol = gradtol,
     stepmax = stepmax,
-    steptol = steptol
+    steptol = steptol,
+    verbose = verbose
   )
 
-  loglik1 <- suppressWarnings(llMax2(model,  processed,  gq_int_matrix, nlm_params))
+  delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = nhop + npp,
+                                                      type = "GHN",
+                                                      level = ghq_size,
+                                                      ndConstruction = "sparse"))
+  ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
 
+
+  ghq_steps <- 100
+  shuffle <- TRUE
+  gq_int_matrix <- gqIntMatrix(ghq_steps, nrc, shuffle)
+  weights <- rep(1 / (ghq_steps), ghq_steps)
+  ghq_matrix2 <- as.matrix(cbind(weights, gq_int_matrix))
+
+  if (dev_mode == "draws") {
+
+    loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix2, nlm_params))
+
+  }else if (dev_mode == "ghq") {
+
+    loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, nlm_params))
+  }else if (dev_mode == "orig") {
+    loglik1 <- suppressWarnings(llMax(model,  processed,  ghq_matrix2))
+  }else if (dev_mode == "ghq2") {
+
+    loglik1 <- suppressWarnings(llMax(model,  processed,  ghq_matrix1))
+  }
+
+
+  #print(loglik1$hessian)
+  #standard_errors  <- array(NA, length(loglik1$estimate))
   standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
 
-  if (extra_hess) {
-    hessian2 <- numDeriv::hessian(func = llCalc3,
-                                  x = loglik1$estimate,
-                                  model = model,
-                                  processed = processed,
-                                  gq_int_matrix = gq_int_matrix
-    )
-
-    standard_errors2 <- sqrt(diag(solve(hessian2)))
-  }else {
-    hessian2 <- NA
-    standard_errors2 <- NA
-  }
 
   printpara  <-  matrix(0,  7,  1)
   row.names(printpara)  <-  c("epsilon_mu",
@@ -153,8 +169,6 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
                          results = results,
                          AIC = AIC,
                          BIC = BIC,
-                         hessian2 = hessian2,
-                         standard_errors2 = standard_errors2,
                          par_count = parcount
   )
 
@@ -164,12 +178,17 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
 #' Integral matrix
 #' @param integral_size int number steps for integral using Gaussian quadrature
 #' @param nrc int number of columns
+#' @param shuffle default true
 #' @returns integral matrix
-gqIntMatrix <- function(integral_size, nrc) {
+gqIntMatrix <- function(integral_size, nrc, shuffle = TRUE) {
 
   int_range <- (1:(integral_size)) / (integral_size + 1)
   q <- qnorm(int_range)
   int_mat <- matrix(rep(q, nrc), integral_size, nrc)
+
+  if (shuffle) {
+    int_mat <- apply(int_mat, 2, sample)
+  }
   return(int_mat)
 
 }

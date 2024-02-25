@@ -34,31 +34,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// llCalc3
-double llCalc3(const arma::vec& working_values, Rcpp::List model, Rcpp::List processed, const arma::mat& gq_int_matrix);
-RcppExport SEXP _DCM_llCalc3(SEXP working_valuesSEXP, SEXP modelSEXP, SEXP processedSEXP, SEXP gq_int_matrixSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const arma::vec& >::type working_values(working_valuesSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type model(modelSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type processed(processedSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type gq_int_matrix(gq_int_matrixSEXP);
-    rcpp_result_gen = Rcpp::wrap(llCalc3(working_values, model, processed, gq_int_matrix));
-    return rcpp_result_gen;
-END_RCPP
-}
-// llMax2
-Rcpp::List llMax2(Rcpp::List model, Rcpp::List processed, const arma::mat& gq_int_matrix, Rcpp::List nlm_params);
-RcppExport SEXP _DCM_llMax2(SEXP modelSEXP, SEXP processedSEXP, SEXP gq_int_matrixSEXP, SEXP nlm_paramsSEXP) {
+// llMax_ghq
+Rcpp::List llMax_ghq(Rcpp::List model, Rcpp::List processed, const arma::mat& ghq_matrix1, Rcpp::List nlm_params);
+RcppExport SEXP _DCM_llMax_ghq(SEXP modelSEXP, SEXP processedSEXP, SEXP ghq_matrix1SEXP, SEXP nlm_paramsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type model(modelSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type processed(processedSEXP);
-    Rcpp::traits::input_parameter< const arma::mat& >::type gq_int_matrix(gq_int_matrixSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type ghq_matrix1(ghq_matrix1SEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type nlm_params(nlm_paramsSEXP);
-    rcpp_result_gen = Rcpp::wrap(llMax2(model, processed, gq_int_matrix, nlm_params));
+    rcpp_result_gen = Rcpp::wrap(llMax_ghq(model, processed, ghq_matrix1, nlm_params));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -66,8 +52,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_DCM_frequencyDistributionCpp", (DL_FUNC) &_DCM_frequencyDistributionCpp, 1},
     {"_DCM_createConceptsCpp", (DL_FUNC) &_DCM_createConceptsCpp, 2},
-    {"_DCM_llCalc3", (DL_FUNC) &_DCM_llCalc3, 4},
-    {"_DCM_llMax2", (DL_FUNC) &_DCM_llMax2, 4},
+    {"_DCM_llMax_ghq", (DL_FUNC) &_DCM_llMax_ghq, 4},
     {NULL, NULL, 0}
 };
 
