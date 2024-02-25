@@ -5,12 +5,14 @@
 \title{calculates optimum model fit
 not used - C++ version is}
 \usage{
-llMax(model, processed, gq_int_matrix)
+llMax(model, processed, ghq_matrix1, nlm_params)
 }
 \arguments{
 \item{model}{model list}
 
 \item{processed}{data list}
+
+\item{nlm_params}{list of params}
 
 \item{gq_int_matrix}{mat}
 }

@@ -7,11 +7,12 @@
 #' @param steptol default 1e-6
 #' @param dev_mode default "orig"
 #' @param ghq_size 3
+#' @param draws 100 fro now when needed
 #' @returns fitted model.
 #' @export
 runModel  <-  function(model,  model_name = "name", verbose = 0,
                        gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
-                       dev_mode = "ghq", ghq_size = 3) {
+                       dev_mode = "C", ghq_size = 3, draws = 100) {
 
   parcount <- parameterCount(model)
   processed <- model$data
@@ -54,26 +55,21 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
   ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
 
 
-  ghq_steps <- 100
+  ghq_steps <- draws
   shuffle <- TRUE
   gq_int_matrix <- gqIntMatrix(ghq_steps, nrc, shuffle)
   weights <- rep(1 / (ghq_steps), ghq_steps)
   ghq_matrix2 <- as.matrix(cbind(weights, gq_int_matrix))
 
-  if (dev_mode == "draws") {
-
-    loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix2, nlm_params))
-
-  }else if (dev_mode == "ghq") {
-
+  if (dev_mode == "C") {
     loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, nlm_params))
-  }else if (dev_mode == "orig") {
-    loglik1 <- suppressWarnings(llMax(model,  processed,  ghq_matrix2))
-  }else if (dev_mode == "ghq2") {
-
-    loglik1 <- suppressWarnings(llMax(model,  processed,  ghq_matrix1))
+  }else if (dev_mode == "R") {
+    loglik1 <- suppressWarnings(llMax(model,  processed,  ghq_matrix1, nlm_params))
+  }else if (dev_mode == "Cdraws") {
+    loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix2, nlm_params))
+  }else if (dev_mode == "Rdraws") {
+    loglik1 <- suppressWarnings(llMax(model,  processed,  ghq_matrix2, nlm_params))
   }
-
 
   #print(loglik1$hessian)
   #standard_errors  <- array(NA, length(loglik1$estimate))
