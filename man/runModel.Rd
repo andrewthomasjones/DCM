@@ -11,10 +11,8 @@ runModel(
   gradtol = 1e-06,
   stepmax = NULL,
   steptol = 1e-06,
-  ghq_steps = 1000,
-  dev_mode = "orig",
-  ghq_size = 3,
-  shuffle = TRUE
+  dev_mode = "ghq",
+  ghq_size = 3
 )
 }
 \arguments{
@@ -30,11 +28,11 @@ runModel(
 
 \item{steptol}{default 1e-6}
 
-\item{ghq_steps}{default 1000, formerly known asn draws}
-
 \item{dev_mode}{default "orig"}
 
 \item{ghq_size}{4}
+
+\item{ghq_steps}{default 1000, formerly known asn draws}
 
 \item{shuffle}{default TRUE, for testing purposes}
 }

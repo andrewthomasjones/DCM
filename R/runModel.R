@@ -13,7 +13,7 @@
 #' @export
 runModel  <-  function(model,  model_name = "name", verbose = 0,
                        gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
-                       ghq_steps = 1000, dev_mode = "orig", ghq_size = 3, shuffle = TRUE) {
+                       dev_mode = "ghq", ghq_size = 3){
 
   parcount <- parameterCount(model)
   processed <- model$data
@@ -34,7 +34,7 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
   }
 
   nrc <- dim(model$epsilon)[1] + dim(model$delta)[1]
-  gq_int_matrix <- gqIntMatrix(ghq_steps, nrc, shuffle)
+
 
   if (is.null(stepmax)) {
     stepmax <- max(1000 * sqrt(sum((model$initial_values)^2)), 1000)
@@ -50,20 +50,23 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
   )
 
   if(dev_mode == "orig"){
-    loglik1 <- suppressWarnings(llMax2(model,  processed,  gq_int_matrix, nlm_params))
-  }else if (dev_mode == "ghq"){
-
-    delta_grid <- suppressMessages(mvQuad::createNIGrid(dim=nhop+npp, type="GHN", level=ghq_size, ndConstruction ="sparse"))
-    ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
-
-    #epsilons are purely addiditve so we dont actually need a 'grid'
-    #epsilon_grid <- suppressMessages(mvQuad::createNIGrid(dim=1, type="GHN", level=6, ndConstruction ="sparse"))
-    #ghq_matrix2 <- as.matrix(cbind(epsilon_grid$weights, matrix(rep(epsilon_grid$nodes[,1], npp), ncol=npp)))
-
-    # epsilon_grid <- suppressMessages(mvQuad::createNIGrid(dim=npp, type="GHN", level=ghq_size, ndConstruction ="sparse"))
-    # ghq_matrix2 <- as.matrix(cbind(epsilon_grid$weights, epsilon_grid$nodes))
+    ghq_steps <- 100
+    shuffle <- TRUE
+    gq_int_matrix <- gqIntMatrix(ghq_steps, nrc, shuffle)
+    weights <- rep(1/(ghq_steps),ghq_steps)
+    ghq_matrix1 <- as.matrix(cbind( weights, gq_int_matrix))
 
     loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, nlm_params))
+
+  }else if (dev_mode == "ghq"){
+
+    delta_grid <- suppressMessages(mvQuad::createNIGrid(dim=nhop+npp,
+                                                   type="GHN",
+                                                   level=ghq_size,
+                                                   ndConstruction ="sparse"))
+    ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
+
+        loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, nlm_params))
   }
 
   standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
