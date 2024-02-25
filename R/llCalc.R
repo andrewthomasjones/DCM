@@ -2,7 +2,7 @@
 #' not used - C++ version is
 #' @param model model list
 #' @param processed data list
-#' @param gq_int_matrix mat
+#' @param ghq_matrix1 mat
 #' @param nlm_params list of params
 #' @returns max loglik
 #' @export

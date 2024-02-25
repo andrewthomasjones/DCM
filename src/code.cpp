@@ -395,18 +395,18 @@ double llCalc_ghq(const arma::vec& working_values,
 
 
 //' llMax_ghq
- //' does the maximisation
- //' @param model list
- //' @param processed  list
- //' @param ghq_matrix1 matrix
- //' @param nlm_params list of params
- //' @returns opt_results
- //' @export
- // [[Rcpp::export]]
- Rcpp::List llMax_ghq(Rcpp::List model,
-                    Rcpp::List processed,
-                    const arma::mat& ghq_matrix1,
-                    Rcpp::List nlm_params){
+//' does the maximisation
+//' @param model list
+//' @param processed  list
+//' @param ghq_matrix1 matrix
+//' @param nlm_params list of params
+//' @returns opt_results
+//' @export
+// [[Rcpp::export]]
+Rcpp::List llMax_ghq(Rcpp::List model,
+                      Rcpp::List processed,
+                      const arma::mat& ghq_matrix1,
+                      Rcpp::List nlm_params){
 
 
    arma::vec working_values =  as<arma::vec>(model["initial_values"]);
@@ -431,7 +431,7 @@ double llCalc_ghq(const arma::vec& working_values,
 
    // Return estimated values
    return opt_results ;
- }
+}
 
 
 

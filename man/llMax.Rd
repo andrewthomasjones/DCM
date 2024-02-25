@@ -12,9 +12,9 @@ llMax(model, processed, ghq_matrix1, nlm_params)
 
 \item{processed}{data list}
 
-\item{nlm_params}{list of params}
+\item{ghq_matrix1}{mat}
 
-\item{gq_int_matrix}{mat}
+\item{nlm_params}{list of params}
 }
 \value{
 max loglik

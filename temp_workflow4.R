@@ -10,6 +10,12 @@ model_1f <- model_generator(processedBW, "one-factor")
 
 model_mtmm <- loadEMIWorkbook(processedBWDCE, "./TESTING_DUMP/EMI_BWprioritiesDCEpriorities_MTMM-2.xlsx")
 
+
+test_mtmm_ghq <- runModel(model_mtmm, dev_mode = "C", ghq_size = 3, verbose = 2)
+test_mtmm_ghq2 <- runModel(model_mtmm, dev_mode = "R", ghq_size = 3, verbose = 2)
+test_mtmm_ghq$LL
+test_mtmm_ghq2$LL
+
 #c code
 test_fixed_ghq <- runModel(model_fixed, dev_mode = "C", verbose = 2)
 test_fixed_ghq2 <- runModel(model_fixed,  dev_mode = "R", verbose = 2)
@@ -27,7 +33,4 @@ test_1f_ghq2 <- runModel(model_1f, dev_mode = "R", ghq_size = 3, verbose = 2)
 test_1f_ghq$LL
 test_1f_ghq2$LL
 
-test_mtmm_ghq <- runModel(model_mtmm, dev_mode = "C", ghq_size = 3, verbose = 2)
-test_mtmm_ghq2 <- runModel(model_mtmm, dev_mode = "R", ghq_size = 3, verbose = 2)
-test_mtmm_ghq$LL
-test_mtmm_ghq2$LL
+

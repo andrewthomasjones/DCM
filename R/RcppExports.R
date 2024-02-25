@@ -5,9 +5,6 @@
 #' @useDynLib DCM
 NULL
 
-#' llMax_ghq
-NULL
-
 frequencyDistributionCpp <- function(cold) {
     .Call('_DCM_frequencyDistributionCpp', PACKAGE = 'DCM', cold)
 }
@@ -16,6 +13,14 @@ createConceptsCpp <- function(data_matrix, nmax_choiceset_size = 31L) {
     .Call('_DCM_createConceptsCpp', PACKAGE = 'DCM', data_matrix, nmax_choiceset_size)
 }
 
+#' llMax_ghq
+#' does the maximisation
+#' @param model list
+#' @param processed  list
+#' @param ghq_matrix1 matrix
+#' @param nlm_params list of params
+#' @returns opt_results
+#' @export
 llMax_ghq <- function(model, processed, ghq_matrix1, nlm_params) {
     .Call('_DCM_llMax_ghq', PACKAGE = 'DCM', model, processed, ghq_matrix1, nlm_params)
 }
