@@ -30,11 +30,7 @@ runModel(
 
 \item{dev_mode}{default "orig"}
 
-\item{ghq_size}{4}
-
-\item{ghq_steps}{default 1000, formerly known asn draws}
-
-\item{shuffle}{default TRUE, for testing purposes}
+\item{ghq_size}{3}
 }
 \value{
 fitted model.

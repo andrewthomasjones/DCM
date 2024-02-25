@@ -260,9 +260,10 @@ double llCalc_ghq(const arma::vec& working_values,
     }
 
     if(deltamatrix(i,0) == -1){
-      deltaepsilonparameters(i) = 1;
+      mudeltaparameters(i) = 1;
     }
   }
+
 
   for(int i=0; i<npp; i++){
 
@@ -276,6 +277,8 @@ double llCalc_ghq(const arma::vec& working_values,
     }
   }
 
+
+
   for(int i=0; i<nhop; i++){
 
     if(deltamatrix(i, 1) == 1){
@@ -287,6 +290,8 @@ double llCalc_ghq(const arma::vec& working_values,
       sigmadeltaparameters(i) = 1;
     }
   }
+
+
 
   for(int j=0; j<nhop; j++){
     for(int i=0; i<npp; i++){
@@ -301,6 +306,8 @@ double llCalc_ghq(const arma::vec& working_values,
     }
   }
 
+
+
   for(int j=0; j<nhop; j++){
     for(int i=0; i<nhop; i++){
 
@@ -313,6 +320,7 @@ double llCalc_ghq(const arma::vec& working_values,
       }
     }
   }
+
 
 
   // phiparameters.diag().ones();
@@ -331,8 +339,9 @@ double llCalc_ghq(const arma::vec& working_values,
   //
   // gqh_matrix1 *= arma::pow(phiparameters, 0.5);
 
-  arma::mat int_delta = gqh_matrix1.cols(1, nhop);
-  arma::mat int_epsilon = gqh_matrix1.cols(nhop+1, nhop+npp);
+  arma::mat int_epsilon = gqh_matrix1.cols(1, npp);
+
+  arma::mat int_delta = gqh_matrix1.cols(npp+1, nhop+npp);
 
   int_epsilon *= arma::diagmat((sigmaepsilonparameters));
   int_epsilon.each_row() += muepsilonparameters.t();
@@ -340,27 +349,31 @@ double llCalc_ghq(const arma::vec& working_values,
   int_delta *= arma::diagmat((sigmadeltaparameters));
   int_delta.each_row() += mudeltaparameters.t();
 
+
   arma::mat imatrix = arma::eye(nhop, nhop);
   arma::mat gb(nhop, nhop, arma::fill::zeros);
   arma::mat concept_use = concept * code;
 
   gb = gammaparameters*arma::inv(imatrix-betaparameters);
+
   gb = gb*int_delta.t() + int_epsilon.t();
   gb = concept_use*gb;
 
   arma::vec decisionmakers = arma::unique(data.col(0));
   int decisionmakers_n = decisionmakers.n_elem;
 
-    arma::vec w1 = gqh_matrix1.col(0);
+  arma::vec w1 = gqh_matrix1.col(0);
   double w1_total = arma::accu(w1);
+
   arma::vec ll_n(decisionmakers_n, arma::fill::zeros);
 
   for(int n=0; n<decisionmakers_n; n++){
     arma::mat subset = data.rows(arma::find(data.col(0) == decisionmakers(n)))-1;
+
     arma::uvec rows1 = arma::conv_to<arma::uvec>::from(subset.col(1));
     arma::mat prob_temp = gb.rows(rows1);
 
-    arma::umat set_list_a = arma::conv_to<arma::umat>::from(subset.cols(arma::span(3, nmax_choiceset_size + 3)));
+    arma::umat set_list_a = arma::conv_to<arma::umat>::from(subset.cols(arma::span(4, nmax_choiceset_size + 3)));
 
     for(int j=0; j<subset.n_rows; j++){
       arma::urowvec set_list_b = set_list_a.row(j);
@@ -373,7 +386,8 @@ double llCalc_ghq(const arma::vec& working_values,
 
   }
 
-  double loglike = -1.0*arma::sum(arma::log(ll_n));
+
+  double loglike = -1.0*arma::accu(arma::log(ll_n));
 
   return(loglike);
 
@@ -418,8 +432,6 @@ double llCalc_ghq(const arma::vec& working_values,
    // Return estimated values
    return opt_results ;
  }
-
-
 
 
 

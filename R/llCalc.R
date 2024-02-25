@@ -34,7 +34,7 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
   gammamatrix <- model$gamma
   deltamatrix <- model$delta
   betamatrix <- model$beta
-  phimatrix <- model$phi
+  #phimatrix <- model$phi
 
   npp <- model$npp
   nhop <- model$nhop
@@ -47,7 +47,7 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
 
   gammaparameters <- gammamatrix * 0
   betaparameters <- betamatrix * 0
-  phiparameters <- phimatrix * 0
+  #phiparameters <- phimatrix * 0
 
   m <- 0
 
@@ -70,9 +70,10 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
     }
 
     if (deltamatrix[i, 1] == -1) {
-      deltaepsilonparameters[i] <- 1
+      mudeltaparameters[i] <- 1
     }
   }
+
 
   for (i in 1:npp) {
 
@@ -86,6 +87,7 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
     }
   }
 
+
   for (i in 1:nhop) {
 
     if (deltamatrix[i, 2] == 1) {
@@ -98,6 +100,7 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
     }
   }
 
+
   for (j in 1: nhop) {
     for (i in 1:npp) {
       if (gammamatrix[i, j] == 1) {
@@ -109,6 +112,9 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
       }
     }
   }
+
+
+
   for (j in 1:nhop) {
     for (i in 1:nhop) {
       if (betamatrix[i, j] == 1) {
@@ -122,35 +128,36 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
   }
 
 
-  diag(phiparameters) <-  1
+  # diag(phiparameters) <-  1
+  #
+  #
+  # for (i in 1:(npp + nhop - 1)) {
+  #   for (j in (i + 1):(npp + nhop)) {
+  #     if (phimatrix[i, j] == 1) {
+  #       if (phimatrix[j, i] == 1) {
+  #         m <- m + 1
+  #         phiparameters[i, j] <- working_values[m]
+  #         phiparameters[j, i] <- working_values[m]
+  #       }
+  #     }
+  #   }
+  #
+  # gq_int_matrix <- gq_int_matrix %*% (phiparameters^0.5)
 
-
-  for (i in 1:(npp + nhop - 1)) {
-    for (j in (i + 1):(npp + nhop)) {
-      if (phimatrix[i, j] == 1) {
-        if (phimatrix[j, i] == 1) {
-          m <- m + 1
-          phiparameters[i, j] <- working_values[m]
-          phiparameters[j, i] <- working_values[m]
-        }
-      }
-    }
-  }
-
-  gq_int_matrix <- gq_int_matrix %*% (phiparameters^0.5)
-  int_epsilon <- cbind(gq_int_matrix[, 1])
+  w1 <- gq_int_matrix[, 1]
+  int_epsilon <- cbind(gq_int_matrix[, 2])
 
   if (npp > 1) {
-    for (i in 2:npp) {
+    for (i in 3:(npp + 1)) {
       int_epsilon <- cbind(int_epsilon, gq_int_matrix[, i])
     }
   }
 
-  int_delta <- cbind(gq_int_matrix[, npp + 1])
+  int_delta <- cbind(gq_int_matrix[, npp + 2])
 
   if (nhop > 1) {
-    for (i in 2:nhop) {
-      int_delta <- cbind(int_delta, gq_int_matrix[, i + npp])
+    for (i in 3:nhop) {
+      int_delta <- cbind(int_delta, gq_int_matrix[, i + npp + 1])
     }
   }
 
@@ -163,58 +170,92 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
     }
   }
 
-  imatrix <- matrix(0, nhop, nhop)
-  diag(imatrix) <-  1
 
-  gb <- imatrix - betaparameters
+
+  gb <- diag(nhop) - betaparameters
+
   gb <- solve(gb)
+
   gb  <-  gammaparameters %*% gb
+
 
   gb  <-  gb %*% t(int_delta)
   gb <- gb + t(int_epsilon)
+
+
   conceptuse <- concept %*% model$code
   gb <- conceptuse %*% gb
-  gb <- exp(gb)
-
-  pthisdm  <-  matrix(1, 1, integral_size)
-  pthiscs  <-  matrix(0, 1, integral_size)
 
 
-  ploglike  <-  array(0,  ndecisionmakers)
-  n  <-  1
-  iddm  <-  data[1, 1]
-  bottom  <-  array(0,  ncol(gb))
+  # gb <- exp(gb)
+  #
+  #   pthisdm  <-  matrix(1, 1, integral_size)
+  #   pthiscs  <-  matrix(0, 1, integral_size)
+  #
+  #   ploglike  <-  array(0,  ndecisionmakers)
+  #   n  <-  1
+  #   iddm  <-  data[1, 1]
+  #   bottom  <-  array(0,  ncol(gb))
+  #
+  #   nlines  <-  dim(data)[1]
+  #
+  # for (i in 1:nlines) {
+  #   bottom  <-  bottom * 0
+  #
+  #   for (j in 1:nmax_choiceset_size) {
+  #     if (data[i, j + 4] > 0) {
+  #       bottom  <-  bottom + gb[data[i, j + 4], ]
+  #     }
+  #   }
+  #
+  #   pthiscs  <-  matrix(gb[data[i, 2], ] / bottom, 1, integral_size)
+  #
+  #   if (data[i, 1] == iddm) {
+  #     pthisdm  <-  pthisdm * pthiscs
+  #   }
+  #
+  #   if (data[i, 1] > iddm) {
+  #     ploglike[n] <- sum(pthisdm) / integral_size
+  #     n  <-  n  +  1
+  #     pthisdm  <-  pthiscs
+  #     iddm  <-  data[i, 1]
+  #   }
+  # }
+  # #print()
+  # ploglike[n] <- sum(pthisdm) / integral_size
+  #
+  # ploglike  <-  log(ploglike)
+  # loglike  <-  sum(ploglike)
+  # loglike  <-  -loglike
 
-  nlines  <-  dim(data)[1]
 
-  for (i in 1:nlines) {
-    bottom  <-  bottom * 0
+  ll_n <- array(NA, ndecisionmakers)
+  decisionmakers <- unique(data[, 1])
+  w1_total <- sum(w1)
 
-    for (j in 1:nmax_choiceset_size) {
-      if (data[i, j + 4] > 0) {
-        bottom  <-  bottom + gb[data[i, j + 4], ]
-      }
+  for (n in 1:ndecisionmakers) {
+
+    subset <- data[data[, 1] == decisionmakers[n], ]
+
+    rows1 <- subset[, 2]
+    #print(rows1)
+    prob_temp <- gb[rows1, ]
+
+    set_list_a <- subset[, 5:(nmax_choiceset_size + 4)]
+
+    for (j in seq_len(nrow(subset))) {
+      set_list_b <- set_list_a[j, ]
+      set_list <-  set_list_b[which(set_list_b > 0)]
+
+      prob_temp[j, ] <-  prob_temp[j, ] - log(colSums(exp(gb[set_list, ])))
     }
 
-    pthiscs  <-  matrix(gb[data[i, 2], ] / bottom, 1, integral_size)
+    ll_n[n] <- sum(exp(colSums(prob_temp)) * w1) / w1_total
 
-    if (data[i, 1] == iddm) {
-      pthisdm  <-  pthisdm * pthiscs
-    }
-
-    if (data[i, 1] > iddm) {
-      ploglike[n] <- sum(pthisdm) / integral_size
-      n  <-  n  +  1
-      pthisdm  <-  pthiscs
-      iddm  <-  data[i, 1]
-    }
   }
 
-  ploglike[n] <- sum(pthisdm) / integral_size
 
-  ploglike  <-  log(ploglike)
-  loglike  <-  sum(ploglike)
-  loglike  <-  -loglike
+  loglike <- -1.0 * sum(log(ll_n))
 
 
   return(loglike)
