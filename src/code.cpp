@@ -98,16 +98,8 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
   i5 = 0;
   i6 = 0;
   i4 = -1;
- //Rcout << "point 2" <<  std::endl;
-  //Rcout << "data " << data.n_rows << " " << data.n_cols <<  std::endl;
-  //Rcout << "data_big " << data_big.n_rows << " " << data_big.n_cols <<  std::endl;
-  //Rcout << "concept_big " << concept_big.n_rows << " " << concept_big.n_cols <<  std::endl;
-  //Rcout << "data_matrix " << data_matrix.n_rows << " " << data_matrix.n_cols <<  std::endl;
 
   while (i1 < (nlines_data_matrix-1)){
-    // if(i1<10){
-    //   Rcout << "i1 " << i1 << " i2 " << i2 << " i4 " << i4 << " i5 " << i5 << " i6 " << i6 << std::endl;
-    // }
 
     i1++;
     match_number=0;
@@ -128,10 +120,6 @@ Rcpp::List createConceptsCpp(const arma::mat& data_matrix, int nmax_choiceset_si
         i4 = i6;
       }
     }
-    //Rcout << "Point 3 " << i1 <<  std::endl;
-    // if(i1<10){
-    //   Rcout << " i4 " << i4 << " i6 " << i6 << std::endl;
-    // }
 
     if (match_number == 0) {
       i6++;

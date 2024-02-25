@@ -49,7 +49,7 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
     verbose = verbose
   )
 
-  if(dev_mode == "orig"){
+  if(dev_mode == "draws"){
     ghq_steps <- 100
     shuffle <- TRUE
     gq_int_matrix <- gqIntMatrix(ghq_steps, nrc, shuffle)
@@ -66,7 +66,14 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
                                                    ndConstruction ="sparse"))
     ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
 
-        loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, nlm_params))
+    loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, nlm_params))
+  }else if (dev_mode == "orig"){
+
+    ghq_steps <- 100
+    shuffle <- TRUE
+    gq_int_matrix <- gqIntMatrix(ghq_steps, nrc, shuffle)
+
+    loglik1 <- suppressWarnings(llMax(model,  processed,  gq_int_matrix))
   }
 
   standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))

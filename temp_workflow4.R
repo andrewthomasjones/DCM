@@ -12,9 +12,15 @@ processedBWDCE <- join_choicedatasets(processedBW, processedDCE)
 
 model_mtmm <- loadEMIWorkbook(processedBWDCE, "./TESTING_DUMP/EMI_BWprioritiesDCEpriorities_MTMM-2.xlsx")
 
+#new
+test_fixed_ghq <- runModel(model_fixed)
 
-test_fixed_ghq <- runModel(model_fixed, dev_mode = "ghq", ghq_size = 3, verbose = 2)
-test_fixed_orig <- runModel(model_fixed, dev_mode = "orig", verbose = 2)
+#new with draws
+test_fixed_draws <- runModel(model_fixed,  dev_mode = "draws")
+
+#old
+test_fixed_orig <- runModel(model_fixed,  dev_mode = "orig")
+
 
 test_random_ghq <- runModel(model_random, dev_mode = "ghq", ghq_size = 3, verbose = 2)
 test_random_orig <- runModel(model_random, dev_mode = "orig", verbose = 2)
