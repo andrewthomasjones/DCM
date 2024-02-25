@@ -156,8 +156,8 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
   int_delta <- cbind(gq_int_matrix[, npp + 2])
 
   if (nhop > 1) {
-    for (i in 3:nhop) {
-      int_delta <- cbind(int_delta, gq_int_matrix[, i + npp + 1])
+    for (i in 3:(nhop + 1)) {
+      int_delta <- cbind(int_delta, gq_int_matrix[, i + npp])
     }
   }
 
