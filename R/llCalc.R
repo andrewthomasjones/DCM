@@ -3,14 +3,21 @@
 #' @param model model list
 #' @param processed data list
 #' @param gq_int_matrix mat
+#' @param nlm_params list of params
 #' @returns max loglik
 #' @export
-llMax  <- function(model,  processed,  gq_int_matrix) {
+llMax  <- function(model,  processed, ghq_matrix1, nlm_params) {
 
-  loglik  <-  nlm(llCalc,  p = model$initial_values,
-                  model,  processed,  gq_int_matrix,
-                  hessian = TRUE,  print.level = 0)
-
+  loglik  <-  nlm(llCalc,
+                  p = model$initial_values,
+                  model,  processed,  ghq_matrix1,
+                  hessian = TRUE,
+                  iterlim = 1000,
+                  print.level = nlm_params$verbose,
+                  gradtol = nlm_params$gradtol,
+                  stepmax = nlm_params$stepmax,
+                  steptol = nlm_params$steptol
+  )
   return(loglik)
 }
 

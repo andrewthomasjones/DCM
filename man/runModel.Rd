@@ -11,8 +11,9 @@ runModel(
   gradtol = 1e-06,
   stepmax = NULL,
   steptol = 1e-06,
-  dev_mode = "ghq",
-  ghq_size = 3
+  dev_mode = "C",
+  ghq_size = 3,
+  draws = 100
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ runModel(
 \item{dev_mode}{default "orig"}
 
 \item{ghq_size}{3}
+
+\item{draws}{100 fro now when needed}
 }
 \value{
 fitted model.
