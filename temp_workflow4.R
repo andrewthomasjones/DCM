@@ -1,8 +1,18 @@
 library(DCM)
 library(tictoc)
+
+#full sample
 processedDCE <- setUp(DCEpriorities)
 processedBW <- setUp(BWpriorities)
+
+
+#reduce sample size to increase speed
+processedDCE <- setUp(DCEpriorities[DCEpriorities$ID < 1030, ])
+processedBW <- setUp(BWpriorities[BWpriorities$ID < 1030, ])
+
+
 processedBWDCE <- join_choicedatasets(processedBW, processedDCE)
+
 
 model_fixed <- model_generator(processedBW, "fixed")
 model_random <- model_generator(processedBW, "random")
@@ -27,7 +37,8 @@ tic()
 test_random_ghq2 <- runModel(model_random, dev_mode = "R", ghq_size = 3, verbose = 0) # > 529.732 sec elapsed
 toc()
 test_random_ghq$LL
-test_random_ghq2$LL
+test_random_ghq2$LL #agree
+
 
 tic()
 test_1f_ghq <- runModel(model_1f, dev_mode = "C",  ghq_size = 3, verbose = 0) #11.087 sec elapsed
@@ -36,16 +47,17 @@ tic()
 test_1f_ghq2 <- runModel(model_1f, dev_mode = "R", ghq_size = 3, verbose = 0) #133.59 sec elapsed
 toc()
 test_1f_ghq$LL
-test_1f_ghq2$LL #not agree
+test_1f_ghq2$LL #agree
+
 
 
 tic()
-test_mtmm_ghq <- runModel(model_mtmm, dev_mode = "C", ghq_size = 3, verbose = 0)
+test_mtmm_ghq <- runModel(model_mtmm, dev_mode = "C", ghq_size = 3, verbose = 1)
 toc()
 tic()
-test_mtmm_ghq2 <- runModel(model_mtmm, dev_mode = "R", ghq_size = 3, verbose = 0)
+test_mtmm_ghq2 <- runModel(model_mtmm, dev_mode = "R", ghq_size = 3, verbose = 1)
 toc()
 test_mtmm_ghq$LL
-test_mtmm_ghq2$LL
+test_mtmm_ghq2$LL #agree
 
 
