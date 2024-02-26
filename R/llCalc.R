@@ -151,7 +151,7 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
   #
   # gq_int_matrix <- gq_int_matrix %*% (phiparameters^0.5)
 
-  w1 <- gq_int_matrix[, 1]
+  #w1 <- gq_int_matrix[, 1]
   int_epsilon <- cbind(gq_int_matrix[, 2])
 
   if (npp > 1) {
@@ -196,15 +196,15 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
 
   gb <- exp(gb)
 
-    pthisdm  <-  matrix(1, 1, integral_size)
-    pthiscs  <-  matrix(0, 1, integral_size)
+  pthisdm  <-  matrix(1, 1, integral_size)
+  pthiscs  <-  matrix(0, 1, integral_size)
 
-    ploglike  <-  array(0,  ndecisionmakers)
-    n  <-  1
-    iddm  <-  data[1, 1]
-    bottom  <-  array(0,  ncol(gb))
+  ploglike  <-  array(0,  ndecisionmakers)
+  n  <-  1
+  iddm  <-  data[1, 1]
+  bottom  <-  array(0,  ncol(gb))
 
-    nlines  <-  dim(data)[1]
+  nlines  <-  dim(data)[1]
 
   for (i in 1:nlines) {
     bottom  <-  bottom * 0

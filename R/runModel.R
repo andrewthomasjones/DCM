@@ -48,12 +48,12 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
     verbose = verbose
   )
 
-    delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = nhop+npp,
-                                                        type = "GHN",
-                                                        level = ghq_size,
-                                                        ndConstruction = "sparse"))
+  delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = nhop + npp,
+                                                      type = "GHN",
+                                                      level = ghq_size,
+                                                      ndConstruction = "sparse"))
 
-    ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
+  ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
 
 
   ghq_steps <- draws
