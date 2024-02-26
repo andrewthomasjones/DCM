@@ -151,7 +151,7 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
   #
   # gq_int_matrix <- gq_int_matrix %*% (phiparameters^0.5)
 
-  w1 <- gq_int_matrix[, 1]
+  #w1 <- gq_int_matrix[, 1]
   int_epsilon <- cbind(gq_int_matrix[, 2])
 
   if (npp > 1) {
@@ -194,75 +194,75 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
   gb <- conceptuse %*% gb
 
 
-  # gb <- exp(gb)
-  #
-  #   pthisdm  <-  matrix(1, 1, integral_size)
-  #   pthiscs  <-  matrix(0, 1, integral_size)
-  #
-  #   ploglike  <-  array(0,  ndecisionmakers)
-  #   n  <-  1
-  #   iddm  <-  data[1, 1]
-  #   bottom  <-  array(0,  ncol(gb))
-  #
-  #   nlines  <-  dim(data)[1]
-  #
-  # for (i in 1:nlines) {
-  #   bottom  <-  bottom * 0
-  #
-  #   for (j in 1:nmax_choiceset_size) {
-  #     if (data[i, j + 4] > 0) {
-  #       bottom  <-  bottom + gb[data[i, j + 4], ]
-  #     }
-  #   }
-  #
-  #   pthiscs  <-  matrix(gb[data[i, 2], ] / bottom, 1, integral_size)
-  #
-  #   if (data[i, 1] == iddm) {
-  #     pthisdm  <-  pthisdm * pthiscs
-  #   }
-  #
-  #   if (data[i, 1] > iddm) {
-  #     ploglike[n] <- sum(pthisdm) / integral_size
-  #     n  <-  n  +  1
-  #     pthisdm  <-  pthiscs
-  #     iddm  <-  data[i, 1]
-  #   }
-  # }
-  # #print()
-  # ploglike[n] <- sum(pthisdm) / integral_size
-  #
-  # ploglike  <-  log(ploglike)
-  # loglike  <-  sum(ploglike)
-  # loglike  <-  -loglike
+  gb <- exp(gb)
 
+  pthisdm  <-  matrix(1, 1, integral_size)
+  pthiscs  <-  matrix(0, 1, integral_size)
 
-  ll_n <- array(NA, ndecisionmakers)
-  decisionmakers <- unique(data[, 1])
-  w1_total <- sum(w1)
+  ploglike  <-  array(0,  ndecisionmakers)
+  n  <-  1
+  iddm  <-  data[1, 1]
+  bottom  <-  array(0,  ncol(gb))
 
-  for (n in 1:ndecisionmakers) {
+  nlines  <-  dim(data)[1]
 
-    subset <- data[data[, 1] == decisionmakers[n], ]
+  for (i in 1:nlines) {
+    bottom  <-  bottom * 0
 
-    rows1 <- subset[, 2]
-    #print(rows1)
-    prob_temp <- gb[rows1, ]
-
-    set_list_a <- subset[, 5:(nmax_choiceset_size + 4)]
-
-    for (j in seq_len(nrow(subset))) {
-      set_list_b <- set_list_a[j, ]
-      set_list <-  set_list_b[which(set_list_b > 0)]
-
-      prob_temp[j, ] <-  prob_temp[j, ] - log(colSums(exp(gb[set_list, ])))
+    for (j in 1:nmax_choiceset_size) {
+      if (data[i, j + 4] > 0) {
+        bottom  <-  bottom + gb[data[i, j + 4], ]
+      }
     }
 
-    ll_n[n] <- sum(exp(colSums(prob_temp)) * w1) / w1_total
+    pthiscs  <-  matrix(gb[data[i, 2], ] / bottom, 1, integral_size)
 
+    if (data[i, 1] == iddm) {
+      pthisdm  <-  pthisdm * pthiscs
+    }
+
+    if (data[i, 1] > iddm) {
+      ploglike[n] <- sum(pthisdm) / integral_size
+      n  <-  n  +  1
+      pthisdm  <-  pthiscs
+      iddm  <-  data[i, 1]
+    }
   }
+  #print()
+  ploglike[n] <- sum(pthisdm) / integral_size
+
+  ploglike  <-  log(ploglike)
+  loglike  <-  sum(ploglike)
+  loglike  <-  -loglike
 
 
-  loglike <- -1.0 * sum(log(ll_n))
+  # ll_n <- array(NA, ndecisionmakers)
+  # decisionmakers <- unique(data[, 1])
+  # w1_total <- sum(w1)
+  #
+  # for (n in 1:ndecisionmakers) {
+  #
+  #   subset <- data[data[, 1] == decisionmakers[n], ]
+  #
+  #   rows1 <- subset[, 2]
+  #   #print(rows1)
+  #   prob_temp <- gb[rows1, ]
+  #
+  #   set_list_a <- subset[, 5:(nmax_choiceset_size + 4)]
+  #
+  #   for (j in seq_len(nrow(subset))) {
+  #     set_list_b <- set_list_a[j, ]
+  #     set_list <-  set_list_b[which(set_list_b > 0)]
+  #
+  #     prob_temp[j, ] <-  prob_temp[j, ] - log(colSums(exp(gb[set_list, ])))
+  #   }
+  #
+  #   ll_n[n] <- sum(exp(colSums(prob_temp)) * w1) / w1_total
+  #
+  # }
+  #
+  #
+  # loglike <- -1.0 * sum(log(ll_n))
 
 
   return(loglike)
