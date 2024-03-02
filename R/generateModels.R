@@ -357,7 +357,7 @@ model_generator  <-  function(pre_processed_data,
     stop(paste("model_type not one of ",  paste(model_types,  collapse = ",  ")))
   }
 
-  if (model_type %in% c("fixed",  "random",  "one-factor")) {
+  if (model_type %in% c("fixed",  "random",  "one-factor", "mtmm")) {
 
     matrix_list <- generate_model_matrices(pre_processed_data,  model_type)
     description  <-  paste0("Generated model of type ", model_type)
