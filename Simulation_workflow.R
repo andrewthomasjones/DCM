@@ -164,7 +164,7 @@ simulation <- function(chosen_values,  model,  processed) {
   return(new_orig_data)
 }
 
-simulate_dataset <- function(template, model_type, chosen_values){
+simulate_dataset <- function(template, model_type, chosen_values, Ron=FALSE){
 
 
 
@@ -177,52 +177,122 @@ simulate_dataset <- function(template, model_type, chosen_values){
   processed_sims <- setUp(test_sims)
   model_sims <- model_generator(processed_sims, model_type)
   results_sims_C <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
-  results_sims_R <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
+  if(Ron){
+    results_sims_R <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
+  }else{
+    results_sims_R <- NA
+  }
   return(list(C = results_sims_C, R = results_sims_R))
 }
 
+library(DCM)
+library(mvtnorm)
+library(tidyverse)
 
-processedDCE <- setUp(DCEpriorities)
-model_fixed <- model_generator(processedDCE, "fixed")
-model_random <- model_generator(processedDCE, "random")
-model_1f <- model_generator(processedDCE, "one-factor")
+m <- 100
+#-----------------------------
+# define attributes and levels
+#-----------------------------
+desVarNames <- c("Safety", "Reliability", "Comfort")
+desLevels <- c(4, 4, 4)
+n <- 4       #number of choice sets
+desOpt <- 4  #num option per choice set
+#generate full factorial
+dat<-gen.factorial(desLevels, length(desLevels), varNames=desVarNames, center=TRUE)
+
+destT <- optFederov(~., dat, nTrials = (n*(desOpt)), criterion="D")
+design_ouput <- destT$design*0.2
 
 
 
-#array(0, length(model_fixed$initial_values))
+list_df <- list()
 
-chosen_values <- sample(0:3, size=length(model_fixed$initial_values), replace = TRUE)
-template <- DCEpriorities
-model_type <- "fixed"
+for(i in 1:m){
 
-results <- simulate_dataset(template, model_type, chosen_values)
+  list_df[[i]] <- data.frame(ID=1000+i,
+                             ChoiceSet = rep(1:n, each=desOpt),
+                             Choice = sample(c(rep(0,desOpt-1), 1), desOpt),
+                             Safety_DCE = design_ouput[, 1],
+                             Reliability_DCE = design_ouput[, 2],
+                             Comfort_DCE = design_ouput[, 3])
+}
+template_DCE <- bind_rows(list_df)
 
-results$C$loglikf$estimate
-results$R$loglikf$estimate
 
-round(abs(chosen_values-results$C$loglikf$estimate)/results$C$results$standard_errors, 2)
-round(abs(chosen_values-results$R$loglikf$estimate)/results$R$results$standard_errors, 2)
-############################################################################################
+list_df <- list()
 
-chosen_values <- sample(0:3, size=length(model_1f$initial_values), replace = TRUE)
-template <- DCEpriorities
+
+
+desVarNames <- c("Safety", "Reliability", "Comfort")
+desLevels <- c(3, 3, 3)
+n <- 4       #number of choice sets
+desOpt <- 4  #num option per choice set
+#generate full factorial
+dat<-gen.factorial(desLevels, length(desLevels), varNames=desVarNames, center=TRUE)
+
+dat[rowSums(dat)==0,]
+
+
+combos <- matrix(c(c(0, 0, 1, -1, 1, -1) , c( -1, 1, 0, 0, -1, 1), c(1, -1, -1, 1, 0, 0)),ncol = 3)
+
+combos2 <-rbind(combos[1:4, ], combos[3:6, ], combos[c(1:2, 5:6), ], combos[1:4, ])
+
+size <- 4
+
+for(i in 1:m){
+
+  list_df[[i]] <- data.frame(ID=1000+i,
+                             ChoiceSet = rep(1:4, each=size),
+                             Choice = sample(c(rep(0,size-1), 1), size),
+                             Safety_BW = combos2[, 1],
+                             Reliability_BW = combos2[, 2],
+                             Comfort_BW =  combos2[, 3])
+}
+template_BW <- bind_rows(list_df)
+
+processed_template_BW <- setUp(template_BW)
+processed_template_DCE <- setUp(template_DCE)
+
+joined <- join_choicedatasets(processed_template_BW, processed_template_DCE)
+model_fixed <- model_generator(joined, "one-factor")
+
+chosen_values <- c(2, -1, -1, 1, -0.5,-0.5, rep(0.1, 6))
+template <- joined$data_original
 model_type <- "one-factor"
 
 results <- simulate_dataset(template, model_type, chosen_values)
 
 results$C$loglikf$estimate
-results$R$loglikf$estimate
-
 round(abs(chosen_values-results$C$loglikf$estimate)/results$C$results$standard_errors, 2)
-round(abs(chosen_values-results$R$loglikf$estimate)/results$R$results$standard_errors, 2)
 
 ############################################################################################
 
-chosen_values <- sample(0:3, size=length(model_random$initial_values), replace = TRUE)
-template <- DCEpriorities
+chosen_values <- c(2, -1, -1)
+template <- template_DCE
+model_type <- "fixed"
+
+results <- simulate_dataset(template, model_type, chosen_values)
+
+results$C$loglikf$estimate
+round(abs(chosen_values-results$C$loglikf$estimate)/results$C$results$standard_errors, 2)
+
+
+
+
+
+
+#array(0, length(model_fixed$initial_values))
+
+
+
+part1 <- rep(sample(1:3, size=9, replace = TRUE),2)
+part2 <- sqrt(part1)
+chosen_values <- c(part1, part2)
+template <- processedBWDCE$data_original
 model_type <- "random"
 
 results <- simulate_dataset(template, model_type, chosen_values)
+
 results$C$loglikf$estimate
 results$R$loglikf$estimate
 
@@ -231,24 +301,33 @@ round(abs(chosen_values-results$R$loglikf$estimate)/results$R$results$standard_e
 
 ############################################################################################
 
+# chosen_values <- sample(0:3, size=length(model_random$initial_values), replace = TRUE)
+#
+# template <- processedBWDCE$data_original
+# model_type <- "one-factor"
+#
+# results <- simulate_dataset(template, model_type, chosen_values)
+# results$C$loglikf$estimate
+# results$R$loglikf$estimate
+#
+# round(abs(chosen_values-results$C$loglikf$estimate)/results$C$results$standard_errors, 2)
+# round(abs(chosen_values-results$R$loglikf$estimate)/results$R$results$standard_errors, 2)
 
-processedDCE <- setUp(DCEpriorities[DCEpriorities$ID < 1030, ])
-processedBW <- setUp(BWpriorities[BWpriorities$ID < 1030, ])
-processedBW_rem <- remove_variables(processedBW, "Accessibility_BW")
+############################################################################################
 
 processedBWDCE <- join_choicedatasets(processedBW_rem, processedDCE)
 model_mtmm <- loadEMIWorkbook(processedBWDCE, "./TESTING_DUMP/EMI_mtmm.xlsx")
 
-chosen_values <- sample(0:3, size=length(model_mtmm$initial_values), replace = TRUE)
+chosen_values <- c(rep(0,18), rep(0,36), sample(1:3, 9, replace = T))#model_mtmm$initial_values #sample(0:3, size=length(model_mtmm$initial_values), replace = TRUE)
 template <- processedBWDCE$data_original
 model_type <- "mtmm"
 
 results <- simulate_dataset(template, model_type, chosen_values)
 results$C$loglikf$estimate
-#results$R$loglikf$estimate
+results$R$loglikf$estimate
 
 round(abs(chosen_values-results$C$loglikf$estimate)/results$C$results$standard_errors, 2)
-#round(abs(chosen_values-results$R$loglikf$estimate)/results$R$results$standard_errors, 2)
+round(abs(chosen_values-results$R$loglikf$estimate)/results$R$results$standard_errors, 2)
 
 ############################################################################################
 
