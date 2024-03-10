@@ -48,11 +48,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// llCalc_ghq_e
+double llCalc_ghq_e(const arma::vec& working_values, Rcpp::List model, Rcpp::List processed, const arma::mat& ghq_matrix1);
+RcppExport SEXP _DCM_llCalc_ghq_e(SEXP working_valuesSEXP, SEXP modelSEXP, SEXP processedSEXP, SEXP ghq_matrix1SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::vec& >::type working_values(working_valuesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type model(modelSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type processed(processedSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type ghq_matrix1(ghq_matrix1SEXP);
+    rcpp_result_gen = Rcpp::wrap(llCalc_ghq_e(working_values, model, processed, ghq_matrix1));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_DCM_frequencyDistributionCpp", (DL_FUNC) &_DCM_frequencyDistributionCpp, 1},
     {"_DCM_createConceptsCpp", (DL_FUNC) &_DCM_createConceptsCpp, 2},
     {"_DCM_llMax_ghq", (DL_FUNC) &_DCM_llMax_ghq, 4},
+    {"_DCM_llCalc_ghq_e", (DL_FUNC) &_DCM_llCalc_ghq_e, 4},
     {NULL, NULL, 0}
 };
 

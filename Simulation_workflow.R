@@ -128,6 +128,7 @@ simulation <- function(chosen_values,  model,  processed) {
 
   data2 <- data
   nlines  <-  dim(data)[1]
+
   for (i in 1:nlines) {
 
     options <- data[i, (1:nmax_choiceset_size) + 4]
@@ -142,6 +143,10 @@ simulation <- function(chosen_values,  model,  processed) {
 
   new_orig_data <- setNames(data.frame(matrix(ncol = 3+length(processed$attribute_names), nrow = 0)), c("ID", "ChoiceSet", "Choice", processed$attribute_names))
 
+
+  concept2  <- processed$concept
+  colnames(concept2) <- processed$attribute_names
+
   choice_set_counter <- 0
   ID_check <- data2[1, 1]
 
@@ -155,8 +160,15 @@ simulation <- function(chosen_values,  model,  processed) {
 
     choice_locator <- which(data2[j, (1:nmax_choiceset_size) + 4]  ==     data2[j, 2])
 
+
+
+
     for(k in 1:nmax_choiceset_size){
-      new_orig_data <- new_orig_data %>% add_row(ID = data2[j, 1], ChoiceSet = choice_set_counter, Choice = 1*(choice_locator==k),   processed$data_original[data2[j, k+4], 4:(3+length(processed$attribute_names))])
+      temp_list <- data.frame(matrix(c(data2[j, 1],choice_set_counter, 1*(choice_locator==k),  concept2[data2[j, k+4], ]), nrow=1))
+      if(length(temp_list) > 3){
+        names(temp_list) <- names(new_orig_data)
+        new_orig_data <- bind_rows(new_orig_data, temp_list)
+      }
     }
 
   }
@@ -164,11 +176,11 @@ simulation <- function(chosen_values,  model,  processed) {
   return(new_orig_data)
 }
 
-simulate_dataset <- function(template, model_type, chosen_values, Ron=FALSE){
+simulate_dataset <- function(processed, model_type, chosen_values, Ron=FALSE, easy_guess=FALSE){
 
 
 
-  processed <- setUp(template)
+  #processed <- setUp(template)
   model <- model_generator(processed, model_type)
   test_sims <- simulation(chosen_values,  model,  processed)
 
@@ -176,7 +188,13 @@ simulate_dataset <- function(template, model_type, chosen_values, Ron=FALSE){
 
   processed_sims <- setUp(test_sims)
   model_sims <- model_generator(processed_sims, model_type)
+
+  if(easy_guess){
+    model_sims$initial_values <- chosen_values
+  }
+
   results_sims_C <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
+
   if(Ron){
     results_sims_R <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
   }else{
@@ -188,148 +206,206 @@ simulate_dataset <- function(template, model_type, chosen_values, Ron=FALSE){
 library(DCM)
 library(mvtnorm)
 library(tidyverse)
+library(AlgDesign)
 
-m <- 100
-#-----------------------------
-# define attributes and levels
-#-----------------------------
-desVarNames <- c("Safety", "Reliability", "Comfort")
-desLevels <- c(4, 4, 4)
-n <- 4       #number of choice sets
-desOpt <- 4  #num option per choice set
-#generate full factorial
-dat<-gen.factorial(desLevels, length(desLevels), varNames=desVarNames, center=TRUE)
+big_list <- list()
+n_sims <- 1000
+m_list <- c(100, 200, 500, 1000)
 
-destT <- optFederov(~., dat, nTrials = (n*(desOpt)), criterion="D")
-design_ouput <- destT$design*0.2
+for (m in m_list){
+
+  m_size <- paste0("m_", m)
+  #m <- 200
+  #-----------------------------
+  # define attributes and levels
+  #-----------------------------
+  desVarNames <- c("Safety", "Reliability")#, "Comfort", "Convenience")
+  desLevels <- c(4, 4)#, 4, 4)
+  n <- 2      #number of choice sets
+  desOpt <- 4  #num option per choice set
+  #generate full factorial
+  dat<-gen.factorial(desLevels, length(desLevels), varNames=desVarNames, center=TRUE)
+
+  destT <- optFederov(~., dat, nTrials = (n*(desOpt)), criterion="D")
+  design_ouput <- destT$design*0.2
 
 
 
-list_df <- list()
+  list_df <- list()
 
-for(i in 1:m){
+  for(i in 1:m){
 
-  list_df[[i]] <- data.frame(ID=1000+i,
-                             ChoiceSet = rep(1:n, each=desOpt),
-                             Choice = sample(c(rep(0,desOpt-1), 1), desOpt),
-                             Safety_DCE = design_ouput[, 1],
-                             Reliability_DCE = design_ouput[, 2],
-                             Comfort_DCE = design_ouput[, 3])
+    list_df[[i]] <- data.frame(ID=1000+i,
+                               ChoiceSet = rep(1:n, each=desOpt),
+                               Choice = sample(c(rep(0,desOpt-1), 1), desOpt),
+                               Safety_DCE = design_ouput[, 1],
+                               Reliability_DCE = design_ouput[, 2]
+                               )
+  }
+  template_DCE <- bind_rows(list_df)
+
+
+  l <- length(desLevels) + 1
+
+  design_ouput2 <- crossdes::find.BIB(l, 4, 3, iter = 30)
+
+  res <- matrix(0, nrow = 24, ncol = length(desLevels)+1)
+
+
+  res <- matrix(c(
+    c(1, -1, 0),
+    c(-1, 1, 0),
+    c(1, 0, -1),
+    c(-1, 0, 1),
+    c(0, 1, -1),
+    c(0, -1, 1)
+  ), ncol=3, byrow =TRUE)
+
+
+  for(i in 1:m){
+
+    list_df[[i]] <- data.frame(ID=1000+i,
+                               ChoiceSet = rep(1:3, each=2),
+                               Choice = sample(c(rep(0,2-1), 1), 2),
+                               Safety_BW = res[, 1],
+                               Reliability_BW = res[, 2],
+                               Comfort_BW =  res[, 3]
+                               )
+
+  }
+
+  template_BW <- bind_rows(list_df)
+  template_BW2 <- template_BW[, 1:5]
+
+
+  processed_template_BW <- setUp(template_BW)
+  processed_template_BW  <- remove_variables(processed_template_BW, "Comfort_BW")
+
+  processed_template_DCE <- setUp(template_DCE)
+
+
+  processed_template_BWDCE  <- join_choicedatasets(processed_template_BW , processed_template_DCE)
+
+
+
+
+  ############################################################################################
+
+  processed1 <- processed_template_DCE
+  chosen_values1 <- c(2, 1)
+
+  processed2 <- processed_template_BW
+  chosen_values2 <- c(2, 1)
+
+  processed3 <- processed_template_BWDCE
+  chosen_values3 <- c(2, 1, 2, 1)
+
+  model_type <- "fixed"
+
+  big_list[[m_size]][[model_type]][["DCE"]][["specs"]] <- list(values = chosen_values1, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed1)
+  big_list[[m_size]][[model_type]][["BW"]][["specs"]] <- list(values = chosen_values2, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed2)
+  big_list[[m_size]][[model_type]][["BWDCE"]][["specs"]] <- list(values = chosen_values3, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed3)
+
+  for(i in 1:n_sims){
+
+    big_list[[m_size]][[model_type]][["DCE"]][["results"]][[i]] <- simulate_dataset(processed1, model_type, chosen_values1, Ron=FALSE, easy_guess=TRUE)
+    big_list[[m_size]][[model_type]][["BW"]][["results"]][[i]] <- simulate_dataset(processed2, model_type, chosen_values2, Ron=FALSE, easy_guess=TRUE)
+    big_list[[m_size]][[model_type]][["BWDCE"]][["results"]][[i]] <- simulate_dataset(processed3, model_type, chosen_values3, Ron=FALSE, easy_guess=TRUE)
+    save(big_list, file="./TESTING_DUMP/simulations.Rdata")
+  }
+
+  # ks.test(list1, "pnorm", mean = 0, sd = 1) # DCE C
+  # ks.test(list2, "pnorm", mean = 0, sd = 1) # BW C
+  # ks.test(list3, "pnorm", mean = 0, sd = 1) # BWDCE C
+
+
+  # ############################################################################################
+
+
+  model_type <- "random"
+
+  chosen_values1 <- c(2, 1, 0.2, 0.1)
+  chosen_values2 <- c(2, 1, 0.2, 0.1)
+  chosen_values3 <- c(2, 1, 2, 1, 0.2, 0.1, 0.2, 0.1)
+
+  big_list[[m_size]][[model_type]][["DCE"]][["specs"]] <- list(values = chosen_values1, n_sims = n_sims, m=m, easy_guess=TRUE,template = processed1)
+  big_list[[m_size]][[model_type]][["BW"]][["specs"]] <- list(values = chosen_values2, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed2)
+  big_list[[m_size]][[model_type]][["BWDCE"]][["specs"]] <- list(values = chosen_values3, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed3)
+
+  for(i in 1:n_sims){
+
+    big_list[[m_size]][[model_type]][["DCE"]][["results"]][[i]] <- simulate_dataset(processed1, model_type, chosen_values1, Ron=FALSE, easy_guess=TRUE)
+    big_list[[m_size]][[model_type]][["BW"]][["results"]][[i]] <- simulate_dataset(processed2, model_type, chosen_values2, Ron=FALSE, easy_guess=TRUE)
+    big_list[[m_size]][[model_type]][["BWDCE"]][["results"]][[i]] <- simulate_dataset(processed3, model_type, chosen_values3, Ron=FALSE, easy_guess=TRUE)
+    save(big_list, file="./TESTING_DUMP/simulations.Rdata")
+  }
+
+  # ks.test(list1, "pnorm", mean = 0, sd = 1) # DCE C
+  # ks.test(list2, "pnorm", mean = 0, sd = 1) # BW C
+  # ks.test(list3, "pnorm", mean = 0, sd = 1) # BWDCE C
+
+
+  # ############################################################################################
+
+
+  model_type <- "one-factor"
+
+  chosen_values1 <- c(2, 1, 0.5, 0.5)
+  chosen_values2 <- c(2, 1, 0.5, 0.5)
+  chosen_values3 <- c(2, 1, 2, 1, 0.5, 0.5, 0.5, 0.5)
+
+  big_list[[m_size]][[model_type]][["DCE"]][["specs"]] <- list(values = chosen_values1, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed1)
+  big_list[[m_size]][[model_type]][["BW"]][["specs"]] <- list(values = chosen_values2, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed2)
+  big_list[[m_size]][[model_type]][["BWDCE"]][["specs"]] <- list(values = chosen_values3, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed3)
+
+  for(i in 1:n_sims){
+
+    big_list[[m_size]][[model_type]][["DCE"]][["results"]][[i]] <- simulate_dataset(processed1, model_type, chosen_values1, Ron=FALSE, easy_guess=TRUE)
+    big_list[[m_size]][[model_type]][["BW"]][["results"]][[i]] <- simulate_dataset(processed2, model_type, chosen_values2, Ron=FALSE, easy_guess=TRUE)
+    big_list[[m_size]][[model_type]][["BWDCE"]][["results"]][[i]] <- simulate_dataset(processed3, model_type, chosen_values3, Ron=FALSE, easy_guess=TRUE)
+    save(big_list, file="./TESTING_DUMP/simulations.Rdata")
+  }
+
+
+  # ############################################################################################
+
+  #createEMIWorkbook(processed3,  "mtmm",  working_folder = "./TESTING_DUMP")
+  model_mtmm <- loadEMIWorkbook(processed3, "./TESTING_DUMP/EMI_mtmm.xlsx")
+  model_type <- "mtmm"
+
+
+  #runModel(model_mtmm,  dev_mode = "C",  ghq_size = 3, verbose = 2)
+
+
+  chosen_values3 <- c(
+    c(2, 1, 2, 1),
+    c(2, 3, -.2, 0.4),
+    c(3, 1, 0.6, 0.1),
+    c(-0.3, -1.2)
+  )
+
+
+  big_list[[m_size]][[model_type]][["DCE"]][["specs"]] <- NA
+  big_list[[m_size]][[model_type]][["BW"]][["specs"]] <- NA
+  big_list[[m_size]][[model_type]][["BWDCE"]][["specs"]] <- list(values = chosen_values3, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed3)
+
+  for(i in 1:n_sims){
+
+      big_list[[m_size]][[model_type]][["BWDCE"]][["results"]][[i]] <- simulate_dataset(processed3, model_type, chosen_values3, Ron=FALSE, easy_guess=TRUE)
+      save(big_list, file="./TESTING_DUMP/simulations.Rdata")
+  }
+
+
+
+  #ks.test(list1, "pnorm", mean = 0, sd = 1) # DCE C
+  #ks.test(list2, "pnorm", mean = 0, sd = 1) # BW C
+  #ks.test(list3_mtmm, "pnorm", mean = 0, sd = 1) # BWDCE C
+
+  save(big_list, file="./TESTING_DUMP/simulations.Rdata")
+
 }
-template_DCE <- bind_rows(list_df)
 
-
-list_df <- list()
-
-
-
-desVarNames <- c("Safety", "Reliability", "Comfort")
-desLevels <- c(3, 3, 3)
-n <- 4       #number of choice sets
-desOpt <- 4  #num option per choice set
-#generate full factorial
-dat<-gen.factorial(desLevels, length(desLevels), varNames=desVarNames, center=TRUE)
-
-dat[rowSums(dat)==0,]
-
-
-combos <- matrix(c(c(0, 0, 1, -1, 1, -1) , c( -1, 1, 0, 0, -1, 1), c(1, -1, -1, 1, 0, 0)),ncol = 3)
-
-combos2 <-rbind(combos[1:4, ], combos[3:6, ], combos[c(1:2, 5:6), ], combos[1:4, ])
-
-size <- 4
-
-for(i in 1:m){
-
-  list_df[[i]] <- data.frame(ID=1000+i,
-                             ChoiceSet = rep(1:4, each=size),
-                             Choice = sample(c(rep(0,size-1), 1), size),
-                             Safety_BW = combos2[, 1],
-                             Reliability_BW = combos2[, 2],
-                             Comfort_BW =  combos2[, 3])
-}
-template_BW <- bind_rows(list_df)
-
-processed_template_BW <- setUp(template_BW)
-processed_template_DCE <- setUp(template_DCE)
-
-joined <- join_choicedatasets(processed_template_BW, processed_template_DCE)
-model_fixed <- model_generator(joined, "one-factor")
-
-chosen_values <- c(2, -1, -1, 1, -0.5,-0.5, rep(0.1, 6))
-template <- joined$data_original
-model_type <- "one-factor"
-
-results <- simulate_dataset(template, model_type, chosen_values)
-
-results$C$loglikf$estimate
-round(abs(chosen_values-results$C$loglikf$estimate)/results$C$results$standard_errors, 2)
-
-############################################################################################
-
-chosen_values <- c(2, -1, -1)
-template <- template_DCE
-model_type <- "fixed"
-
-results <- simulate_dataset(template, model_type, chosen_values)
-
-results$C$loglikf$estimate
-round(abs(chosen_values-results$C$loglikf$estimate)/results$C$results$standard_errors, 2)
-
-
-
-
-
-
-#array(0, length(model_fixed$initial_values))
-
-
-
-part1 <- rep(sample(1:3, size=9, replace = TRUE),2)
-part2 <- sqrt(part1)
-chosen_values <- c(part1, part2)
-template <- processedBWDCE$data_original
-model_type <- "random"
-
-results <- simulate_dataset(template, model_type, chosen_values)
-
-results$C$loglikf$estimate
-results$R$loglikf$estimate
-
-round(abs(chosen_values-results$C$loglikf$estimate)/results$C$results$standard_errors, 2)
-round(abs(chosen_values-results$R$loglikf$estimate)/results$R$results$standard_errors, 2)
-
-############################################################################################
-
-# chosen_values <- sample(0:3, size=length(model_random$initial_values), replace = TRUE)
-#
-# template <- processedBWDCE$data_original
-# model_type <- "one-factor"
-#
-# results <- simulate_dataset(template, model_type, chosen_values)
-# results$C$loglikf$estimate
-# results$R$loglikf$estimate
-#
-# round(abs(chosen_values-results$C$loglikf$estimate)/results$C$results$standard_errors, 2)
-# round(abs(chosen_values-results$R$loglikf$estimate)/results$R$results$standard_errors, 2)
-
-############################################################################################
-
-processedBWDCE <- join_choicedatasets(processedBW_rem, processedDCE)
-model_mtmm <- loadEMIWorkbook(processedBWDCE, "./TESTING_DUMP/EMI_mtmm.xlsx")
-
-chosen_values <- c(rep(0,18), rep(0,36), sample(1:3, 9, replace = T))#model_mtmm$initial_values #sample(0:3, size=length(model_mtmm$initial_values), replace = TRUE)
-template <- processedBWDCE$data_original
-model_type <- "mtmm"
-
-results <- simulate_dataset(template, model_type, chosen_values)
-results$C$loglikf$estimate
-results$R$loglikf$estimate
-
-round(abs(chosen_values-results$C$loglikf$estimate)/results$C$results$standard_errors, 2)
-round(abs(chosen_values-results$R$loglikf$estimate)/results$R$results$standard_errors, 2)
-
-############################################################################################
+save(big_list, file="./TESTING_DUMP/simulations.Rdata")
 
 
 

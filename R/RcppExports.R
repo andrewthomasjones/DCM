@@ -25,3 +25,7 @@ llMax_ghq <- function(model, processed, ghq_matrix1, nlm_params) {
     .Call('_DCM_llMax_ghq', PACKAGE = 'DCM', model, processed, ghq_matrix1, nlm_params)
 }
 
+llCalc_ghq_e <- function(working_values, model, processed, ghq_matrix1) {
+    .Call('_DCM_llCalc_ghq_e', PACKAGE = 'DCM', working_values, model, processed, ghq_matrix1)
+}
+
