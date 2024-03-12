@@ -1,6 +1,23 @@
 library(DCM)
 library(tictoc)
 
+processed <- setUp(BWpriorities)
+processed <- remove_variables(processed, "Accessibility_BW" )
+model<- model_generator(processed, "fixed")
+res <- runModel(model)
+chosen_values <- res$results$estimate
+
+
+
+s1 <- scores(chosen_values,  model,  processed)
+
+a <- t(s1) %*% s1
+
+b <- solve(res$loglikf$hessian) %*% a %*% solve(res$loglikf$hessian)
+sqrt(diag(b))
+sqrt(diag(solve(res$loglikf$hessian)))
+
+
 processedDCE <- setUp(DCEpriorities)
 processedBW <- setUp(BWpriorities)
 
@@ -8,6 +25,47 @@ processedBW <- setUp(BWpriorities)
 
 gt <- 1e-6
 st <- 1e-6
+
+model_fixed <- model_generator(processedDCE, "fixed")
+test_fixed_C_DCE <- runModel(model_fixed,  dev_mode = "C",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
+
+
+standard_errors <- sqrt(diag(solve(test_fixed_C_DCE$loglikf$hessian)))
+standard_errors
+
+
+
+delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = model_fixed$npp + model_fixed$nhop,
+                                                    type = "GHN",
+                                                    level = 3,
+                                                    ndConstruction = "sparse"))
+
+ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
+
+hessian2 <- numDeriv::hessian(func = llCalc,
+                              x = test_fixed_C_DCE$loglikf$estimate,
+                              method.args=list(eps=1e-4,
+                                               d=0.01, zero.tol=sqrt(.Machine$double.eps/7e-7), r=4, v=2, show.details=TRUE),
+                              model = model_fixed,
+                              processed = model_fixed$data,
+                              ghq_matrix1 = as.matrix(ghq_matrix1)
+)
+
+
+
+
+standard_errors <- sqrt(diag(solve(hessian2)))
+standard_errors
+
+
+
+
+solve(hessian2) %*% %*% solve(hessian2)
+
+
+
+
+
 
 
 

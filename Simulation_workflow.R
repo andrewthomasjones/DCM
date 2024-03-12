@@ -3,6 +3,166 @@
 #' @param chosen_values vector
 #' @param model model to base simulations on
 #' @param processed data to base simulations on
+#' @returns scores
+#' @export
+scores <- function(chosen_values,  model,  processed) {
+
+  concept  <-  processed$concept
+  nmax_choiceset_size  <- processed$nmax_choiceset_size
+  data  <-  processed$data
+  ndecisionmakers  <-  processed$ndecisionmakers
+
+  epsilonmatrix <- model$epsilon
+  deltamatrix <- model$delta
+  gammamatrix <- model$gamma
+  deltamatrix <- model$delta
+  betamatrix <- model$beta
+  #phimatrix <- model$phi
+
+  npp <- model$npp
+  nhop <- model$nhop
+
+  muepsilonparameters <- array(0, npp)
+  mudeltaparameters <- array(0, nhop)
+  sigmaepsilonparameters <- array(0, npp)
+  sigmadeltaparameters <- array(0, nhop)
+
+  gammaparameters <- gammamatrix * 0
+  betaparameters <- betamatrix * 0
+  #phiparameters <- phimatrix * 0
+
+  m <- 0
+
+  for (i in 1:npp) {
+
+    if (epsilonmatrix[i, 1] == 1) {
+      m <- m + 1
+      muepsilonparameters[i] <- chosen_values[m]
+    }
+
+    if (epsilonmatrix[i, 1] == -1) muepsilonparameters[i] <- 1
+  }
+
+  for (i in 1:nhop) {
+
+    if (deltamatrix[i, 1] == 1) {
+
+      m <- m + 1
+      mudeltaparameters[i] <- chosen_values[m]
+    }
+
+    if (deltamatrix[i, 1] == -1) {
+      mudeltaparameters[i] <- 1
+    }
+  }
+
+
+  for (i in 1:npp) {
+
+    if (epsilonmatrix[i, 2] == 1) {
+      m <- m + 1
+      sigmaepsilonparameters[i] <- abs(chosen_values[m])
+    }
+
+    if (epsilonmatrix[i, 2] == -1) {
+      sigmaepsilonparameters[i] <- 1
+    }
+  }
+
+
+  for (i in 1:nhop) {
+
+    if (deltamatrix[i, 2] == 1) {
+      m <- m + 1
+      sigmadeltaparameters[i] <- abs(chosen_values[m])
+    }
+
+    if (deltamatrix[i, 2] == -1) {
+      sigmadeltaparameters[i] <- 1
+    }
+  }
+
+
+  for (j in 1: nhop) {
+    for (i in 1:npp) {
+      if (gammamatrix[i, j] == 1) {
+        m <- m + 1
+        gammaparameters[i, j] <- chosen_values[m]
+      }
+      if (gammamatrix[i, j] == -1) {
+        gammaparameters[i, j] <- 1
+      }
+    }
+  }
+
+
+
+  for (j in 1:nhop) {
+    for (i in 1:nhop) {
+      if (betamatrix[i, j] == 1) {
+        m <- m + 1
+        betaparameters[i, j] <- chosen_values[m]
+      }
+      if (betamatrix[i, j] == -1) {
+        betaparameters[i, j] <- 1
+      }
+    }
+  }
+
+
+  gb <- diag(nhop) - betaparameters
+  gb <- solve(gb)
+  gb  <-  gammaparameters %*% gb
+
+
+  delta <- matrix(0, nrow = 1, ncol = length(mudeltaparameters))
+  epsilon <- matrix(0, nrow = 1, ncol= length(muepsilonparameters))
+
+  gb  <-  gb %*% t(delta)
+  gb <- gb + t(epsilon)
+
+
+  conceptuse <- concept %*% model$code
+  gb <- conceptuse %*% gb
+  gb <- exp(gb)
+
+
+  nlines  <-  dim(data)[1]
+
+  scores <-  matrix(0, nrow = nlines , ncol = dim(concept)[2])
+
+  for (i in 1:nlines) {
+
+    options <- data[i, (1:nmax_choiceset_size) + 4]
+
+    options <- options[options>0]
+    probs <- gb[options, ]
+    probs <- probs/sum(probs)
+    choice <-  which(options == data[i, 2])
+    d_i <- rep(0, length(probs))
+    d_i[choice] <- 1
+
+    scores[i, ] <- t(d_i - probs) %*% concept[options, ]
+  }
+
+  return(scores)
+}
+
+
+
+
+
+
+
+
+
+
+
+#' does sims
+#' not used - C++ version is
+#' @param chosen_values vector
+#' @param model model to base simulations on
+#' @param processed data to base simulations on
 #' @returns loglik
 #' @export
 simulation <- function(chosen_values,  model,  processed) {
@@ -178,30 +338,46 @@ simulation <- function(chosen_values,  model,  processed) {
 
 simulate_dataset <- function(processed, model_type, chosen_values, Ron=FALSE, easy_guess=FALSE){
 
+  tryCatch(
+    expr = {
+
+      #processed <- setUp(template)
+      model <- model_generator(processed, model_type)
+      test_sims <- simulation(chosen_values,  model,  processed)
 
 
-  #processed <- setUp(template)
-  model <- model_generator(processed, model_type)
-  test_sims <- simulation(chosen_values,  model,  processed)
 
+      processed_sims <- setUp(test_sims)
+      model_sims <- model_generator(processed_sims, model_type)
 
+      if(easy_guess){
+        model_sims$initial_values <- chosen_values
+      }
 
-  processed_sims <- setUp(test_sims)
-  model_sims <- model_generator(processed_sims, model_type)
+      results_sims_C <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
 
-  if(easy_guess){
-    model_sims$initial_values <- chosen_values
-  }
-
-  results_sims_C <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
-
-  if(Ron){
-    results_sims_R <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
-  }else{
-    results_sims_R <- NA
-  }
-  return(list(C = results_sims_C, R = results_sims_R))
+      if(Ron){
+        results_sims_R <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
+      }else{
+        results_sims_R <- NA
+      }
+      return(list(C = results_sims_C, R = results_sims_R))
+    },
+    error = function(e){
+        #message('Caught an error!')
+      print(e)
+      return(list(C = NA, R = NA))
+    },
+    warning = function(w){
+      print(w)
+      return(list(C = NA, R = NA))
+    },
+    finally = {
+      #message('All done, quitting.')
+    }
+  )
 }
+
 
 library(DCM)
 library(mvtnorm)
@@ -307,13 +483,14 @@ for (m in m_list){
   big_list[[m_size]][[model_type]][["BWDCE"]][["specs"]] <- list(values = chosen_values3, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed3)
 
   for(i in 1:n_sims){
-
+    message(paste("sim:", i))
     big_list[[m_size]][[model_type]][["DCE"]][["results"]][[i]] <- simulate_dataset(processed1, model_type, chosen_values1, Ron=FALSE, easy_guess=TRUE)
     big_list[[m_size]][[model_type]][["BW"]][["results"]][[i]] <- simulate_dataset(processed2, model_type, chosen_values2, Ron=FALSE, easy_guess=TRUE)
     big_list[[m_size]][[model_type]][["BWDCE"]][["results"]][[i]] <- simulate_dataset(processed3, model_type, chosen_values3, Ron=FALSE, easy_guess=TRUE)
-    save(big_list, file="./TESTING_DUMP/simulations.Rdata")
-  }
 
+  }
+  save(big_list, file="./TESTING_DUMP/simulations.Rdata")
+}
   # ks.test(list1, "pnorm", mean = 0, sd = 1) # DCE C
   # ks.test(list2, "pnorm", mean = 0, sd = 1) # BW C
   # ks.test(list3, "pnorm", mean = 0, sd = 1) # BWDCE C
