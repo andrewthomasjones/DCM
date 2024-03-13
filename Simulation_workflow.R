@@ -336,7 +336,7 @@ simulation <- function(chosen_values,  model,  processed) {
   return(new_orig_data)
 }
 
-simulate_dataset <- function(processed, model_type, chosen_values, Ron=FALSE, easy_guess=FALSE){
+simulate_dataset <- function(processed, model_type, chosen_values, Drawson=FALSE, easy_guess=FALSE, ghq_size = 3, draws = 100){
 
   tryCatch(
     expr = {
@@ -356,41 +356,23 @@ simulate_dataset <- function(processed, model_type, chosen_values, Ron=FALSE, ea
 
       results_sims_C <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
 
-      if(Ron){
-        results_sims_R <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
+      if(Drawson){
+        results_sims_D <- runModel(model_sims,  dev_mode = "Cdraws",  draws = 100, verbose = 0)
       }else{
-        results_sims_R <- NA
+        results_sims_D <- NA
       }
-      return(list(C = results_sims_C, R = results_sims_R))
+      return(list(C = results_sims_C, D = results_sims_D))
     },
     error = function(e){
         #message('Caught an error!')
-      print(e)
-      return(list(C = NA, R = NA))
-    },
-    warning = function(w){
-      print(w)
-      return(list(C = NA, R = NA))
-    },
-    finally = {
-      #message('All done, quitting.')
+      #print(e)
+      return(list(C = NA, D = NA))
     }
   )
 }
 
 
-library(DCM)
-library(mvtnorm)
-library(tidyverse)
-library(AlgDesign)
-
-big_list <- list()
-n_sims <- 1000
-m_list <- c(100, 200, 500, 1000)
-
-for (m in m_list){
-
-  m_size <- paste0("m_", m)
+simulate_data <- function(m){
   #m <- 200
   #-----------------------------
   # define attributes and levels
@@ -416,7 +398,7 @@ for (m in m_list){
                                Choice = sample(c(rep(0,desOpt-1), 1), desOpt),
                                Safety_DCE = design_ouput[, 1],
                                Reliability_DCE = design_ouput[, 2]
-                               )
+    )
   }
   template_DCE <- bind_rows(list_df)
 
@@ -446,7 +428,7 @@ for (m in m_list){
                                Safety_BW = res[, 1],
                                Reliability_BW = res[, 2],
                                Comfort_BW =  res[, 3]
-                               )
+    )
 
   }
 
@@ -456,136 +438,74 @@ for (m in m_list){
 
   processed_template_BW <- setUp(template_BW)
   processed_template_BW  <- remove_variables(processed_template_BW, "Comfort_BW")
-
   processed_template_DCE <- setUp(template_DCE)
-
-
   processed_template_BWDCE  <- join_choicedatasets(processed_template_BW , processed_template_DCE)
 
+  processed <- list()
 
+  processed[["DCE"]] <- processed_template_DCE
+  processed[["BW"]] <- processed_template_BW
+  processed[["BWDCE"]] <- processed_template_BWDCE
 
-
-  ############################################################################################
-
-  processed1 <- processed_template_DCE
-  chosen_values1 <- c(2, 1)
-
-  processed2 <- processed_template_BW
-  chosen_values2 <- c(2, 1)
-
-  processed3 <- processed_template_BWDCE
-  chosen_values3 <- c(2, 1, 2, 1)
-
-  model_type <- "fixed"
-
-  big_list[[m_size]][[model_type]][["DCE"]][["specs"]] <- list(values = chosen_values1, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed1)
-  big_list[[m_size]][[model_type]][["BW"]][["specs"]] <- list(values = chosen_values2, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed2)
-  big_list[[m_size]][[model_type]][["BWDCE"]][["specs"]] <- list(values = chosen_values3, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed3)
-
-  for(i in 1:n_sims){
-    message(paste("sim:", i))
-    big_list[[m_size]][[model_type]][["DCE"]][["results"]][[i]] <- simulate_dataset(processed1, model_type, chosen_values1, Ron=FALSE, easy_guess=TRUE)
-    big_list[[m_size]][[model_type]][["BW"]][["results"]][[i]] <- simulate_dataset(processed2, model_type, chosen_values2, Ron=FALSE, easy_guess=TRUE)
-    big_list[[m_size]][[model_type]][["BWDCE"]][["results"]][[i]] <- simulate_dataset(processed3, model_type, chosen_values3, Ron=FALSE, easy_guess=TRUE)
-
-  }
-  save(big_list, file="./TESTING_DUMP/simulations.Rdata")
-}
-  # ks.test(list1, "pnorm", mean = 0, sd = 1) # DCE C
-  # ks.test(list2, "pnorm", mean = 0, sd = 1) # BW C
-  # ks.test(list3, "pnorm", mean = 0, sd = 1) # BWDCE C
-
-
-  # ############################################################################################
-
-
-  model_type <- "random"
-
-  chosen_values1 <- c(2, 1, 0.2, 0.1)
-  chosen_values2 <- c(2, 1, 0.2, 0.1)
-  chosen_values3 <- c(2, 1, 2, 1, 0.2, 0.1, 0.2, 0.1)
-
-  big_list[[m_size]][[model_type]][["DCE"]][["specs"]] <- list(values = chosen_values1, n_sims = n_sims, m=m, easy_guess=TRUE,template = processed1)
-  big_list[[m_size]][[model_type]][["BW"]][["specs"]] <- list(values = chosen_values2, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed2)
-  big_list[[m_size]][[model_type]][["BWDCE"]][["specs"]] <- list(values = chosen_values3, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed3)
-
-  for(i in 1:n_sims){
-
-    big_list[[m_size]][[model_type]][["DCE"]][["results"]][[i]] <- simulate_dataset(processed1, model_type, chosen_values1, Ron=FALSE, easy_guess=TRUE)
-    big_list[[m_size]][[model_type]][["BW"]][["results"]][[i]] <- simulate_dataset(processed2, model_type, chosen_values2, Ron=FALSE, easy_guess=TRUE)
-    big_list[[m_size]][[model_type]][["BWDCE"]][["results"]][[i]] <- simulate_dataset(processed3, model_type, chosen_values3, Ron=FALSE, easy_guess=TRUE)
-    save(big_list, file="./TESTING_DUMP/simulations.Rdata")
-  }
-
-  # ks.test(list1, "pnorm", mean = 0, sd = 1) # DCE C
-  # ks.test(list2, "pnorm", mean = 0, sd = 1) # BW C
-  # ks.test(list3, "pnorm", mean = 0, sd = 1) # BWDCE C
-
-
-  # ############################################################################################
-
-
-  model_type <- "one-factor"
-
-  chosen_values1 <- c(2, 1, 0.5, 0.5)
-  chosen_values2 <- c(2, 1, 0.5, 0.5)
-  chosen_values3 <- c(2, 1, 2, 1, 0.5, 0.5, 0.5, 0.5)
-
-  big_list[[m_size]][[model_type]][["DCE"]][["specs"]] <- list(values = chosen_values1, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed1)
-  big_list[[m_size]][[model_type]][["BW"]][["specs"]] <- list(values = chosen_values2, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed2)
-  big_list[[m_size]][[model_type]][["BWDCE"]][["specs"]] <- list(values = chosen_values3, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed3)
-
-  for(i in 1:n_sims){
-
-    big_list[[m_size]][[model_type]][["DCE"]][["results"]][[i]] <- simulate_dataset(processed1, model_type, chosen_values1, Ron=FALSE, easy_guess=TRUE)
-    big_list[[m_size]][[model_type]][["BW"]][["results"]][[i]] <- simulate_dataset(processed2, model_type, chosen_values2, Ron=FALSE, easy_guess=TRUE)
-    big_list[[m_size]][[model_type]][["BWDCE"]][["results"]][[i]] <- simulate_dataset(processed3, model_type, chosen_values3, Ron=FALSE, easy_guess=TRUE)
-    save(big_list, file="./TESTING_DUMP/simulations.Rdata")
-  }
-
-
-  # ############################################################################################
-
-  #createEMIWorkbook(processed3,  "mtmm",  working_folder = "./TESTING_DUMP")
-  model_mtmm <- loadEMIWorkbook(processed3, "./TESTING_DUMP/EMI_mtmm.xlsx")
-  model_type <- "mtmm"
-
-
-  #runModel(model_mtmm,  dev_mode = "C",  ghq_size = 3, verbose = 2)
-
-
-  chosen_values3 <- c(
-    c(2, 1, 2, 1),
-    c(2, 3, -.2, 0.4),
-    c(3, 1, 0.6, 0.1),
-    c(-0.3, -1.2)
-  )
-
-
-  big_list[[m_size]][[model_type]][["DCE"]][["specs"]] <- NA
-  big_list[[m_size]][[model_type]][["BW"]][["specs"]] <- NA
-  big_list[[m_size]][[model_type]][["BWDCE"]][["specs"]] <- list(values = chosen_values3, n_sims = n_sims, m=m, easy_guess=TRUE, template = processed3)
-
-  for(i in 1:n_sims){
-
-      big_list[[m_size]][[model_type]][["BWDCE"]][["results"]][[i]] <- simulate_dataset(processed3, model_type, chosen_values3, Ron=FALSE, easy_guess=TRUE)
-      save(big_list, file="./TESTING_DUMP/simulations.Rdata")
-  }
-
-
-
-  #ks.test(list1, "pnorm", mean = 0, sd = 1) # DCE C
-  #ks.test(list2, "pnorm", mean = 0, sd = 1) # BW C
-  #ks.test(list3_mtmm, "pnorm", mean = 0, sd = 1) # BWDCE C
-
-  save(big_list, file="./TESTING_DUMP/simulations.Rdata")
-
+  return(processed)
 }
 
-save(big_list, file="./TESTING_DUMP/simulations.Rdata")
 
 
+library(DCM)
+library(mvtnorm)
+library(tidyverse)
+library(AlgDesign)
 
+big_list <- list()
+
+n_sims <- 100
+
+m_list <- c(10, 20, 50, 100, 200)
+
+models <- c("fixed", "random", "one-factor", "mtmm")
+
+chosen_values <- list()
+
+chosen_values[["fixed"]][["DCE"]] <- c(1.2, 1.4)
+chosen_values[["fixed"]][["BW"]] <- c(1.8, 0.7)
+chosen_values[["fixed"]][["BWDCE"]] <- c(1.2, 1.4, 1.8, 0.7)
+
+chosen_values[["random"]][["DCE"]] <- c(0.7, 2.0, 3.8, 1.8)
+chosen_values[["random"]][["BW"]] <- c(1.3, 0.5, 6.0, 1.8)
+chosen_values[["random"]][["BWDCE"]] <- c(0.7, 2.0, 1.3, 0.5, 3.8, 1.8, 6.0, 1.8)
+
+chosen_values[["one-factor"]][["DCE"]] <- c(2.2, 1.6, 1.9, 0.2)
+chosen_values[["one-factor"]][["BW"]] <- c(2.4, 0.7, 1.5, 0.0)
+chosen_values[["one-factor"]][["BWDCE"]] <- c(2.2, 1.6, 2.4, 0.7, 1.9, 0.2, 1.5, 0.0)
+
+chosen_values[["mtmm"]][["DCE"]] <- NA
+chosen_values[["mtmm"]][["BW"]] <- NA
+chosen_values[["mtmm"]][["BWDCE"]] <- c(3.0,  1.9,  3.0,  0.5, 2.5,  1.5,  1.5, -1.5,  2.7,  2.2,  2.1,  0.6,  0.9, -0.5)
+
+
+for (m in m_list){
+
+  m_size <- paste0("m_", m)
+
+  processed <- simulate_data(m)
+
+  for(model_type in models){
+
+    for(data_type in names(processed)){
+
+      big_list[[m_size]][[model_type]][[data_type]][["specs"]] <- list(values = chosen_values[[model_type]][[data_type]], n_sims = n_sims, m=m, easy_guess=TRUE, template = processed[[data_type]])
+
+      if(!is.na(big_list[[m_size]][[model_type]][[data_type]][["specs"]][1])){
+        for(i in 1:n_sims){
+          message(paste(m_size, model_type, data_type, "sim:", i))
+          big_list[[m_size]][[model_type]][[data_type]][["results"]][[i]] <- simulate_dataset(processed[[data_type]], model_type, chosen_values[[model_type]][[data_type]], Drawson=TRUE, easy_guess=TRUE)
+        }
+      }
+      save(big_list, file=paste0("./TESTING_DUMP/simulation_", format(Sys.time(), "%Y-%m-%d_%H%m"), "_saved_results.Rdata"))
+    }
+  }
+}
 
 
 

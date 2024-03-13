@@ -1,7 +1,25 @@
 library(DCM)
 library(tictoc)
 
-processed <- setUp(BWpriorities)
+processedBW <- setUp(BWpriorities[, 1:5])
+processedDCE <- setUp(DCEpriorities[, 1:5])
+joined <- join_choicedatasets(processedBW, processedDCE)
+
+model_1f <- model_generator(joined, "one-factor")
+model_fixed<- model_generator(joined, "fixed")
+model_random <- model_generator(joined, "random")
+model_mtmm <- model_generator(joined, "mtmm")
+
+res_1f <- runModel(model_1f)
+res_fixed <- runModel(model_fixed)
+res_random <- runModel(model_random)
+res_mtmm  <- runModel(model_mtmm)
+
+round(res_1f$results$estimate,1)
+round(res_fixed$results$estimate,1)
+round(res_random$results$estimate,1)
+round(res_mtmm$results$estimate,1)
+
 processed <- remove_variables(processed, "Accessibility_BW" )
 model<- model_generator(processed, "fixed")
 res <- runModel(model)
