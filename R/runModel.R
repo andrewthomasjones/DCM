@@ -12,7 +12,7 @@
 #' @export
 runModel  <-  function(model,  model_name = "name", verbose = 0,
                        gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
-                       dev_mode = "C", ghq_size = 3, draws = 100) {
+                       dev_mode = "C", ghq_size = 4, draws = 100) {
 
   parcount <- parameterCount(model)
   processed <- model$data
@@ -48,8 +48,9 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
     verbose = verbose
   )
 
+
   delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = nhop + npp,
-                                                      type = "GHN",
+                                                      type = "GHe",
                                                       level = ghq_size,
                                                       ndConstruction = "sparse"))
 

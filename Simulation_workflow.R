@@ -482,16 +482,16 @@ library(AlgDesign)
 
 big_list <- list()
 
-n_sims <- 2
+n_sims <- 1000
 
-m_list <- c(10, 20)#, 50, 100, 200)
+m_list <- c(20, 50, 100, 200)
 
 models <- c("fixed", "random", "one-factor", "mtmm")
 integral_types <- c("draws", "ghq")
 
 precision_levels <- list()
 
-precision_levels[["draws"]] <- c(100, 200)
+precision_levels[["draws"]] <- c(100, 1000)
 precision_levels[["ghq"]] <- c(3, 4, 5)
 
 chosen_values <- list()
@@ -512,38 +512,121 @@ chosen_values[["mtmm"]][["DCE"]] <- NA
 chosen_values[["mtmm"]][["BW"]] <- NA
 chosen_values[["mtmm"]][["BWDCE"]] <- c(3.0,  1.9,  3.0,  0.5, 2.5,  1.5,  1.5, -1.5,  2.7,  2.2,  2.1,  0.6,  0.9, -0.5)
 
+data_sets <- c("DCE", "BW", "BWDCE")
+big_list <- list()
 
-for (m in m_list){
+# for (m in m_list){
+#
+#   m_size <- paste0("m_", m)
+#
+#   #processed <- simulate_data(m)
+#
+#   for(model_type in models){
+#
+#     for(data_type in data_sets){
+#
+#       big_list[[m_size]][[model_type]][[data_type]][["specs"]] <- NA
+#
+#         for(i in 1:n_sims){
+#           n_name <- paste0("n_", i)
+#           #message(paste(m_size, model_type, data_type))
+#           big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]] <- NA
+#
+#           for(g in integral_types){
+#             for(p in precision_levels[[g]]){
+#               p_name <- paste0("p_", p)
+#               #message(paste(".   sim:", i, g, p_name))
+#               big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- NA
+#             }
+#           }
+#         }
+#     }
+#   }
+# }
+#
+# save(big_list, file=paste0("./TESTING_DUMP/simulation_saved_results.Rdata"))
 
-  m_size <- paste0("m_", m)
 
+load(file=paste0("./TESTING_DUMP/simulation_saved_results.Rdata"))
+
+save_again <- FALSE
+for(m_size in names(big_list)){
+
+  m <- as.numeric(str_extract(m_size, "([0-9].*)"))
   processed <- simulate_data(m)
 
-  for(model_type in models){
+  for(model_type in names(big_list[[m_size]])){
 
-    for(data_type in names(processed)){
+    for(data_type in names(big_list[[m_size]][[model_type]])){
 
       big_list[[m_size]][[model_type]][[data_type]][["specs"]] <- list(values = chosen_values[[model_type]][[data_type]], n_sims = n_sims, m=m, easy_guess=TRUE, template = processed[[data_type]])
 
       if(!is.na(big_list[[m_size]][[model_type]][[data_type]][["specs"]][1])){
-        for(i in 1:n_sims){
-          n_name <- paste0("n_", i)
+        for(n_name in names(big_list[[m_size]][[model_type]][[data_type]][["results"]])){
+          i <- as.numeric(str_extract(n_name, "([0-9].*)"))
           message(paste(m_size, model_type, data_type))
           big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]] <- simulate_dataset(processed[[data_type]], model_type, chosen_values[[model_type]][[data_type]], easy_guess=TRUE)
 
-          for(g in integral_types){
-            for(p in precision_levels[[g]]){
-              p_name <- paste0("p_", p)
+          for(g in names(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][-1])){
+            for(p_name in names(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][-1][[g]])){
               message(paste(".   sim:", i, g, p_name))
-              big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- estimate_model(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]], g, p)
+              p <- as.numeric(str_extract(p_name, "([0-9].*)"))
+              if(is.na(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]][1])){
+                big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- estimate_model(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]], g, p)
+                save_again <- TRUE
+              }
             }
           }
         }
       }
-      save(big_list, file=paste0("./TESTING_DUMP/simulation_", format(Sys.time(), "%Y-%m-%d_%H%m"), "_saved_results.Rdata"))
+      if(save_again){
+        save(big_list, file="./TESTING_DUMP/simulation_saved_results.Rdata")
+      }
     }
   }
 }
+
+
+
+
+
+#
+#
+#
+#
+#
+#
+# for (m in m_list){
+#
+#   m_size <- paste0("m_", m)
+#
+#   processed <- simulate_data(m)
+#
+#   for(model_type in models){
+#
+#     for(data_type in names(processed)){
+#
+#       big_list[[m_size]][[model_type]][[data_type]][["specs"]] <- list(values = chosen_values[[model_type]][[data_type]], n_sims = n_sims, m=m, easy_guess=TRUE, template = processed[[data_type]])
+#
+#       if(!is.na(big_list[[m_size]][[model_type]][[data_type]][["specs"]][1])){
+#         for(i in 1:n_sims){
+#           n_name <- paste0("n_", i)
+#           message(paste(m_size, model_type, data_type))
+#           big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]] <- simulate_dataset(processed[[data_type]], model_type, chosen_values[[model_type]][[data_type]], easy_guess=TRUE)
+#
+#           for(g in integral_types){
+#             for(p in precision_levels[[g]]){
+#               p_name <- paste0("p_", p)
+#               message(paste(".   sim:", i, g, p_name))
+#               big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- estimate_model(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]], g, p)
+#             }
+#           }
+#         }
+#       }
+#       save(big_list, file=paste0("./TESTING_DUMP/simulation_", format(Sys.time(), "%Y-%m-%d_%H%m"), "_saved_results.Rdata"))
+#     }
+#   }
+# }
 
 
 
