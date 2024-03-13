@@ -336,10 +336,8 @@ simulation <- function(chosen_values,  model,  processed) {
   return(new_orig_data)
 }
 
-simulate_dataset <- function(processed, model_type, chosen_values, Drawson=FALSE, easy_guess=FALSE, ghq_size = 3, draws = 100){
+simulate_dataset <- function(processed, model_type, chosen_values,  easy_guess=FALSE){
 
-  tryCatch(
-    expr = {
 
       #processed <- setUp(template)
       model <- model_generator(processed, model_type)
@@ -354,21 +352,46 @@ simulate_dataset <- function(processed, model_type, chosen_values, Drawson=FALSE
         model_sims$initial_values <- chosen_values
       }
 
-      results_sims_C <- runModel(model_sims,  dev_mode = "C",  ghq_size = 3, verbose = 0)
+      return(model_sims)
+}
 
-      if(Drawson){
-        results_sims_D <- runModel(model_sims,  dev_mode = "Cdraws",  draws = 100, verbose = 0)
-      }else{
-        results_sims_D <- NA
+
+estimate_model <- function(model_sims, type, precision){
+
+  if(type=="ghq"){
+    dev_mode <- "C"
+    ghq_size <- precision
+
+    tryCatch(
+      expr = {
+        results <- runModel(model_sims, dev_mode = dev_mode,  ghq_size = ghq_size, verbose = 0)
+        return(results)
+      },
+      error = function(e){
+        return(NA)
       }
-      return(list(C = results_sims_C, D = results_sims_D))
-    },
-    error = function(e){
-        #message('Caught an error!')
-      #print(e)
-      return(list(C = NA, D = NA))
-    }
-  )
+    )
+
+
+
+  }else if(type=="draws"){
+    dev_mode <- "Cdraws"
+    draws <- precision
+
+    tryCatch(
+      expr = {
+        results <- runModel(model_sims, dev_mode = dev_mode,  draws = draws, verbose = 0)
+        return(results)
+      },
+      error = function(e){
+        return(NA)
+      }
+    )
+
+
+  }
+
+
 }
 
 
@@ -459,11 +482,17 @@ library(AlgDesign)
 
 big_list <- list()
 
-n_sims <- 100
+n_sims <- 2
 
-m_list <- c(10, 20, 50, 100, 200)
+m_list <- c(10, 20)#, 50, 100, 200)
 
 models <- c("fixed", "random", "one-factor", "mtmm")
+integral_types <- c("draws", "ghq")
+
+precision_levels <- list()
+
+precision_levels[["draws"]] <- c(100, 200)
+precision_levels[["ghq"]] <- c(3, 4, 5)
 
 chosen_values <- list()
 
@@ -498,8 +527,17 @@ for (m in m_list){
 
       if(!is.na(big_list[[m_size]][[model_type]][[data_type]][["specs"]][1])){
         for(i in 1:n_sims){
-          message(paste(m_size, model_type, data_type, "sim:", i))
-          big_list[[m_size]][[model_type]][[data_type]][["results"]][[i]] <- simulate_dataset(processed[[data_type]], model_type, chosen_values[[model_type]][[data_type]], Drawson=TRUE, easy_guess=TRUE)
+          n_name <- paste0("n_", i)
+          message(paste(m_size, model_type, data_type))
+          big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]] <- simulate_dataset(processed[[data_type]], model_type, chosen_values[[model_type]][[data_type]], easy_guess=TRUE)
+
+          for(g in integral_types){
+            for(p in precision_levels[[g]]){
+              p_name <- paste0("p_", p)
+              message(paste(".   sim:", i, g, p_name))
+              big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- estimate_model(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]], g, p)
+            }
+          }
         }
       }
       save(big_list, file=paste0("./TESTING_DUMP/simulation_", format(Sys.time(), "%Y-%m-%d_%H%m"), "_saved_results.Rdata"))
