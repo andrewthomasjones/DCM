@@ -312,7 +312,7 @@ simulation <- function(chosen_values,  model,  processed) {
 
   for(j in 1:nrow(data2)){
     if(ID_check == data2[j, 1]){
-       choice_set_counter <- choice_set_counter + 1
+      choice_set_counter <- choice_set_counter + 1
     }else{
       choice_set_counter <- 1
       ID_check <- data2[j, 1]
@@ -339,20 +339,20 @@ simulation <- function(chosen_values,  model,  processed) {
 simulate_dataset <- function(processed, model_type, chosen_values,  easy_guess=FALSE){
 
 
-      #processed <- setUp(template)
-      model <- model_generator(processed, model_type)
-      test_sims <- simulation(chosen_values,  model,  processed)
+  #processed <- setUp(template)
+  model <- model_generator(processed, model_type)
+  test_sims <- simulation(chosen_values,  model,  processed)
 
 
 
-      processed_sims <- setUp(test_sims)
-      model_sims <- model_generator(processed_sims, model_type)
+  processed_sims <- setUp(test_sims)
+  model_sims <- model_generator(processed_sims, model_type)
 
-      if(easy_guess){
-        model_sims$initial_values <- chosen_values
-      }
+  if(easy_guess){
+    model_sims$initial_values <- chosen_values
+  }
 
-      return(model_sims)
+  return(model_sims)
 }
 
 
@@ -482,9 +482,9 @@ library(AlgDesign)
 
 big_list <- list()
 
-n_sims <- 1000
+n_sims <- 100
 
-m_list <- c(20, 50, 100, 200)
+m_list <- c(200)  #c(20, 50, 100, 200)
 
 models <- c("fixed", "random", "one-factor", "mtmm")
 integral_types <- c("draws", "ghq")
@@ -492,7 +492,7 @@ integral_types <- c("draws", "ghq")
 precision_levels <- list()
 
 precision_levels[["draws"]] <- c(100, 1000)
-precision_levels[["ghq"]] <- c(3, 4, 5)
+precision_levels[["ghq"]] <- c(3, 4)
 
 chosen_values <- list()
 
@@ -500,9 +500,9 @@ chosen_values[["fixed"]][["DCE"]] <- c(1.2, 1.4)
 chosen_values[["fixed"]][["BW"]] <- c(1.8, 0.7)
 chosen_values[["fixed"]][["BWDCE"]] <- c(1.2, 1.4, 1.8, 0.7)
 
-chosen_values[["random"]][["DCE"]] <- c(0.7, 2.0, 3.8, 1.8)
-chosen_values[["random"]][["BW"]] <- c(1.3, 0.5, 6.0, 1.8)
-chosen_values[["random"]][["BWDCE"]] <- c(0.7, 2.0, 1.3, 0.5, 3.8, 1.8, 6.0, 1.8)
+chosen_values[["random"]][["DCE"]] <- c(0.7, 2.0, 2.8, 1.8)
+chosen_values[["random"]][["BW"]] <- c(1.3, 0.5, 3.0, 1.8)
+chosen_values[["random"]][["BWDCE"]] <- c(0.7, 2.0, 1.3, 0.5, 2.8, 1.8, 3.0, 1.8)
 
 chosen_values[["one-factor"]][["DCE"]] <- c(2.2, 1.6, 1.9, 0.2)
 chosen_values[["one-factor"]][["BW"]] <- c(2.4, 0.7, 1.5, 0.0)
@@ -515,41 +515,9 @@ chosen_values[["mtmm"]][["BWDCE"]] <- c(3.0,  1.9,  3.0,  0.5, 2.5,  1.5,  1.5, 
 data_sets <- c("DCE", "BW", "BWDCE")
 big_list <- list()
 
-# for (m in m_list){
-#
-#   m_size <- paste0("m_", m)
-#
-#   #processed <- simulate_data(m)
-#
-#   for(model_type in models){
-#
-#     for(data_type in data_sets){
-#
-#       big_list[[m_size]][[model_type]][[data_type]][["specs"]] <- NA
-#
-#         for(i in 1:n_sims){
-#           n_name <- paste0("n_", i)
-#           #message(paste(m_size, model_type, data_type))
-#           big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]] <- NA
-#
-#           for(g in integral_types){
-#             for(p in precision_levels[[g]]){
-#               p_name <- paste0("p_", p)
-#               #message(paste(".   sim:", i, g, p_name))
-#               big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- NA
-#             }
-#           }
-#         }
-#     }
-#   }
-# }
-#
-# save(big_list, file=paste0("./TESTING_DUMP/simulation_saved_results.Rdata"))
+file <- "./TESTING_DUMP/simulation_saved_results5.Rdata"
 
 
-load(file=paste0("./TESTING_DUMP/simulation_saved_results.Rdata"))
-
-save_again <- FALSE
 for(m_size in names(big_list)){
 
   m <- as.numeric(str_extract(m_size, "([0-9].*)"))
@@ -571,27 +539,66 @@ for(m_size in names(big_list)){
             for(p_name in names(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][-1][[g]])){
               message(paste(".   sim:", i, g, p_name))
               p <- as.numeric(str_extract(p_name, "([0-9].*)"))
-              if(is.na(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]][1])){
-                big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- estimate_model(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]], g, p)
-                save_again <- TRUE
-              }
+              big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- estimate_model(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]], g, p)
             }
+            save(big_list, file=file)
+            gc()
           }
         }
-      }
-      if(save_again){
-        save(big_list, file="./TESTING_DUMP/simulation_saved_results.Rdata")
       }
     }
   }
 }
 
+# bias - is estimator estimating true value
+# variance - variance of estimator / MSE of estimator
+# sample standard error of estimates
+# z scores of (true - est)/se -> is it standard normal
+# do 95% CIs have appropriate coverage probs
+# does bias and variance differ between Draws and GHQ
+# does bias and variance differ between GHQ levels
+# does bias and variance differ between Draws levels
+
+# overall and divided by data type / model type / 'variable class'
+
+# what is appropriate GHQ level (judgement call)
+# is GHQ estimator unbiased
+# are reported standard errors correct
+# are reported CIs adequate (are true CIs normal)
+# just quite how bad was the draws thing
 
 
-
-
+# sapply(big_list$m_20$fixed$DCE$results, "[[", "draws$p_100$results$estimate")- big_list$m_20$fixed$DCE$specs$values
 #
 #
+# big_list$m_20$fixed$DCE$results$n_1$draws$p_100$results$estimate - big_list$m_20$fixed$DCE$specs$values
+# big_list$m_20$fixed$DCE$results$n_1$draws$p_1000$results$estimate - big_list$m_20$fixed$DCE$specs$values
+# big_list$m_20$fixed$DCE$results$n_1$ghq$p_3$results$estimate - big_list$m_20$fixed$DCE$specs$values
+# big_list$m_20$fixed$DCE$results$n_1$ghq$p_4$results$estimate - big_list$m_20$fixed$DCE$specs$values
+# big_list$m_20$fixed$DCE$results$n_1$ghq$p_5$results$estimate -  big_list$m_20$fixed$DCE$specs$values
+#
+
+# file <- "./TESTING_DUMP/simulation_saved_results2.Rdata"
+# load(file=paste0(file))
+# #
+# model <- "random"
+# size <- "m_10"
+# data <- "BWDCE"
+# random_type <- "ghq"
+# precision_level <- "p_3"
+#
+# bias <- rep(0, length(big_list[[size]][[model]][[data]]$specs$values))
+#
+# for(i in names(big_list[[size]][[model]][[data]]$results)){
+#   bias <- bias + (big_list[[size]][[model]][[data]]$results[[i]][[random_type]][[precision_level]]$results$estimate - big_list[[size]][[model]][[data]]$specs$values)/length(names(big_list[[size]][[model]][[data]]$results))
+# }
+#
+# var_names <- big_list[[size]][[model]][[data]]$results$n_1$ghq$p_3$results$parameters
+# bias
+# #
+
+
+
 #
 #
 #
