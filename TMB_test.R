@@ -3,13 +3,39 @@ compile("TMB_code.cpp")
 dyn.load(dynlib("TMB_code"))
 set.seed(123)
 
+
+choice_picker <- function(data){
+  choices <- data[,2]
+  slots <- data[, 5:ncol(data)]
+  locations <-  unlist(mapply(function(x, a){which(slots[x, ] == a)[1]}, seq_len(nrow(slots)), choices)) #why do some rows in data matrix have repeats??
+
+  d <- slots*0
+  for(i in seq_len(nrow(slots))){
+    d[i, locations[i]] <- 1
+  }
+
+
+  return(d)
+}
+
+
+
 data <- list(concept = model$concept,
              data = model$data,
              code = model$code,
+             group = factor(model$data[,1]),
+             choices = choice_picker(model$data), #matrix of choices - each row all zeros but has one 1
              nmax_choiceset_size=model$nmax_choiceset_size,
              ndecisionmakers = model$ndecisionmakers,
              npp=model$npp,
              nhop=model$nhop)
+
+
+
+# // options <- options[options>0]
+# // choice <-  which(options == data[i, 2])
+# // d_i <- rep(0, length(probs))
+# // d_i[choice] <- 1
 
 parameters <- list(gamma = gamma,
                   beta = beta,

@@ -1,7 +1,7 @@
 library(DCM)
 library(tictoc)
 
-processedBW <- setUp(BWpriorities[, 1:5])
+processedBW <- setUp(BWpriorities)
 processedDCE <- setUp(DCEpriorities[, 1:5])
 joined <- join_choicedatasets(processedBW, processedDCE)
 
