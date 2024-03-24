@@ -31,12 +31,6 @@ data <- list(concept = model$concept,
              nhop=model$nhop)
 
 
-
-# // options <- options[options>0]
-# // choice <-  which(options == data[i, 2])
-# // d_i <- rep(0, length(probs))
-# // d_i[choice] <- 1
-
 parameters <- list(gamma = gamma,
                   beta = beta,
                   phi = phi,
@@ -53,7 +47,16 @@ random <- list(epsilon = epsilon,
 )
 
 
-map <- list()
+map <- list(
+  gamma = gamma, # the others will have to be filled via something like the current mapping function
+  beta = beta,
+  phi = matrix(NA, nrow = nrow(parameters$phi), ncol = ncol(parameters$phi))
+  muepsilon = muepsilon,
+  mudelta = mudelta,
+  sigmaepsilon = sigmaepsilon,
+  sigmadelta = sigmadelta
+) #also phi is redundant if we have correlations for other stuff now
+
   # Optionally, a simple mechanism for collecting and fixing parameters from R is available through the map argument. A map is a named list of factors with the following properties:
   #
   #   names(map) is a subset of names(parameters).
