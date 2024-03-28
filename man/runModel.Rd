@@ -12,7 +12,7 @@ runModel(
   stepmax = NULL,
   steptol = 1e-06,
   dev_mode = "C",
-  ghq_size = 4,
+  ghq_size = 3,
   draws = 100
 )
 }

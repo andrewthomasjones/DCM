@@ -24,6 +24,30 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(DCM)
+#> 
+#> 
+#> ###################################################################################
+#> #KKKKKKKKK    KKKKKKK     OOOOOOOOO     BBBBBBBBBBBBBBBBB   EEEEEEEEEEEEEEEEEEEEEE#
+#> #K:::::::K    K:::::K   OO:::::::::OO   B::::::::::::::::B  E::::::::::::::::::::E#
+#> #K:::::::K    K:::::K OO:::::::::::::OO B::::::BBBBBB:::::B E::::::::::::::::::::E#
+#> #K:::::::K   K::::::KO:::::::OOO:::::::OBB:::::B     B:::::BEE::::::EEEEEEEEE::::E#
+#> #KK::::::K  K:::::KKKO::::::O   O::::::O  B::::B     B:::::B  E:::::E       EEEEEE#
+#> #K:::::K K:::::K   O:::::O     O:::::O  B::::B     B:::::B  E:::::E               #
+#> #K::::::K:::::K    O:::::O     O:::::O  B::::BBBBBB:::::B   E::::::EEEEEEEEEE     #
+#> #K:::::::::::K     O:::::O     O:::::O  B:::::::::::::BB    E:::::::::::::::E     #
+#> #K:::::::::::K     O:::::O     O:::::O  B::::BBBBBB:::::B   E:::::::::::::::E     #
+#> #K::::::K:::::K    O:::::O     O:::::O  B::::B     B:::::B  E::::::EEEEEEEEEE     #
+#> #K:::::K K:::::K   O:::::O     O:::::O  B::::B     B:::::B  E:::::E               #
+#> #KK::::::K  K:::::KKKO::::::O   O::::::O  B::::B     B:::::B  E:::::E       EEEEEE#
+#> #K:::::::K   K::::::KO:::::::OOO:::::::OBB:::::BBBBBB::::::BEE::::::EEEEEEEE:::::E#
+#> #K:::::::K    K:::::K OO:::::::::::::OO B:::::::::::::::::B E::::::::::::::::::::E#
+#> #K:::::::K    K:::::K   OO:::::::::OO   B::::::::::::::::B  E::::::::::::::::::::E#
+#> #KKKKKKKKK    KKKKKKK     OOOOOOOOO     BBBBBBBBBBBBBBBBB   EEEEEEEEEEEEEEEEEEEEEE#
+#> ###################################################################################
+#> 
+#> version 0.1.2
+#> 
+#> Type 'citation("DCM")' for citing this R package in publications.
 
 processedBW<-setUp(BWpriorities)
 
@@ -35,7 +59,6 @@ m3BW<-model_generator(processedBW, "one-factor")
 r1BW<-runModel(m1BW)
 #> Warning in sqrt(diag(solve(loglik1$hessian))): NaNs produced
 r2BW<-runModel(m2BW)
-#> Warning in sqrt(diag(solve(loglik1$hessian))): NaNs produced
 r3BW<-runModel(m3BW)
 #> Warning in sqrt(diag(solve(loglik1$hessian))): NaNs produced
 ```
@@ -43,15 +66,34 @@ r3BW<-runModel(m3BW)
 ``` r
 summariseModelList(list(r1BW,r2BW,r3BW))
 #> # A tibble: 3 × 6
-#>   `Model Specifications` Parameters `Latent Variables` Log-Likelih…¹   AIC   BIC
-#>   <chr>                       <dbl> <lgl>                      <dbl> <dbl> <dbl>
-#> 1 "M1: "                         10 NA                        12086.  1.20  68.5
-#> 2 "M2: "                         20 NA                        11227. 21.3  156. 
-#> 3 "M3: "                         20 NA                        11227. 21.3  156. 
-#> # … with abbreviated variable name ¹​`Log-Likelihood`
+#>   `Model Specifications`    Parameters `Latent Variables` `Log-Likelihood`   AIC
+#>   <chr>                          <dbl> <lgl>                         <dbl> <dbl>
+#> 1 M1: Generated model of t…         10 NA                           12086.  1.20
+#> 2 M2: Generated model of t…         20 NA                           10158. 21.5 
+#> 3 M3: Generated model of t…         20 NA                           11349. 21.3 
+#> # ℹ 1 more variable: BIC <dbl>
 ```
 
 ``` r
-cat(parPrint(r1BW))
-#> Printout of results for \\ Log-likelihood: 12085.8865\\ Number of parameters: 10\\ \begin{center} \begin{tabular}{lrr}  Model Parameter & Estimate & Standard Error\\ \hline \\ $\epsilon_ {\mu, 1}$&$1.0592$&$NaN$\\ $\epsilon_ {\mu, 2}$&$1.1867$&$NaN$\\ $\epsilon_ {\mu, 3}$&$-0.6469$&$NaN$\\ $\epsilon_ {\mu, 4}$&$-0.113$&$NaN$\\ $\epsilon_ {\mu, 5}$&$0.4849$&$NaN$\\ $\epsilon_ {\mu, 6}$&$0.2573$&$NaN$\\ $\epsilon_ {\mu, 7}$&$-0.8583$&$NaN$\\ $\epsilon_ {\mu, 8}$&$-1.191$&$NaN$\\ $\epsilon_ {\mu, 9}$&$0.9775$&$NaN$\\ $\epsilon_ {\mu, 10}$&$-0.1564$&$NaN$\\ \end{tabular} \end{center}
+parPrint(r1BW)
+#>  [1] "Printout of results for Generated model of type fixed\\\\"
+#>  [2] "Log-likelihood: 12085.8865\\\\"                           
+#>  [3] "Number of parameters: 10\\\\"                             
+#>  [4] "\\begin{center}"                                          
+#>  [5] "\\begin{tabular}{lrr}"                                    
+#>  [6] ""                                                         
+#>  [7] "Model Parameter & Estimate & Standard Error\\\\"          
+#>  [8] "\\hline \\\\"                                             
+#>  [9] "$\\epsilon_ {\\mu, 1}$&$1.0592$&$NaN$\\\\"                
+#> [10] "$\\epsilon_ {\\mu, 2}$&$1.1867$&$NaN$\\\\"                
+#> [11] "$\\epsilon_ {\\mu, 3}$&$-0.6469$&$NaN$\\\\"               
+#> [12] "$\\epsilon_ {\\mu, 4}$&$-0.113$&$NaN$\\\\"                
+#> [13] "$\\epsilon_ {\\mu, 5}$&$0.4849$&$NaN$\\\\"                
+#> [14] "$\\epsilon_ {\\mu, 6}$&$0.2573$&$NaN$\\\\"                
+#> [15] "$\\epsilon_ {\\mu, 7}$&$-0.8583$&$NaN$\\\\"               
+#> [16] "$\\epsilon_ {\\mu, 8}$&$-1.191$&$NaN$\\\\"                
+#> [17] "$\\epsilon_ {\\mu, 9}$&$0.9775$&$NaN$\\\\"                
+#> [18] "$\\epsilon_ {\\mu, 10}$&$-0.1564$&$NaN$\\\\"              
+#> [19] "\\end{tabular}"                                           
+#> [20] "\\end{center}"
 ```

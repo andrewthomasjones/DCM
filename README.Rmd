@@ -53,6 +53,6 @@ r3BW<-runModel(m3BW)
 summariseModelList(list(r1BW,r2BW,r3BW))
 ```
 
-```{r table2, results='as.is'}
-cat(parPrint(r1BW))
+```{r table2}
+parPrint(r1BW)
 ```
