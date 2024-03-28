@@ -16,7 +16,7 @@ join_choicedatasets  <-  function(data1,  data2) {
   ncols_data2 <- dim(data2$data)[2]
 
 
-  data_original_merge <- data.frame(data1$data_original, data2$data_original[, 4:ncol(data2$data_original)])
+  #data_original_merge <- data.frame(data1$data_original, data2$data_original[, 4:ncol(data2$data_original)])
 
   nmaxchoicesetsize_merge <- max(data1$nmax_choiceset_size, data2$nmax_choiceset_size)
 
@@ -60,7 +60,7 @@ join_choicedatasets  <-  function(data1,  data2) {
   }
 
   #all the initial stuff packaged up
-  processed <- list(data_original = data_original_merge,
+  processed <- list(data_original = NA,
                     data_name = paste0("Joined_from_", n1, "_and_", n2),
                     data = data_merge,
                     ncovariates = ncovariates_data1 + ncovariates_data2,
@@ -70,7 +70,7 @@ join_choicedatasets  <-  function(data1,  data2) {
                     concept = concept_merge,
                     lcovariates = lcovariates,
                     fdd = fdd,
-                    attribute_names  =  names(data_original_merge)[-(1:3)]
+                    attribute_names  =  c(data1$attribute_names, data2$attribute_names)
   )
 
   return(processed)
