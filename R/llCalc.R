@@ -19,7 +19,7 @@ llMax  <- function(model,  processed, ghq_matrix1, nlm_params) {
                   hessian = TRUE,
                   print.level = nlm_params$verbose,
                   iterlim = 1000
-                  )
+  )
   return(loglik)
 }
 
@@ -59,7 +59,7 @@ llCalc <- function(working_values,  model,  processed,  ghq_matrix1) {
 
   gammaparameters <- gammamatrix * 0
   betaparameters <- betamatrix * 0
-  phiparameters <- phimatrix * 0
+  #phiparameters <- phimatrix * 0
 
   m <- 0
 
