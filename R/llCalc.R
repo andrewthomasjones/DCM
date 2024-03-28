@@ -8,15 +8,17 @@
 #' @export
 llMax  <- function(model,  processed, ghq_matrix1, nlm_params) {
 
-  loglik  <-  nlm(llCalc,
+  loglik  <-  nlm(f = llCalc,
                   p = model$initial_values,
-                  model,  processed,  ghq_matrix1,
-                  hessian = TRUE,
-                  iterlim = 1000,
-                  print.level = nlm_params$verbose,
+                  model = model,
+                  processed = processed,
+                  ghq_matrix1 = ghq_matrix1,
                   gradtol = nlm_params$gradtol,
                   stepmax = nlm_params$stepmax,
-                  steptol = nlm_params$steptol
+                  steptol = nlm_params$steptol,
+                  hessian = TRUE,
+                  print.level = nlm_params$verbose,
+                  iterlim = 1000
   )
   return(loglik)
 }
@@ -26,26 +28,29 @@ llMax  <- function(model,  processed, ghq_matrix1, nlm_params) {
 #' @param working_values vector
 #' @param model model list
 #' @param processed data list
-#' @param gq_int_matrix mat
+#' @param ghq_matrix1 mat
 #' @returns loglik
 #' @export
-llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
+llCalc <- function(working_values,  model,  processed,  ghq_matrix1) {
 
   concept  <-  processed$concept
-  nmax_choiceset_size  <- processed$nmax_choiceset_size
   data  <-  processed$data
+
+  nmax_choiceset_size  <- processed$nmax_choiceset_size
   ndecisionmakers  <-  processed$ndecisionmakers
+
+  npp <- model$npp
+  nhop <- model$nhop
+
+  integral_size <- dim(ghq_matrix1)[1]
 
   epsilonmatrix <- model$epsilon
   deltamatrix <- model$delta
   gammamatrix <- model$gamma
   deltamatrix <- model$delta
   betamatrix <- model$beta
-  #phimatrix <- model$phi
-
-  npp <- model$npp
-  nhop <- model$nhop
-  integral_size <- dim(gq_int_matrix)[1]
+  phimatrix <- model$phi
+  code <- model$code
 
   muepsilonparameters <- array(0, npp)
   mudeltaparameters <- array(0, nhop)
@@ -149,22 +154,24 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
   #     }
   #   }
   #
-  # gq_int_matrix <- gq_int_matrix %*% (phiparameters^0.5)
+  # ghq_matrix1 <- ghq_matrix1 %*% (phiparameters^0.5)
 
-  #w1 <- gq_int_matrix[, 1]
-  int_epsilon <- cbind(gq_int_matrix[, 2])
+  #w1 <- ghq_matrix1[, 1]
+
+
+  int_epsilon <- cbind(ghq_matrix1[, 2])
 
   if (npp > 1) {
     for (i in 3:(npp + 1)) {
-      int_epsilon <- cbind(int_epsilon, gq_int_matrix[, i])
+      int_epsilon <- cbind(int_epsilon, ghq_matrix1[, i])
     }
   }
 
-  int_delta <- cbind(gq_int_matrix[, npp + 2])
+  int_delta <- cbind(ghq_matrix1[, npp + 2])
 
   if (nhop > 1) {
     for (i in 3:(nhop + 1)) {
-      int_delta <- cbind(int_delta, gq_int_matrix[, i + npp])
+      int_delta <- cbind(int_delta, ghq_matrix1[, i + npp])
     }
   }
 
@@ -190,7 +197,7 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
   gb <- gb + t(int_epsilon)
 
 
-  conceptuse <- concept %*% model$code
+  conceptuse <- concept %*% code
   gb <- conceptuse %*% gb
 
 
@@ -234,36 +241,6 @@ llCalc <- function(working_values,  model,  processed,  gq_int_matrix) {
   ploglike  <-  log(ploglike)
   loglike  <-  sum(ploglike)
   loglike  <-  -loglike
-
-
-  # ll_n <- array(NA, ndecisionmakers)
-  # decisionmakers <- unique(data[, 1])
-  # w1_total <- sum(w1)
-  #
-  # for (n in 1:ndecisionmakers) {
-  #
-  #   subset <- data[data[, 1] == decisionmakers[n], ]
-  #
-  #   rows1 <- subset[, 2]
-  #   #print(rows1)
-  #   prob_temp <- gb[rows1, ]
-  #
-  #   set_list_a <- subset[, 5:(nmax_choiceset_size + 4)]
-  #
-  #   for (j in seq_len(nrow(subset))) {
-  #     set_list_b <- set_list_a[j, ]
-  #     set_list <-  set_list_b[which(set_list_b > 0)]
-  #
-  #     prob_temp[j, ] <-  prob_temp[j, ] - log(colSums(exp(gb[set_list, ])))
-  #   }
-  #
-  #   ll_n[n] <- sum(exp(colSums(prob_temp)) * w1) / w1_total
-  #
-  # }
-  #
-  #
-  # loglike <- -1.0 * sum(log(ll_n))
-
 
   return(loglike)
 }

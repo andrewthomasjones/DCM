@@ -8,3 +8,5 @@ inst/doc
 ._*
 vignettes/demo_cache/*
 TESTING_DUMP/*
+/*.so
+/*.o

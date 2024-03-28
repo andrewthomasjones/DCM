@@ -1,63 +1,203 @@
 library(DCM)
 library(tictoc)
 
-#full sample
+processedBW <- setUp(BWpriorities)
+processedDCE <- setUp(DCEpriorities[, 1:5])
+joined <- join_choicedatasets(processedBW, processedDCE)
+
+model_1f <- model_generator(joined, "one-factor")
+model_fixed<- model_generator(joined, "fixed")
+model_random <- model_generator(joined, "random")
+model_mtmm <- model_generator(joined, "mtmm")
+
+res_1f <- runModel(model_1f)
+res_fixed <- runModel(model_fixed)
+res_random <- runModel(model_random)
+res_mtmm  <- runModel(model_mtmm)
+
+round(res_1f$results$estimate,1)
+round(res_fixed$results$estimate,1)
+round(res_random$results$estimate,1)
+round(res_mtmm$results$estimate,1)
+
+processed <- remove_variables(processed, "Accessibility_BW" )
+model<- model_generator(processed, "fixed")
+res <- runModel(model)
+chosen_values <- res$results$estimate
+
+
+
+s1 <- scores(chosen_values,  model,  processed)
+
+a <- t(s1) %*% s1
+
+b <- solve(res$loglikf$hessian) %*% a %*% solve(res$loglikf$hessian)
+sqrt(diag(b))
+sqrt(diag(solve(res$loglikf$hessian)))
+
+
 processedDCE <- setUp(DCEpriorities)
 processedBW <- setUp(BWpriorities)
 
+#joined <- join_choicedatasets(processedBWr , processedDCE)
 
-#reduce sample size to increase speed
-processedDCE <- setUp(DCEpriorities[DCEpriorities$ID < 1030, ])
-processedBW <- setUp(BWpriorities[BWpriorities$ID < 1030, ])
+gt <- 1e-6
+st <- 1e-6
+
+model_fixed <- model_generator(processedDCE, "fixed")
+test_fixed_C_DCE <- runModel(model_fixed,  dev_mode = "C",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
 
 
-processedBWDCE <- join_choicedatasets(processedBW, processedDCE)
+standard_errors <- sqrt(diag(solve(test_fixed_C_DCE$loglikf$hessian)))
+standard_errors
+
+
+
+delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = model_fixed$npp + model_fixed$nhop,
+                                                    type = "GHN",
+                                                    level = 3,
+                                                    ndConstruction = "sparse"))
+
+ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
+
+hessian2 <- numDeriv::hessian(func = llCalc,
+                              x = test_fixed_C_DCE$loglikf$estimate,
+                              method.args=list(eps=1e-4,
+                                               d=0.01, zero.tol=sqrt(.Machine$double.eps/7e-7), r=4, v=2, show.details=TRUE),
+                              model = model_fixed,
+                              processed = model_fixed$data,
+                              ghq_matrix1 = as.matrix(ghq_matrix1)
+)
+
+
+
+
+standard_errors <- sqrt(diag(solve(hessian2)))
+standard_errors
+
+
+
+
+solve(hessian2) %*% %*% solve(hessian2)
+
+
+
+
+
+
 
 
 model_fixed <- model_generator(processedBW, "fixed")
-model_random <- model_generator(processedBW, "random")
-model_1f <- model_generator(processedBW, "one-factor")
+test_fixed_R_BW <- runModel(model_fixed,  dev_mode = "R",  ghq_size = 3, verbose = 0, gradtol = gt, steptol = st)
+test_fixed_R_BW$results
 
-model_mtmm <- loadEMIWorkbook(processedBWDCE, "./TESTING_DUMP/EMI_BWprioritiesDCEpriorities_MTMM-2.xlsx")
+model_fixed <- model_generator(processedDCE, "fixed")
+test_fixed_R_DCE <- runModel(model_fixed,  dev_mode = "C",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
 
-tic()
-test_fixed_ghq <- runModel(model_fixed,  dev_mode = "C",  verbose = 0) #1.839 sec elapsed
-toc()
-tic()
-test_fixed_ghq2 <- runModel(model_fixed,  dev_mode = "R",  verbose = 0) #32.637 sec elapsed
-toc()
-test_fixed_ghq$LL
-test_fixed_ghq2$LL #agree
-
-
-tic()
-test_random_ghq <- runModel(model_random, dev_mode = "C",  ghq_size = 3, verbose = 0) #39.892 sec elapsed
-toc()
-tic()
-test_random_ghq2 <- runModel(model_random, dev_mode = "R", ghq_size = 3, verbose = 0) # > 529.732 sec elapsed
-toc()
-test_random_ghq$LL
-test_random_ghq2$LL #agree
-
-
-tic()
-test_1f_ghq <- runModel(model_1f, dev_mode = "C",  ghq_size = 3, verbose = 0) #11.087 sec elapsed
-toc()
-tic()
-test_1f_ghq2 <- runModel(model_1f, dev_mode = "R", ghq_size = 3, verbose = 0) #133.59 sec elapsed
-toc()
-test_1f_ghq$LL
-test_1f_ghq2$LL #agree
+model_fixed <- model_generator(joined, "fixed")
+test_fixed_R_BWDCE <- runModel(model_fixed,  dev_mode = "C",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
 
 
 
-tic()
-test_mtmm_ghq <- runModel(model_mtmm, dev_mode = "C", ghq_size = 3, verbose = 1)
-toc()
-tic()
-test_mtmm_ghq2 <- runModel(model_mtmm, dev_mode = "R", ghq_size = 3, verbose = 1)
-toc()
-test_mtmm_ghq$LL
-test_mtmm_ghq2$LL #agree
 
+
+test_fixed_C_BW <- runModel(model_fixed,  dev_mode = "C",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
+
+error <- abs(test_fixed_R_BW$loglikf$hessian - test_fixed_C_BW$loglikf$hessian) / test_fixed_R_BW$loglikf$hessian
+error[error < 10^-3] <- 0
+error
+
+abs(test_fixed_C_BW$LL - test_fixed_R_BW$LL) / test_fixed_R_BW$LL
+
+standard_errors <- sqrt(diag(solve(test_fixed_R_BW$loglikf$hessian)))
+standard_errors
+
+delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = model_fixed$npp + model_fixed$nhop,
+                                                    type = "GHN",
+                                                    level = 3,
+                                                    ndConstruction = "sparse"))
+
+ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
+
+hessian2 <- numDeriv::hessian(func = llCalc,
+                              x = test_fixed_R_BW$loglikf$estimate,
+                              method.args=list(eps=1e-4,
+                                               d=0.01, zero.tol=sqrt(.Machine$double.eps/7e-7), r=4, v=2, show.details=TRUE),
+                              model = model_fixed,
+                              processed = model_fixed$data,
+                              ghq_matrix1 = as.matrix(ghq_matrix1)
+)
+
+standard_errors2 <- sqrt(diag(solve(hessian2)))
+standard_errors2
+test_fixed_R_BW$results$standard_errors
+
+
+error <- abs(test_fixed_R_BW$loglikf$hessian - hessian2) / test_fixed_R_BW$loglikf$hessian
+sum(abs(error))
+
+error <- abs(test_fixed_R_BW$loglikf$hessian - test_fixed_C_BW$loglikf$hessian) / test_fixed_R_BW$loglikf$hessian
+sum(abs(error))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+error <- abs(test_fixed_R_BW$loglikf$hessian - hessian2) / test_fixed_R_BW$loglikf$hessian
+sum(abs(error))
+
+error <- abs(test_fixed_R_BW$loglikf$hessian - test_fixed_C_BW$loglikf$hessian) / test_fixed_R_BW$loglikf$hessian
+sum(abs(error))
+
+##################################################################################################################
+
+
+model_fixed <- model_generator(processedDCE, "fixed")
+test_fixed_R_DCE <- runModel(model_fixed,  dev_mode = "R",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
+test_fixed_C_DCE <- runModel(model_fixed,  dev_mode = "C",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
+
+error <- abs(test_fixed_R_DCE$loglikf$hessian - test_fixed_C_DCE$loglikf$hessian) / test_fixed_R_DCE$loglikf$hessian
+error[error < 10^-3] <- 0
+error
+
+abs(test_fixed_C_DCE$LL - test_fixed_R_DCE$LL) / test_fixed_R_DCE$LL
+
+standard_errors <- sqrt(diag(solve(test_fixed_R_DCE$loglikf$hessian)))
+standard_errors
+
+delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = model_fixed$npp + model_fixed$nhop,
+                                                    type = "GHN",
+                                                    level = 3,
+                                                    ndConstruction = "sparse"))
+
+ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
+
+hessian2 <- numDeriv::hessian(func = DCM:::llCalc_ghq_e,
+                              x = test_fixed_C_DCE$loglikf$estimate,
+                              model = model_fixed,
+                              processed = model_fixed$data,
+                              ghq_matrix1 = as.matrix(ghq_matrix1)
+)
+
+standard_errors2 <- sqrt(diag(solve(hessian2)))
+standard_errors2
+test_fixed_R_DCE$results$standard_errors
+test_fixed_C_DCE$results$standard_errors
+
+error <- abs(test_fixed_R_DCE$loglikf$hessian - hessian2) / test_fixed_R_DCE$loglikf$hessian
+#error[error < 10^-4] <- 0
+sum(abs(error))
+
+error <- abs(test_fixed_R_DCE$loglikf$hessian - test_fixed_C_DCE$loglikf$hessian) / test_fixed_R_DCE$loglikf$hessian
+#error[error < 10^-3] <- 0
+sum(abs(error))
 

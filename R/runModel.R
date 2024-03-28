@@ -48,8 +48,9 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
     verbose = verbose
   )
 
+
   delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = nhop + npp,
-                                                      type = "GHN",
+                                                      type = "GHe",
                                                       level = ghq_size,
                                                       ndConstruction = "sparse"))
 
