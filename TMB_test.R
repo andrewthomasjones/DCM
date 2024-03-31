@@ -37,7 +37,7 @@ data <- list(concept = model$data$concept,
              imatrix = diag(model$nhop)
              )
 
-model$epsilon[ ,1] <- res_fixed$results$estimate
+model$epsilon[ ,1] <- 0.1#res_fixed$results$estimate
 model$epsilon[ ,2] <- 1 #e-12 #//FIXME has to be very small for fixed
 
 model$delta[ ,1] <- 0
@@ -113,7 +113,7 @@ rep <- sdreport(obj)
 summary(rep, "random")
 summary(rep, "fixed", p.value = TRUE)
 #
-# model <- model_generator(joined, "mtmm")
-# res_fixed <- runModel(model)
-# res_fixed$results #FIXME orders seem different between methods but parameters the same
-# #12688.9436092967
+model <- model_generator(joined, "mtmm")
+res_fixed <- runModel(model, verbose = 2)
+res_fixed$results #FIXME orders seem different between methods but parameters the same
+#12688.9436092967
