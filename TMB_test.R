@@ -8,9 +8,11 @@ processedBW <- remove_variables(processedBW, "Accessibility_BW")
 
 joined <- join_choicedatasets(processedBW, processedDCE)
 
-model <- model_generator(joined , "fixed")
-#res_fixed <- runModel(model)
+model <- model_generator(joined, "fixed")
+res_fixed <- runModel(model)
 
+
+model <- model_generator(joined, "mtmm")
 choice_picker <- function(data){
   choices <- data[,2]
   slots <- data[, 5:ncol(data)]
@@ -36,10 +38,12 @@ data <- list(concept = model$data$concept,
              )
 
 model$epsilon[ ,1] <- res_fixed$results$estimate
-model$epsilon[ ,2] <- 1e-8 #//FIXME
+model$epsilon[ ,2] <- 1 #e-12 #//FIXME has to be very small for fixed
 
 model$delta[ ,1] <- 0
 model$delta[ ,2] <- 1
+
+model$gamma[model$gamma==-1]<-1
 
 parameters <- list(
                   gamma = model$gamma,
@@ -58,13 +62,22 @@ random <- c("epsilon", "delta")
 #3822.771
 
 #fixed model
+gamma1<- model$gamma
+beta1<- model$beta
+
+gamma1[model$gamma == 0] <- NA
+gamma1[!is.na(gamma1)] <- paste0("gamma_", seq_len(sum(!is.na(gamma1))))
+
+beta1[model$beta==0] <- NA
+beta1[!is.na(beta1)] <- paste0("beta_", seq_len(sum(!is.na(beta1))))
+
 map <- list(
-  gamma = model$gamma*NA, # the others will have to be filled via something like the current mapping function
-  beta = model$beta*NA,
+  gamma =   gamma1, #paste0("gamma_", seq_len(length(model$gamma))), #model$gamma*NA, # the others will have to be filled via something like the current mapping function
+  beta = beta1, #model$beta*NA,
   phi = model$phi*NA,
   muepsilon = paste0("mu_epsilon_", seq_len(length(model$epsilon[, 1]))),
   mudelta = model$delta[, 1]*NA,
-  logsigmaepsilon = log(matrix(model$epsilon[, 2], nrow = 1))*NA,
+  logsigmaepsilon = log(matrix(model$epsilon[, 2], nrow = 1))*NA, #paste0("logsigma_epsilon_", seq_len(length(model$epsilon[, 1]))),# log(matrix(model$epsilon[, 2], nrow = 1))*NA,
   logsigmadelta = log(matrix(model$delta[, 2], nrow = 1))*NA
 )
 
@@ -99,5 +112,8 @@ opt$par
 rep <- sdreport(obj)
 summary(rep, "random")
 summary(rep, "fixed", p.value = TRUE)
-
-res_fixed$results #FIXME orders seem different between methods but parameters the same
+#
+# model <- model_generator(joined, "mtmm")
+# res_fixed <- runModel(model)
+# res_fixed$results #FIXME orders seem different between methods but parameters the same
+# #12688.9436092967
