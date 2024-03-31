@@ -1,8 +1,9 @@
 library(TMB)
-compile("TMB_code.cpp")
-dyn.load(dynlib("TMB_code"))
-set.seed(123)
+library(DCM)
 
+
+processedDCE <- setUp(DCEpriorities)
+model <- model_generator(processedDCE, "fixed")
 
 choice_picker <- function(data){
   choices <- data[,2]
@@ -20,63 +21,74 @@ choice_picker <- function(data){
 
 
 
-data <- list(concept = model$concept,
-             data = model$data,
+data <- list(concept = model$data$concept,
+             data = model$data$data[, 5:ncol(model$data$data)],
              code = model$code,
-             group = factor(model$data[,1]),
-             choices = choice_picker(model$data), #matrix of choices - each row all zeros but has one 1
-             nmax_choiceset_size=model$nmax_choiceset_size,
-             ndecisionmakers = model$ndecisionmakers,
-             npp=model$npp,
-             nhop=model$nhop)
+             group = factor(model$data$data[,1]),
+             choices = choice_picker(model$data$data), #matrix of choices - each row all zeros but has one 1
+             imatrix = diag(model$nhop)
+             )
 
+model$epsilon[ ,1] <- 0.1*rnorm(length(model$epsilon[ ,1]))
+model$epsilon[ ,2] <- 1
 
-parameters <- list(gamma = gamma,
-                  beta = beta,
-                  phi = phi,
-                  muepsilon = muepsilon,
-                  mudelta = mudelta,
-                  sigmaepsilon = sigmaepsilon,
-                  sigmadelta = sigmadelta,
-                  epsilon = epsilon,
-                  delta = delta
+model$delta[ ,1] <- 0
+model$delta[ ,2] <- 1
+
+parameters <- list(
+                  gamma = model$gamma,
+                  beta = model$beta,
+                  phi = model$phi,
+                  muepsilon = matrix(model$epsilon[, 1], nrow = 1),
+                  mudelta = matrix(model$delta[, 1], nrow = 1),
+                  logsigmaepsilon = log(matrix(model$epsilon[, 2], nrow = 1)),
+                  logsigmadelta = log(matrix(model$delta[, 2], nrow = 1)),
+                  epsilon = matrix(rnorm(model$data$ndecisionmakers*model$npp), nrow = model$data$ndecisionmakers, ncol = model$npp, byrow=TRUE),
+                  delta = matrix(0, nrow = model$data$ndecisionmakers, ncol = model$nhop, byrow=TRUE)
 )
 
-random <- list(epsilon = epsilon,
-               delta = delta
-)
+random <- c("epsilon", "delta")
 
+temp_epsilon <- diag(model$epsilon[, 2])*NA
+#temp_epsilon[col(temp_epsilon) != row(temp_epsilon)] <- NA
 
+temp_delta <- as.matrix(diag(model$delta[, 2]))*NA
+#temp_delta[col(temp_delta) != row(temp_delta)] <- NA
+
+#fixed model
 map <- list(
-  gamma = gamma, # the others will have to be filled via something like the current mapping function
-  beta = beta,
-  phi = matrix(NA, nrow = nrow(parameters$phi), ncol = ncol(parameters$phi))
-  muepsilon = muepsilon,
-  mudelta = mudelta,
-  sigmaepsilon = sigmaepsilon,
-  sigmadelta = sigmadelta
-) #also phi is redundant if we have correlations for other stuff now
+  gamma = model$gamma*NA, # the others will have to be filled via something like the current mapping function
+  beta = model$beta*NA,
+  phi = model$phi*NA,
+  muepsilon = paste0("mu_epsilon_", seq_len(length(model$epsilon[, 1]))),
+  mudelta = model$delta[, 1]*NA,
+  logsigmaepsilon = log(matrix(model$epsilon[, 2], nrow = 1))*NA,
+  logsigmadelta = log(matrix(model$delta[, 2], nrow = 1))*NA
+)
 
-  # Optionally, a simple mechanism for collecting and fixing parameters from R is available through the map argument. A map is a named list of factors with the following properties:
-  #
-  #   names(map) is a subset of names(parameters).
-  #
-  # For a parameter "p" length(map$p) equals length(parameters$p).
-  #
-  # Parameter entries with NAs in the factor are fixed.
-  #
-  # Parameter entries with equal factor level are collected to a common value.
-  #
+map_f <- lapply(map, as.factor)
+
+# system("rm TMB_code.o")
+# system("rm TMB_code.so")
+
+compile("TMB_code.cpp")
+dyn.load(dynlib("TMB_code"))
+set.seed(123)
 
 
-obj <- MakeADFun(data, parameters, map = map, random = random, DLL = "TMB_code", hessian = TRUE)
+# parameters$muepsilon[1] <- 0
+# map$muepsilon[1] <- NA
 
+obj <- MakeADFun(data, parameters, map = map_f, random = random,  DLL = "TMB_code", silent=FALSE,
+                 hessian = TRUE, LaplaceNonZeroGradient = T)
+
+obj$env$tracepar <- TRUE
 ## Test eval function and gradient
 obj$fn()
 obj$gr()
 
-upper_lims = Inf
-lower_lims = -Inf
+upper_lims = 5
+lower_lims = -5
 
 ## Fit model
 opt <- nlminb(obj$par, obj$fn, obj$gr, upper = upper_lims, lower = lower_lims)

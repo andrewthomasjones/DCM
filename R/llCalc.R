@@ -235,6 +235,7 @@ llCalc <- function(working_values,  model,  processed,  ghq_matrix1) {
       iddm  <-  data[i, 1]
     }
   }
+
   #print()
   ploglike[n] <- sum(pthisdm) / integral_size
 

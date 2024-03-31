@@ -1,117 +1,112 @@
 // Simple linear regression.
 #include <TMB.hpp>
-template<class Type>
-
 using namespace density;
 
 
-Type logsumexp(Type x){
-  c = x.maxCoeff();
-  return c + log(exp(x - c).sum());
-}
-
-
-
-
-
+template <class Type>
 Type objective_function<Type>::operator() ()
 {
   //actual data and design matrices
   DATA_MATRIX(concept);
-  DATA_MATRIX(data);
+  DATA_IMATRIX(data);
   DATA_MATRIX(code);
   DATA_FACTOR(group); //decsion makers
   DATA_MATRIX(choices); //matrix of choices - each row all zeros but has one 1
-
-  //model specs
-  DATA_INTEGER(nmax_choiceset_size);
-  DATA_INTEGER(ndecisionmakers);
-  DATA_INTEGER(npp);
-  DATA_INTEGER(nhop);
+  DATA_MATRIX(imatrix);
 
   //parameter matrices
   PARAMETER_MATRIX(gamma);
   PARAMETER_MATRIX(beta);
   PARAMETER_MATRIX(phi);
 
-  // these ones need to be integrated out
-  PARAMETER_VECTOR(muepsilon);
-  PARAMETER_VECTOR(mudelta);
+  PARAMETER_MATRIX(muepsilon);
+  PARAMETER_MATRIX(mudelta);
 
-  // and are parametized here
-  PARAMETER_VECTOR(sigmaepsilon);
-  PARAMETER_VECTOR(sigmadelta);
+  PARAMETER_VECTOR(logsigmaepsilon);
+  PARAMETER_VECTOR(logsigmadelta);
+
+  // these ones need to be integrated out
   PARAMETER_MATRIX(epsilon);
   PARAMETER_MATRIX(delta);
 
   // the ll output var
-  Type nll = Type(0);
-  vector<Type> nll_temp = vector<Type>::Zeros(ndecisionmakers);
-
-  // no covariance for now, diagnol variances matrices
-  matrix<Type> Sigma_epsilon = sigmaepsilon.asDiagonal();
-  matrix<Type> Sigma_delta = sigmadelta.asDiagonal();
-
-  //set up MVnorm objects
-  MVNORM_t<Type> mvn_epsilon(Sigma_epsilon);
-  MVNORM_t<Type> mvn_delta(Sigma_delta);
+  Type nll = Type(0.0);
 
   //distributional asignment for the random effects
-  nll -= mvn_epsilon(epsilon-muepsilon).sum();
-  nll -= mvn_delta(delta-mudelta).sum();
+  for (int i=0; i < epsilon.rows(); i++){
+    for (int j=0; j < epsilon.cols(); j++){
+      nll -= dnorm(epsilon(i,j), muepsilon(0, i), exp(logsigmaepsilon[i]), true);
+    }
+  }
 
-  Matrix<Type> imatrix = Matrix<Type, nhop, nhop>::Identity();
-  imatrix = imatrix - betaparameters;
-  imatrix = imatrix.inverse()
+  for (int i=0; i < delta.rows(); i++){
+    for (int j=0; j < delta.cols(); j++){
+     nll -= dnorm(delta(i,j), mudelta(0, i), exp(logsigmadelta[i]), true);
+    }
+  }
 
-  Matrix<Type> gb = gamma * imatrix;
+  imatrix = imatrix - beta;
+  imatrix = imatrix.inverse();
 
-  gb = gb * delta.transpose() + epsilon.transpose();
+  matrix<Type> gb1 = gamma * imatrix;
 
-  Matrix<Type> concept_use = concept * code;
+  vector<Type> prob(data.cols());
+  vector<Type> choice(data.cols());
+  vector<int> choiceset_row;
 
-  gb = concept_use * gb;
+  matrix<Type> gb2;
+  matrix<Type> gb3;
+  //matrix<Type> gb3_exp;
 
-  gb = exp(gb);
+  vector<Type> nll_temp(epsilon.rows());
 
+  nll_temp.setZero();
 
   for(int i=0; i<data.rows(); i++){
 
-    j = group[i];
+    int j = group[i];
+    //
+    gb2 = gb1 * (delta.transpose().col(j) + mudelta.transpose()) + epsilon.transpose().col(j) + muepsilon.transpose();
+    gb3 = (concept * code) * gb2;
+    gb3 = exp(gb3.array());
 
-    probs = gb.row(data.block(i, i, 4, nmax_choiceset_size-1) - 1); // pad with zeros ? check is actually a vector?
+    choiceset_row = data.row(i);
 
-    nll_temp[j] += dmultinom(choices.row(1), //Vector of length K of integers. 0 or 1 for this K will be the max choiceset size, pad with zeros so the extra choices dont do anything
-                       probs, //Vector of length K, specifying the probability for the K classes (note, unlike in R these must sum to 1).
-                       1) //true if one wants the log-probability, false otherwise.
+    for(int k = 0; k < choiceset_row.size(); k++){
+      prob(k) = gb3(choiceset_row(k)-1, 0);
+    }
+
+    prob = prob / prob.sum();
+
+    choice = choices.row(i);
+
+    nll_temp(j) -= dmultinom(choice, //Vector of length K of integers. 0 or 1 for this K will be the max choiceset size, pad with zeros so the extra choices dont do anything
+                             prob, //Vector of length K, specifying the probability for the K classes (note, unlike in R these must sum to 1).
+                             1); //true if one wants the log-probability, false otherwise.
+
+
   }
 
-  nll -= logsumexp(nll_temp);
+  nll -= nll_temp.sum();
 
   // Report objects back to R:
-  ADREPORT(gamma);
-  ADREPORT(beta);
-  ADREPORT(phi);
+  // ADREPORT(gamma);
+  // ADREPORT(beta);
+  // ADREPORT(phi);
+  //
+  // ADREPORT(sigmaepsilon);
+  // ADREPORT(sigmadelta);
 
-  ADREPORT(sigmaepsilon);
-  ADREPORT(sigmadelta);
-  ADREPORT(muepsilon);
-  ADREPORT(mudelta);
 
-  REPORT(gamma);
-  REPORT(beta);
-  REPORT(phi);
+  // REPORT(gamma);
+  // REPORT(beta);
+  // REPORT(phi);
 
-  REPORT(sigmaepsilon);
-  REPORT(sigmadelta);
-  REPORT(muepsilon);
-  REPORT(mudelta);
-
-  REPORT(epsilon);
-  REPORT(delta);
+  // REPORT(nll_temp);
+  // REPORT(epsilon);
+  // REPORT(delta);
 
   return nll;
 
 }
-
 
