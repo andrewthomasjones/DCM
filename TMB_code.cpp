@@ -22,8 +22,8 @@ Type objective_function<Type>::operator() ()
   PARAMETER_MATRIX(muepsilon);
   PARAMETER_MATRIX(mudelta);
 
-  PARAMETER_VECTOR(logsigmaepsilon);
-  PARAMETER_VECTOR(logsigmadelta);
+  PARAMETER_MATRIX(logsigmaepsilon);
+  PARAMETER_MATRIX(logsigmadelta);
 
   // these ones need to be integrated out
   PARAMETER_MATRIX(epsilon);
@@ -32,16 +32,19 @@ Type objective_function<Type>::operator() ()
   // the ll output var
   Type nll = Type(0.0);
 
+  Type nll_epsilon = Type(0.0);
+  Type nll_delta = Type(0.0);
+
   //distributional asignment for the random effects
   for (int i=0; i < epsilon.rows(); i++){
     for (int j=0; j < epsilon.cols(); j++){
-      nll -= dnorm(epsilon(i,j), muepsilon(0, i), exp(logsigmaepsilon[i]), true);
+      nll_epsilon += dnorm(epsilon(i,j), muepsilon(0, j), exp(logsigmaepsilon(0, j)), 1);
     }
   }
 
   for (int i=0; i < delta.rows(); i++){
     for (int j=0; j < delta.cols(); j++){
-     nll -= dnorm(delta(i,j), mudelta(0, i), exp(logsigmadelta[i]), true);
+      nll_delta += dnorm(delta(i,j), mudelta(0, j), exp(logsigmadelta(0, j)), 1);
     }
   }
 
@@ -58,53 +61,56 @@ Type objective_function<Type>::operator() ()
   matrix<Type> gb3;
   //matrix<Type> gb3_exp;
 
-  vector<Type> nll_temp(epsilon.rows());
+  vector<Type> nll_data(epsilon.rows());
 
-  nll_temp.setZero();
+  nll_data.setZero();
 
   for(int i=0; i<data.rows(); i++){
 
     int j = group[i];
     //
-    gb2 = gb1 * (delta.transpose().col(j) + mudelta.transpose()) + epsilon.transpose().col(j) + muepsilon.transpose();
+    gb2 = gb1 * (delta.transpose().col(j)) + epsilon.transpose().col(j);
     gb3 = (concept * code) * gb2;
     gb3 = exp(gb3.array());
 
     choiceset_row = data.row(i);
 
     for(int k = 0; k < choiceset_row.size(); k++){
-      prob(k) = gb3(choiceset_row(k)-1, 0);
+      if(choiceset_row(k)-1 >= 0){
+        prob(k) = gb3(choiceset_row(k)-1, 0);
+      }else{
+        prob(k) = 0.0000001; //FIXME
+      }
     }
 
     prob = prob / prob.sum();
 
     choice = choices.row(i);
 
-    nll_temp(j) -= dmultinom(choice, //Vector of length K of integers. 0 or 1 for this K will be the max choiceset size, pad with zeros so the extra choices dont do anything
+    nll_data(j) += dmultinom(choice, //Vector of length K of integers. 0 or 1 for this K will be the max choiceset size, pad with zeros so the extra choices dont do anything
                              prob, //Vector of length K, specifying the probability for the K classes (note, unlike in R these must sum to 1).
                              1); //true if one wants the log-probability, false otherwise.
 
 
   }
 
-  nll -= nll_temp.sum();
+  nll -= nll_data.sum();
+  nll -= nll_epsilon;
+  nll -= nll_delta;
 
   // Report objects back to R:
   // ADREPORT(gamma);
   // ADREPORT(beta);
   // ADREPORT(phi);
+  // ADREPORT(mudelta);
+  // ADREPORT(muepsilon);
   //
-  // ADREPORT(sigmaepsilon);
-  // ADREPORT(sigmadelta);
+  REPORT(nll_data);
+  REPORT(nll_delta);
+  REPORT(nll_epsilon);
 
-
-  // REPORT(gamma);
-  // REPORT(beta);
-  // REPORT(phi);
-
-  // REPORT(nll_temp);
-  // REPORT(epsilon);
-  // REPORT(delta);
+  REPORT(epsilon);
+  REPORT(delta);
 
   return nll;
 
