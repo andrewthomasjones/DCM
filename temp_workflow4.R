@@ -5,7 +5,7 @@ processedBW <- setUp(BWpriorities)
 processedDCE <- setUp(DCEpriorities)
 joined <- join_choicedatasets(processedBW, processedDCE)
 
-model_1f <- model_generator(joined, "one-factor")
+model_1f <- model_generator(processedDCE, "one-factor")
 model_fixed <- model_generator(processedDCE, "fixed")
 model_random <- model_generator(processedDCE, "random")
 model_mtmm <- model_generator(joined, "mtmm")

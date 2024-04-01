@@ -8,11 +8,13 @@ processedBW <- remove_variables(processedBW, "Accessibility_BW")
 
 joined <- join_choicedatasets(processedBW, processedDCE)
 
-model <- model_generator(joined, "fixed")
+model <- model_generator(processedDCE, "random")
 res_fixed <- runModel(model)
 
 
-model <- model_generator(joined, "mtmm")
+#model <- model_generator(joined, "mtmm")
+
+
 choice_picker <- function(data){
   choices <- data[,2]
   slots <- data[, 5:ncol(data)]
@@ -38,7 +40,7 @@ data <- list(concept = model$data$concept,
              )
 
 model$epsilon[ ,1] <- 0.1#res_fixed$results$estimate
-model$epsilon[ ,2] <- 1 #e-12 #//FIXME has to be very small for fixed
+model$epsilon[ ,2] <- 1e-8 #e-12 #//FIXME has to be very small for fixed
 
 model$delta[ ,1] <- 0
 model$delta[ ,2] <- 1
@@ -89,13 +91,13 @@ map_f <- lapply(map, as.factor)
 
 compile("TMB_code.cpp")
 dyn.load(dynlib("TMB_code"))
-set.seed(123)
+obj <- MakeADFun(data, parameters, map = map_f, random = random,  DLL = "TMB_code", hessian = TRUE)
 
 
 # parameters$muepsilon[1] <- 0
 # map$muepsilon[1] <- NA
 
-obj <- MakeADFun(data, parameters, map = map_f, random = random,  DLL = "TMB_code", hessian = TRUE, inner.control = list(maxit = 1000))
+
 
 obj$env$tracepar <- TRUE
 ## Test eval function and gradient
@@ -109,7 +111,7 @@ lower_lims = -Inf
 opt <- nlminb(obj$par, obj$fn, obj$gr, upper = upper_lims, lower = lower_lims)
 opt$par
 
-rep <- sdreport(obj)
+rep <- sdreport(obj, bias.correct = TRUE)
 summary(rep, "random")
 summary(rep, "fixed", p.value = TRUE)
 #

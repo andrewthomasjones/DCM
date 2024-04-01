@@ -356,7 +356,15 @@ simulate_dataset <- function(processed, model_type, chosen_values,  easy_guess=F
 }
 
 
-estimate_model <- function(model_sims, type, precision){
+
+model_sims <- big_list[[m_size]][[model_type]][[data_type]][["results"]][["n_20"]][["sim"]]
+g <- "TMB"
+p <- 0
+model_type <- "random"
+
+estimate_model(model_sims, g, p, model_type)
+
+estimate_model <- function(model_sims, type, precision, model_type){
 
   if(type=="ghq"){
     dev_mode <- "C"
@@ -381,6 +389,21 @@ estimate_model <- function(model_sims, type, precision){
     tryCatch(
       expr = {
         results <- runModel(model_sims, dev_mode = dev_mode,  draws = draws, verbose = 0)
+        return(results)
+      },
+      error = function(e){
+        return(NA)
+      }
+    )
+
+
+  }else if(type == "TMB"){
+
+
+    tryCatch(
+      expr = {
+        results <- run_model_TMB(model_sims$data, model_type)
+
         return(results)
       },
       error = function(e){
@@ -480,19 +503,22 @@ library(mvtnorm)
 library(tidyverse)
 library(AlgDesign)
 
+source("TMB_test2.R")
+
 big_list <- list()
 
-n_sims <- 100
+n_sims <- 1000
 
-m_list <- c(250)  #c(20, 50, 100, 200)
+m_list <- c(100, 250)  #c(20, 50, 100, 200)
 
-models <- c( "random", "one-factor")#, "mtmm") #"fixed",
-integral_types <- c("draws", "ghq")
+models <- c("random", "one-factor", "mtmm", "fixed")
+integral_types <- c("TMB", "draws", "ghq")
 
 precision_levels <- list()
 
-precision_levels[["draws"]] <- c(100)#, 1000)
-precision_levels[["ghq"]] <- c(4, 5)
+precision_levels[["draws"]] <- c(1000)#, 1000)
+precision_levels[["ghq"]] <- c(3, 4)
+precision_levels[["TMB"]] <- c(0)
 
 chosen_values <- list()
 
@@ -515,7 +541,7 @@ chosen_values[["mtmm"]][["BWDCE"]] <- c(3.0,  1.9,  3.0,  0.5, 2.5,  1.5,  1.5, 
 data_sets <- c("DCE", "BW", "BWDCE")
 big_list <- list()
 
-file <- "./TESTING_DUMP/simulation_saved_results6.Rdata"
+file <- "./TESTING_DUMP/simulation_saved_results_TMB3.Rdata"
 
 for(m in m_list){
 
@@ -538,9 +564,9 @@ for(m in m_list){
           for(g in integral_types){
             for(p in precision_levels[[g]]){
               p_name <- paste0("p_", p)
-              #message(paste(".   sim:", i, g, p_name))
-              p <- as.numeric(str_extract(p_name, "([0-9].*)"))
-              big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- estimate_model(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]], g, p)
+              message(paste(".   sim:", i, g, p_name))
+              #p <- as.numeric(str_extract(p_name, "([0-9].*)"))
+              big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- estimate_model(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]], g, p, model_type)
             }
             save(big_list, file=file)
             gc()

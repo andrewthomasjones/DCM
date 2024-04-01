@@ -98,6 +98,12 @@ Type objective_function<Type>::operator() ()
   nll -= nll_epsilon;
   nll -= nll_delta;
 
+  matrix<Type> sigmaepsilon = exp(logsigmaepsilon.array());
+  matrix<Type> sigmadelta = exp(logsigmadelta.array());
+
+  REPORT(sigmaepsilon);
+  REPORT(sigmadelta);
+
   // Report objects back to R:
   // ADREPORT(gamma);
   // ADREPORT(beta);
@@ -105,12 +111,12 @@ Type objective_function<Type>::operator() ()
   // ADREPORT(mudelta);
   // ADREPORT(muepsilon);
   //
-  REPORT(nll_data);
-  REPORT(nll_delta);
-  REPORT(nll_epsilon);
-
-  REPORT(epsilon);
-  REPORT(delta);
+  // REPORT(nll_data);
+  // REPORT(nll_delta);
+  // REPORT(nll_epsilon);
+  //
+  // REPORT(epsilon);
+  // REPORT(delta);
 
   return nll;
 
