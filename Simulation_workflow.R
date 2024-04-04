@@ -172,6 +172,8 @@ simulation <- function(chosen_values,  model,  processed) {
   data  <-  processed$data
   ndecisionmakers  <-  processed$ndecisionmakers
 
+  groups <- as.numeric(factor(model$data$data[,1]))
+
   epsilonmatrix <- model$epsilon
   deltamatrix <- model$delta
   gammamatrix <- model$gamma
@@ -269,27 +271,28 @@ simulation <- function(chosen_values,  model,  processed) {
     }
   }
 
-  gb <- diag(nhop) - betaparameters
-  gb <- solve(gb)
-  gb  <-  gammaparameters %*% gb
 
-
-  delta <- rmvnorm(1, mudeltaparameters, diag(sigmadeltaparameters))
-  epsilon <- rmvnorm(1, muepsilonparameters, diag(sigmaepsilonparameters))
-
-  gb  <-  gb %*% t(delta)
-  gb <- gb + t(epsilon)
-
-
-  conceptuse <- concept %*% model$code
-  gb <- conceptuse %*% gb
-  gb <- exp(gb)
 
 
   data2 <- data
   nlines  <-  dim(data)[1]
 
+  delta <- rmvnorm(ndecisionmakers, mudeltaparameters, diag(sigmadeltaparameters))
+  epsilon <- rmvnorm(ndecisionmakers, muepsilonparameters, diag(sigmaepsilonparameters))
+
   for (i in 1:nlines) {
+
+    j = groups[i];
+
+    gb <- diag(nhop) - betaparameters
+    gb <- solve(gb)
+    gb  <-  gammaparameters %*% gb
+    gb  <-  gb %*% t(delta)[, j]
+    gb <- gb + t(epsilon)[, j]
+
+    conceptuse <- concept %*% model$code
+    gb <- conceptuse %*% gb
+    gb <- exp(gb)
 
     options <- data[i, (1:nmax_choiceset_size) + 4]
     probs <- gb[options, ]
@@ -355,14 +358,6 @@ simulate_dataset <- function(processed, model_type, chosen_values,  easy_guess=F
   return(model_sims)
 }
 
-
-
-model_sims <- big_list[[m_size]][[model_type]][[data_type]][["results"]][["n_20"]][["sim"]]
-g <- "TMB"
-p <- 0
-model_type <- "random"
-
-estimate_model(model_sims, g, p, model_type)
 
 estimate_model <- function(model_sims, type, precision, model_type){
 
@@ -541,7 +536,7 @@ chosen_values[["mtmm"]][["BWDCE"]] <- c(3.0,  1.9,  3.0,  0.5, 2.5,  1.5,  1.5, 
 data_sets <- c("DCE", "BW", "BWDCE")
 big_list <- list()
 
-file <- "./TESTING_DUMP/simulation_saved_results_TMB3.Rdata"
+file <- "./TESTING_DUMP/simulation_saved_results_TMB_fixed2.Rdata"
 
 for(m in m_list){
 
