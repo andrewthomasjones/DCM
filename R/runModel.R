@@ -14,6 +14,8 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
                        gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
                        dev_mode = "C", ghq_size = 3, draws = 100) {
 
+  start_time <- Sys.time()
+
   parcount <- parameterCount(model)
   processed <- model$data
 
@@ -159,6 +161,9 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
                         format(Sys.time(),
                                "%Y-%m-%d %H:%M"))
 
+  end_time <- Sys.time()
+  time_taken <- end_time - start_time
+
   fitted_model  <-  list(result_name = result_name,
                          model = model,
                          model_name = model_name,
@@ -167,7 +172,8 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
                          results = results,
                          AIC = AIC,
                          BIC = BIC,
-                         par_count = parcount
+                         par_count = parcount,
+                         execution_time = as.numeric(time_taken)
   )
 
   return(fitted_model)

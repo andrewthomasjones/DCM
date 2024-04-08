@@ -497,22 +497,25 @@ library(DCM)
 library(mvtnorm)
 library(tidyverse)
 library(AlgDesign)
+library(tictoc)
 
 source("TMB_test2.R")
+critical_val <- qnorm(0.975)
 
 big_list <- list()
 
-n_sims <- 1000
+n_sims <- 1 #750
 
-m_list <- c(100, 250)  #c(20, 50, 100, 200)
+m_list <- c(50)#, 100, 250)
 
-models <- c("random", "one-factor", "mtmm", "fixed")
+models <- c("one-factor",  "random", "fixed", "mtmm")
+
 integral_types <- c("TMB", "draws", "ghq")
 
 precision_levels <- list()
 
-precision_levels[["draws"]] <- c(1000)#, 1000)
-precision_levels[["ghq"]] <- c(3, 4)
+precision_levels[["draws"]] <- c(100, 1000)
+precision_levels[["ghq"]] <- c(3, 4, 5)
 precision_levels[["TMB"]] <- c(0)
 
 chosen_values <- list()
@@ -536,7 +539,9 @@ chosen_values[["mtmm"]][["BWDCE"]] <- c(3.0,  1.9,  3.0,  0.5, 2.5,  1.5,  1.5, 
 data_sets <- c("DCE", "BW", "BWDCE")
 big_list <- list()
 
-file <- "./TESTING_DUMP/simulation_saved_results_TMB_fixed2.Rdata"
+file <- "./TESTING_DUMP/simulation_saved_results0.Rdata"
+file2 <- "./TESTING_DUMP/simulation_processed_results0.Rdata"
+
 
 for(m in m_list){
 
@@ -548,117 +553,142 @@ for(m in m_list){
 
     for(data_type in data_sets){
 
-      big_list[[m_size]][[model_type]][[data_type]][["specs"]] <- list(values = chosen_values[[model_type]][[data_type]], n_sims = n_sims, m=m, easy_guess=TRUE, template = processed[[data_type]])
+      for(eg in c(TRUE, FALSE)){
+        eg_name <- paste0("eg_", eg)
 
-      if(!is.na(big_list[[m_size]][[model_type]][[data_type]][["specs"]][1])){
-        for(i in 1:n_sims){
-          n_name <- paste0("n_", i)
-          message(paste(m_size, model_type, data_type, i))
-          big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]] <- simulate_dataset(processed[[data_type]], model_type, chosen_values[[model_type]][[data_type]], easy_guess=TRUE)
+        big_list[[m_size]][[model_type]][[data_type]][["specs"]] <- list(values = chosen_values[[model_type]][[data_type]], n_sims = n_sims, m=m, easy_guess=eg, template = processed[[data_type]])
 
-          for(g in integral_types){
-            for(p in precision_levels[[g]]){
-              p_name <- paste0("p_", p)
-              message(paste(".   sim:", i, g, p_name))
-              #p <- as.numeric(str_extract(p_name, "([0-9].*)"))
-              big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- estimate_model(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]], g, p, model_type)
+        if(!is.na(chosen_values[[model_type]][[data_type]][1])){
+          for(i in 1:n_sims){
+            n_name <- paste0("n_", i)
+            message(paste(m_size, model_type, data_type, eg_name, i))
+            big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][["sim"]] <- simulate_dataset(processed[[data_type]], model_type, chosen_values[[model_type]][[data_type]], easy_guess=eg)
+
+            for(g in integral_types){
+              for(p in precision_levels[[g]]){
+                p_name <- paste0("p_", p)
+                message(paste(".   sim:", i, g, p_name))
+                #p <- as.numeric(str_extract(p_name, "([0-9].*)"))
+                big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][[g]][[p_name]] <- estimate_model(big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][["sim"]], g, p, model_type)
+              }
             }
-            save(big_list, file=file)
-            gc()
           }
+          save(big_list, file=file)
+          gc()
         }
       }
-
     }
   }
 }
 
 
 # bias - is estimator estimating true value
-# variance - variance of estimator / MSE of estimator
-# sample standard error of estimates
-# z scores of (true - est)/se -> is it standard normal
-# do 95% CIs have appropriate coverage probs
-# does bias and variance differ between Draws and GHQ
-# does bias and variance differ between GHQ levels
-# does bias and variance differ between Draws levels
 
-# overall and divided by data type / model type / 'variable class'
+# variance - variance of estimator / MSE of estimator
+
+# reported sample standard error of estimates
+
+# z scores of (true - est)/se -> is it standard normal
+
+# standard error calculated from biases directly
+
+#  95% CI true coverage probability
 
 # what is appropriate GHQ level (judgement call)
 # is GHQ estimator unbiased
 # are reported standard errors correct
 # are reported CIs adequate (are true CIs normal)
 # just quite how bad was the draws thing
+load(file=paste0(file))
 
+row_count <- 1
+row_list <- list()
 
-# sapply(big_list$m_20$fixed$DCE$results, "[[", "draws$p_100$results$estimate")- big_list$m_20$fixed$DCE$specs$values
-#
-#
-# big_list$m_20$fixed$DCE$results$n_1$draws$p_100$results$estimate - big_list$m_20$fixed$DCE$specs$values
-# big_list$m_20$fixed$DCE$results$n_1$draws$p_1000$results$estimate - big_list$m_20$fixed$DCE$specs$values
-# big_list$m_20$fixed$DCE$results$n_1$ghq$p_3$results$estimate - big_list$m_20$fixed$DCE$specs$values
-# big_list$m_20$fixed$DCE$results$n_1$ghq$p_4$results$estimate - big_list$m_20$fixed$DCE$specs$values
-# big_list$m_20$fixed$DCE$results$n_1$ghq$p_5$results$estimate -  big_list$m_20$fixed$DCE$specs$values
-#
+for(m in m_list){
 
-# file <- "./TESTING_DUMP/simulation_saved_results2.Rdata"
-# load(file=paste0(file))
-# #
-# model <- "random"
-# size <- "m_10"
-# data <- "BWDCE"
-# random_type <- "ghq"
-# precision_level <- "p_3"
-#
-# bias <- rep(0, length(big_list[[size]][[model]][[data]]$specs$values))
-#
-# for(i in names(big_list[[size]][[model]][[data]]$results)){
-#   bias <- bias + (big_list[[size]][[model]][[data]]$results[[i]][[random_type]][[precision_level]]$results$estimate - big_list[[size]][[model]][[data]]$specs$values)/length(names(big_list[[size]][[model]][[data]]$results))
-# }
-#
-# var_names <- big_list[[size]][[model]][[data]]$results$n_1$ghq$p_3$results$parameters
-# bias
-# #
+  m_size <- paste0("m_", m)
 
+  for(model_type in models){
 
+    for(data_type in data_sets){
 
-#
-#
-#
-#
-# for (m in m_list){
-#
-#   m_size <- paste0("m_", m)
-#
-#   processed <- simulate_data(m)
-#
-#   for(model_type in models){
-#
-#     for(data_type in names(processed)){
-#
-#       big_list[[m_size]][[model_type]][[data_type]][["specs"]] <- list(values = chosen_values[[model_type]][[data_type]], n_sims = n_sims, m=m, easy_guess=TRUE, template = processed[[data_type]])
-#
-#       if(!is.na(big_list[[m_size]][[model_type]][[data_type]][["specs"]][1])){
-#         for(i in 1:n_sims){
-#           n_name <- paste0("n_", i)
-#           message(paste(m_size, model_type, data_type))
-#           big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]] <- simulate_dataset(processed[[data_type]], model_type, chosen_values[[model_type]][[data_type]], easy_guess=TRUE)
-#
-#           for(g in integral_types){
-#             for(p in precision_levels[[g]]){
-#               p_name <- paste0("p_", p)
-#               message(paste(".   sim:", i, g, p_name))
-#               big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][[g]][[p_name]] <- estimate_model(big_list[[m_size]][[model_type]][[data_type]][["results"]][[n_name]][["sim"]], g, p)
-#             }
-#           }
-#         }
-#       }
-#       save(big_list, file=paste0("./TESTING_DUMP/simulation_", format(Sys.time(), "%Y-%m-%d_%H%m"), "_saved_results.Rdata"))
-#     }
-#   }
-# }
+      for(eg in c(TRUE, FALSE)){
+        eg_name <- paste0("eg_", eg)
 
+        if(!is.na(chosen_values[[model_type]][[data_type]][1])){
 
+          true <- big_list[[m_size]][[model_type]][[data_type]][["specs"]]$values
+          names <- parameter_labels(big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][["n_1"]][["sim"]])
+          estimates <- list()
+          standard_errors <- list()
+          times <- list()
 
+          for(g in integral_types){
+            for(p in precision_levels[[g]]){
+              p_name <- paste0("p_", p)
+              for(i in 1:n_sims){
+                n_name <- paste0("n_", i)
 
+                if(!is.na(big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][[g]][[p_name]][1])){
+                  #print(paste(m_size, model_type, data_type, eg_name, g, p_name,  n_name))
+                  estimates[[i]] <-       big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][[g]][[p_name]]$results$estimate
+                  standard_errors[[i]] <- big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][[g]][[p_name]]$results$standard_errors
+                  times[[i]] <-           big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][[g]][[p_name]]$execution_time
+                  #print(big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][[g]][[p_name]]$execution_time)
+                }else{
+                  estimates[[i]] <- true*NA
+                  standard_errors[[i]] <- true*NA
+                  times[[i]] <- NA
+                }
+
+              }
+              #print(times)
+              for(j in 1:length(true)){
+
+                estimates_j <- unlist(lapply(estimates, '[[', j))
+                true_j <- true[j]
+                standard_errors_j <- unlist(lapply(standard_errors,  '[[', j))
+
+                mu <- mean(estimates_j)
+                std_deviations <- mean((estimates_j - mu)^2, na.rm=T)
+                z_scores <- (estimates_j - true_j) / standard_errors_j
+
+                upper_bounds <- estimates_j + critical_val*standard_errors_j
+                lower_bounds <- estimates_j - critical_val*standard_errors_j
+
+                sw_p_value = if(sum(is.finite(z_scores)) > 3){shapiro.test(z_scores)$p.value}else{NA}
+                coverage_probability = (sum(1.0*((true_j > lower_bounds) & (true_j < upper_bounds)), na.rm = T)/ length(estimates))
+
+                row_list[[row_count]] <- data.frame(
+                  m_size = m_size,
+                  data_type = data_type,
+                  integral_type = g,
+                  precision = p,
+                  n = length(estimates),
+                  time = mean(unlist(times), na.rm = T),
+                  start = eg_name,
+                  true = true_j,
+                  name = names[j],
+                  bias = mean(estimates_j - true_j, na.rm = T),
+                  coverage_probability = coverage_probability,
+                  mse = mean((estimates_j - true_j)^2, na.rm = T),
+                  mean_std_deviation = mean(std_deviations, na.rm = T),
+                  bias_pc = 100*mean(estimates_j - true_j, na.rm = T)/true_j,
+                  mu = mean(estimates_j, na.rm = T),
+                  sw_p_value = sw_p_value,
+                  good_estimate = coverage_probability > 0.90 & sw_p_value > 0.01
+                )
+                row_count <- row_count + 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+results_table <- bind_rows(row_list)
+save(results_table, file=file2)
+
+head(results_table)

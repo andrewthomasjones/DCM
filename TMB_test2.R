@@ -1,4 +1,5 @@
 library(TMB)
+library(tictoc)
 
 compile("TMB_code.cpp")
 dyn.load(dynlib("TMB_code"))
@@ -19,6 +20,8 @@ choice_picker <- function(data){
 
 
 run_model_TMB <- function(processed_data, model_type){
+
+  start_time <- Sys.time()
 
   model <- model_generator(processed_data, model_type)
 
@@ -132,6 +135,9 @@ run_model_TMB <- function(processed_data, model_type){
                           estimate = opt$par,
                           standard_errors = se[,2])
 
+  end_time <- Sys.time()
+  time_taken <- end_time - start_time
+
   fitted_model  <-  list(result_name = result_name,
                          model = model,
                          model_name = model_type,
@@ -140,7 +146,8 @@ run_model_TMB <- function(processed_data, model_type){
                          results = results,
                          AIC = 2*K - 2*LL,
                          BIC = -2*LL + K*log(nrow(model$data$data)),
-                         par_count = K
+                         par_count = K,
+                         execution_time = as.numeric(time_taken)
   )
 
   return(fitted_model)
