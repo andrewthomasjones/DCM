@@ -498,15 +498,18 @@ library(mvtnorm)
 library(tidyverse)
 library(AlgDesign)
 library(tictoc)
-
-source("TMB_test2.R")
 critical_val <- qnorm(0.975)
+source("TMB_test2.R")
+
+
+file <- "./TESTING_DUMP/simulation_saved_results3.Rdata"
+file2 <- "./TESTING_DUMP/simulation_processed_results3.Rdata"
 
 big_list <- list()
 
-n_sims <- 1 #750
+n_sims <-  1000
 
-m_list <- c(50)#, 100, 250)
+m_list <- c(50, 100, 250)
 
 models <- c("one-factor",  "random", "fixed", "mtmm")
 
@@ -514,8 +517,8 @@ integral_types <- c("TMB", "draws", "ghq")
 
 precision_levels <- list()
 
-precision_levels[["draws"]] <- c(100, 1000)
-precision_levels[["ghq"]] <- c(3, 4, 5)
+precision_levels[["draws"]] <- c(1000)
+precision_levels[["ghq"]] <- c(3, 4)
 precision_levels[["TMB"]] <- c(0)
 
 chosen_values <- list()
@@ -538,9 +541,6 @@ chosen_values[["mtmm"]][["BWDCE"]] <- c(3.0,  1.9,  3.0,  0.5, 2.5,  1.5,  1.5, 
 
 data_sets <- c("DCE", "BW", "BWDCE")
 big_list <- list()
-
-file <- "./TESTING_DUMP/simulation_saved_results0.Rdata"
-file2 <- "./TESTING_DUMP/simulation_processed_results0.Rdata"
 
 
 for(m in m_list){
