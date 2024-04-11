@@ -502,12 +502,12 @@ critical_val <- qnorm(0.975)
 source("TMB_test2.R")
 
 
-file <- "./TESTING_DUMP/simulation_saved_results3.Rdata"
-file2 <- "./TESTING_DUMP/simulation_processed_results3.Rdata"
+file <- "./TESTING_DUMP/simulation_saved_results4.Rdata"
+file2 <- "./TESTING_DUMP/simulation_processed_results4.Rdata"
 
 big_list <- list()
 
-n_sims <-  1000
+n_sims <-  5
 
 m_list <- c(50, 100, 250)
 
@@ -662,6 +662,7 @@ for(m in m_list){
                 row_list[[row_count]] <- data.frame(
                   m_size = m_size,
                   data_type = data_type,
+                  model_type = model_type,
                   integral_type = g,
                   precision = p,
                   n = length(estimates),
