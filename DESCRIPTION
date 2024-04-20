@@ -27,7 +27,8 @@ Imports:
     mvQuad,
     TMB (>= 1.9.11),
     AlgDesign,
-    crossdes
+    crossdes,
+    Rfast
 Suggests: 
     knitr,
     rmarkdown,

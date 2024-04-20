@@ -257,13 +257,13 @@ simulation <- function(chosen_values,  model,  processed) {
   nlines  <-  dim(data)[1]
 
   delta <-
-    rmvnorm(ndecisionmakers,
-            mudeltaparameters,
-            diag(sigmadeltaparameters))
+    Rfast::rmvnorm(ndecisionmakers,
+                   mudeltaparameters,
+                   diag(sigmadeltaparameters))
   epsilon <-
-    rmvnorm(ndecisionmakers,
-            muepsilonparameters,
-            diag(sigmaepsilonparameters))
+    Rfast::rmvnorm(ndecisionmakers,
+                   muepsilonparameters,
+                   diag(sigmaepsilonparameters))
 
   for (i in 1:nlines) {
     j <- groups[i]
