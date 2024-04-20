@@ -1,7 +1,15 @@
 library(DCM)
 library(tictoc)
 
+processedDCE <- setUp(DCEpriorities)
+model <- model_generator(processedDCE, "fixed")
+res <- runModel(model, dev_mode = "TMB")
+
 processedBW <- setUp(BWpriorities)
+processedDCE <- setUp(DCEpriorities)
+
+processedBW <- remove_variables(processedBW , "Accessibility_BW" )
+
 processedDCE <- setUp(DCEpriorities)
 joined <- join_choicedatasets(processedBW, processedDCE)
 

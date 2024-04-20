@@ -6,11 +6,11 @@
 NULL
 
 frequencyDistributionCpp <- function(cold) {
-    .Call('_DCM_frequencyDistributionCpp', PACKAGE = 'DCM', cold)
+    .Call(`_DCM_frequencyDistributionCpp`, cold)
 }
 
 createConceptsCpp <- function(data_matrix, nmax_choiceset_size = 31L) {
-    .Call('_DCM_createConceptsCpp', PACKAGE = 'DCM', data_matrix, nmax_choiceset_size)
+    .Call(`_DCM_createConceptsCpp`, data_matrix, nmax_choiceset_size)
 }
 
 #' llMax_ghq
@@ -22,10 +22,10 @@ createConceptsCpp <- function(data_matrix, nmax_choiceset_size = 31L) {
 #' @returns opt_results
 #' @export
 llMax_ghq <- function(model, processed, ghq_matrix1, nlm_params) {
-    .Call('_DCM_llMax_ghq', PACKAGE = 'DCM', model, processed, ghq_matrix1, nlm_params)
+    .Call(`_DCM_llMax_ghq`, model, processed, ghq_matrix1, nlm_params)
 }
 
 llCalc_ghq_e <- function(working_values, model, processed, ghq_matrix1) {
-    .Call('_DCM_llCalc_ghq_e', PACKAGE = 'DCM', working_values, model, processed, ghq_matrix1)
+    .Call(`_DCM_llCalc_ghq_e`, working_values, model, processed, ghq_matrix1)
 }
 

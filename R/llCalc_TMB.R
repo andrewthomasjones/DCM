@@ -1,9 +1,3 @@
-library(TMB)
-library(tictoc)
-
-compile("TMB_code.cpp")
-dyn.load(dynlib("TMB_code"))
-
 choice_picker <- function(data){
   choices <- data[,2]
   slots <- data[, 5:ncol(data)]
@@ -19,11 +13,13 @@ choice_picker <- function(data){
 }
 
 
-run_model_TMB <- function(processed_data, model_type){
+run_model_TMB <- function(model){
 
   start_time <- Sys.time()
 
-  model <- model_generator(processed_data, model_type)
+  processed_data <- model$data
+
+  model_type <- model$description
 
   parameters_labels  <-  parameter_labels(model)
 
@@ -51,6 +47,7 @@ run_model_TMB <- function(processed_data, model_type){
     epsilon = matrix(rnorm(model$data$ndecisionmakers*model$npp), nrow = model$data$ndecisionmakers, ncol = model$npp, byrow=TRUE),
     delta = matrix(rnorm(model$data$ndecisionmakers*model$nhop), nrow = model$data$ndecisionmakers, ncol = model$nhop, byrow=TRUE)
   )
+
   random <- c("epsilon", "delta")
 
     map <- list(
@@ -108,7 +105,16 @@ run_model_TMB <- function(processed_data, model_type){
 
   map_f <- lapply(map, as.factor)
 
-  obj <- MakeADFun(data, parameters, map = map_f, random = random,  DLL = "TMB_code", hessian = TRUE, silent=TRUE)
+
+  # instantiate ModelA object
+  obj <- TMB::MakeADFun(data = c(model = "DCMLL", # which model to use
+                                  data),
+                         parameters = parameters,
+                         map = map_f,
+                         random = random,
+                         hessian = TRUE,
+                         silent=TRUE,
+                         DLL = "DCM_TMBExports") # package's DLL
 
   #obj$env$tracepar <- TRUE
 
@@ -122,7 +128,7 @@ run_model_TMB <- function(processed_data, model_type){
   ## Fit model
   opt <- nlminb(obj$par, obj$fn, obj$gr, upper = upper_lims, lower = lower_lims)
 
-  rep <- sdreport(obj, bias.correct = TRUE)
+  rep <- TMB::sdreport(obj, bias.correct = TRUE)
   se <- summary(rep, "fixed")
 
   result_name <- paste0(model_type,  " ",
@@ -154,20 +160,6 @@ run_model_TMB <- function(processed_data, model_type){
 
 }
 
-
-# processedDCE <- setUp(DCEpriorities)
-#
-# processedBW <- remove_variables(setUp(BWpriorities), "Accessibility_BW")
-#
-# joined <- join_choicedatasets(processedBW, processedDCE)
-#
-# run_model_TMB(processedDCE, "random")
-#
-# run_model_TMB(joined, "mtmm")
-#
-# run_model_TMB(processedDCE, "fixed")
-#
-# run_model_TMB(processedDCE, "one-factor")
 
 
 

@@ -360,7 +360,7 @@ model_generator  <-  function(pre_processed_data,
   if (model_type %in% c("fixed",  "random",  "one-factor", "mtmm")) {
 
     matrix_list <- generate_model_matrices(pre_processed_data,  model_type)
-    description  <-  paste0("Generated model of type ", model_type)
+    description  <-  model_type
 
     nhop <- nrow(matrix_list$delta_model)
     npp <- pre_processed_data$npp

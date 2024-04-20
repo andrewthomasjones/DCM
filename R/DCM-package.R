@@ -1,3 +1,7 @@
+#' @rawNamespace useDynLib(DCM, .registration=TRUE); useDynLib(DCM_TMBExports)
+#' @keywords internal
+"_PACKAGE"
+
 ## usethis namespace: start
 #' @importFrom data.table as.data.table
 #' @importFrom DiagrammeR add_global_graph_attrs
@@ -29,6 +33,8 @@
 #' @importFrom tools file_ext
 #' @importFrom utils packageVersion
 #' @importFrom utils read.table read.csv
+#' @importFrom AlgDesign gen.factorial optFederov
+#' @importFrom crossdes find.BIB
+#' @importFrom TMB sdreport
 ## usethis namespace: end
-#' @rawNamespace useDynLib(DCM, .registration=TRUE); useDynLib(DCM_TMBExports)
 NULL

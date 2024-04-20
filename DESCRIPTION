@@ -36,6 +36,7 @@ VignetteBuilder: knitr
 LinkingTo: 
     Rcpp,
     RcppArmadillo,
+    RcppEigen,
     TMB
 Depends: 
     R (>= 3.5.0)

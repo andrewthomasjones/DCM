@@ -1,10 +1,15 @@
-// Simple linear regression.
-#include <TMB.hpp>
+/// @file DCMLL.hpp
+
 using namespace density;
 
+#ifndef DCMLL_hpp
+#define DCMLL_hpp
+
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR obj
 
 template <class Type>
-Type objective_function<Type>::operator() ()
+Type DCMLL(objective_function<Type>* obj)
 {
   //actual data and design matrices
   DATA_MATRIX(concept);
@@ -122,3 +127,7 @@ Type objective_function<Type>::operator() ()
 
 }
 
+#undef TMB_OBJECTIVE_PTR
+#define TMB_OBJECTIVE_PTR this
+
+#endif
