@@ -49,7 +49,7 @@ llCalc <- function(working_values,  model,  processed,  ghq_matrix1) {
   gammamatrix <- model$gamma
   deltamatrix <- model$delta
   betamatrix <- model$beta
-  phimatrix <- model$phi
+  #phimatrix <- model$phi
   code <- model$code
 
   muepsilonparameters <- array(0, npp)

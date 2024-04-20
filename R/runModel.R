@@ -43,9 +43,9 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
   }
 
 
-  if(dev_mode == "TMB"){
+  if (dev_mode == "TMB") {
     fitted_model <- run_model_TMB(model)
-  }else{
+  }else {
     #pass through in case these need to be accessed
     nlm_params <- list(
       gradtol = gradtol,
