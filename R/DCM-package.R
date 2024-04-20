@@ -30,4 +30,5 @@
 #' @importFrom utils packageVersion
 #' @importFrom utils read.table read.csv
 ## usethis namespace: end
+#' @rawNamespace useDynLib(DCM, .registration=TRUE); useDynLib(DCM_TMBExports)
 NULL
