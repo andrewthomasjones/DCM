@@ -17,6 +17,8 @@ process_sims(
 )
 }
 \arguments{
+\item{big_list}{list of sim results}
+
 \item{data_sets}{list of dataset types}
 
 \item{chosen_values}{simulation params}
@@ -30,6 +32,8 @@ process_sims(
 \item{m_list}{list of sample sizes for sims}
 
 \item{n_sims}{no of sims}
+
+\item{conf_level}{confidence levels for coverage calculations}
 }
 \value{
 list of results

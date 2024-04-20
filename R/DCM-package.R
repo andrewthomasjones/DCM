@@ -13,6 +13,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom dplyr rename
 #' @importFrom dplyr select
+#' @importFrom dplyr bind_rows
 #' @importFrom greekLetters greeks
 #' @importFrom Hmisc rcorr
 #' @importFrom lifecycle deprecated
@@ -32,9 +33,14 @@
 #' @importFrom stats qnorm
 #' @importFrom tools file_ext
 #' @importFrom utils packageVersion
-#' @importFrom utils read.table read.csv
-#' @importFrom AlgDesign gen.factorial optFederov
+#' @importFrom utils read.table
+#' @importFrom utils read.csv
+#' @importFrom utils combn
+#' @importFrom AlgDesign gen.factorial
+#' @importFrom AlgDesign optFederov
 #' @importFrom crossdes find.BIB
 #' @importFrom TMB sdreport
+#' @importFrom stats nlminb rmultinom rnorm setNames shapiro.test
+#'
 ## usethis namespace: end
 NULL

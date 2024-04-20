@@ -1,7 +1,7 @@
 Package: DCM
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.2
+Version: 0.1.3
 Author: Andrew Thomas Jones, Thomas Magor, Leonard V. Coote
 Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
 Description: More about what it does (maybe more than one line)
@@ -25,7 +25,9 @@ Imports:
     utils,
     Hmisc,
     mvQuad,
-    TMB (>= 1.9.11)
+    TMB (>= 1.9.11),
+    AlgDesign,
+    crossdes
 Suggests: 
     knitr,
     rmarkdown,

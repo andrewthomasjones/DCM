@@ -31,6 +31,8 @@ run_sims(
 
 \item{n_sims}{no of sims}
 
+\item{p}{number of columns}
+
 \item{file}{outfile for save}
 }
 \value{

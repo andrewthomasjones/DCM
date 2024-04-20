@@ -473,7 +473,7 @@ generate_simulation_templates <- function(m, p = 2) {
 
   design_ouput2 <- crossdes::find.BIB(l, 4, 3, iter = 30)
 
-  combinations <- combn(seq_len(ncol(design_ouput2)), 2)
+  combinations <- utils::combn(seq_len(ncol(design_ouput2)), 2)
 
   res <-
     matrix(0,
@@ -536,6 +536,7 @@ generate_simulation_templates <- function(m, p = 2) {
 #' @param models model types to test
 #' @param m_list list of sample sizes for sims
 #' @param n_sims no of sims
+#' @param p number of columns
 #' @param file outfile for save
 #' @returns list of results
 #' @export
@@ -615,6 +616,7 @@ run_sims <- function(data_sets,
 
 
 #' cleans up data batch of simulations. params need to mathc those used for sim
+#' @param big_list list of sim results
 #' @param data_sets list of dataset types
 #' @param chosen_values simulation params
 #' @param precision_levels for estimates
@@ -622,6 +624,7 @@ run_sims <- function(data_sets,
 #' @param models model types to test
 #' @param m_list list of sample sizes for sims
 #' @param n_sims no of sims
+#' @param conf_level confidence levels for coverage calculations
 #' @returns list of results
 #' @export
 process_sims <-
@@ -695,7 +698,7 @@ process_sims <-
                       estimates_j - critical_val * standard_errors_j
 
                     sw_p_value <- if (sum(is.finite(z_scores)) > 3) {
-                      shapiro.test(z_scores)$p.value
+                      stats::shapiro.test(z_scores)$p.value
                     } else {
                       NA
                     }
@@ -733,6 +736,6 @@ process_sims <-
         }
       }
     }
-    results_table <- bind_rows(row_list)
+    results_table <- dplyr::bind_rows(row_list)
     return(results_table)
   }
