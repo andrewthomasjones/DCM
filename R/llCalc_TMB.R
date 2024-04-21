@@ -141,8 +141,8 @@ run_model_TMB <- function(model) {
 
   se_final <- se
 
-  logged_params <- str_detect(row.names(se_final), "^log")
-  match_names <- str_replace(row.names(se_final)[logged_params], "log", "")
+  logged_params <- stringr::str_detect(row.names(se_final), "^log")
+  match_names <- stringr::str_replace(row.names(se_final)[logged_params], "log", "")
   swap_idx <- which(row.names(se2) %in% match_names)
 
   se_final[swap_idx, 1:2] <-  se2[swap_idx, 1:2]

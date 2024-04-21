@@ -28,7 +28,8 @@ Imports:
     TMB (>= 1.9.11),
     AlgDesign,
     crossdes,
-    Rfast
+    Rfast,
+    stringr
 Suggests: 
     knitr,
     rmarkdown,

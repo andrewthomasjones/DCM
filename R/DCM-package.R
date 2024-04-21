@@ -44,5 +44,6 @@
 #' @importFrom Rfast rmvnorm
 #' @importFrom foreach foreach
 #' @importFrom foreach %dopar%
+#' @importFrom stringr str_detect str_replace
 ## usethis namespace: end
 NULL

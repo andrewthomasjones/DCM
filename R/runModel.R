@@ -161,8 +161,8 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
                             standard_errors = standard_errors)
 
     #make sure standard deviation estimates corrected to be positive
-    results$estimate[str_detect(results$parameters, "_sig_")] <-
-      abs(results$estimate[str_detect(results$parameters, "_sig_")])
+    results$estimate[stringr::str_detect(results$parameters, "_sig_")] <-
+      abs(results$estimate[stringr::str_detect(results$parameters, "_sig_")])
 
     results$LL  <-   c(loglik1$minimum,  rep(".",  nrow(results) - 1))
 

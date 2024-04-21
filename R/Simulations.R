@@ -647,6 +647,7 @@ run_sims <- function(data_sets,
 #' @param m_list list of sample sizes for sims
 #' @param n_sims no of sims
 #' @param conf_level confidence levels for coverage calculations
+#' @param colvars how many column variables in sims
 #' @returns list of results
 #' @export
 process_sims <-

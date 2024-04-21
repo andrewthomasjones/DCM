@@ -35,6 +35,8 @@ process_sims(
 \item{n_sims}{no of sims}
 
 \item{conf_level}{confidence levels for coverage calculations}
+
+\item{colvars}{how many column variables in sims}
 }
 \value{
 list of results
