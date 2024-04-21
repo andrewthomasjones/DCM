@@ -1,12 +1,8 @@
-pickfun <- function(slots, x, a) {
-  return(which(slots[x, ] == a)[1])
-}
-
 choice_picker <- function(data) {
   choices <- data[, 2]
   slots <- data[, 5:ncol(data)]
-  locations <-  unlist(mapply(pickfun, seq_len(nrow(slots)), choices)) #why do some rows in data matrix have repeats??
-
+  locations <-
+     unlist(mapply(function(x, a){which(slots[x, ] == a)[1]}, seq_len(nrow(slots)), choices))
   d <- slots * 0
   for (i in seq_len(nrow(slots))) {
     d[i, locations[i]] <- 1
@@ -134,8 +130,20 @@ run_model_TMB <- function(model) {
   ## Fit model
   opt <- nlminb(obj$par, obj$fn, obj$gr, upper = upper_lims, lower = lower_lims)
 
-  rep <- TMB::sdreport(obj, bias.correct = TRUE)
+  rep <- TMB::sdreport(obj, bias.correct = TRUE, getReportCovariance = FALSE, bias.correct.control = list(sd = TRUE))
+
+
   se <- summary(rep, "fixed")
+  se2 <- summary(rep, "report")
+
+  se_final <- se
+
+  logged_params <- str_detect(row.names(se_final), "^log")
+  match_names <- str_replace(row.names(se_final)[logged_params], "log", "")
+  swap_idx <- which(row.names(se2) %in% match_names)
+
+  se_final[swap_idx, 1:2] <-  se2[swap_idx, 1:2]
+  row.names(se_final)[swap_idx] <- row.names(se2)[swap_idx]
 
   result_name <- paste0(model_type,  " ",
                         format(Sys.time(),
@@ -144,8 +152,10 @@ run_model_TMB <- function(model) {
   LL <- opt$objective
 
   results  <-  data.frame(parameters = parameters_labels, #FIXME order is wrong
-                          estimate = opt$par,
-                          standard_errors = se[, 2])
+                          estimate = se_final[, 1],
+                          standard_errors = se_final[, 2])
+
+
 
   end_time <- Sys.time()
   time_taken <- end_time - start_time
@@ -159,6 +169,9 @@ run_model_TMB <- function(model) {
                          AIC = 2 * K - 2 * LL,
                          BIC = -2 * LL + K * log(nrow(model$data$data)),
                          par_count = K,
+                         rep = rep,
+                         adrep = adrep,
+                         rep2 = rep2,
                          execution_time = as.numeric(time_taken)
   )
 

@@ -40,16 +40,19 @@ Type DCMLL(objective_function<Type>* obj)
   Type nll_epsilon = Type(0.0);
   Type nll_delta = Type(0.0);
 
+  matrix<Type> sigmaepsilon = logsigmaepsilon.array().exp();
+  matrix<Type> sigmadelta = logsigmadelta.array().exp();
+
   //distributional asignment for the random effects
   for (int i=0; i < epsilon.rows(); i++){
     for (int j=0; j < epsilon.cols(); j++){
-      nll_epsilon += dnorm(epsilon(i,j), muepsilon(0, j), exp(logsigmaepsilon(0, j)), 1);
+      nll_epsilon += dnorm(epsilon(i,j), muepsilon(0, j), sigmaepsilon(0, j), 1);
     }
   }
 
   for (int i=0; i < delta.rows(); i++){
     for (int j=0; j < delta.cols(); j++){
-      nll_delta += dnorm(delta(i,j), mudelta(0, j), exp(logsigmadelta(0, j)), 1);
+      nll_delta += dnorm(delta(i,j), mudelta(0, j), sigmadelta(0, j), 1);
     }
   }
 
@@ -103,11 +106,18 @@ Type DCMLL(objective_function<Type>* obj)
   nll -= nll_epsilon;
   nll -= nll_delta;
 
-  matrix<Type> sigmaepsilon = exp(logsigmaepsilon.array());
-  matrix<Type> sigmadelta = exp(logsigmadelta.array());
-
   REPORT(sigmaepsilon);
   REPORT(sigmadelta);
+
+  ADREPORT(sigmaepsilon);
+  ADREPORT(sigmadelta);
+
+  // Type test = sigmadelta(0,0);
+  // ADREPORT(test);
+  // REPORT(test);
+  // Type test2 = exp(logsigmadelta(0,0);
+  // ADREPORT(test2);
+  // REPORT(test);
 
   // Report objects back to R:
   // ADREPORT(gamma);

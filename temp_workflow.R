@@ -2,7 +2,7 @@ library(DCM)
 library(tictoc)
 
 processedDCE <- setUp(DCEpriorities)
-model <- model_generator(processedDCE, "fixed")
+model <- model_generator(processedDCE, "random")
 res <- runModel(model, dev_mode = "TMB")
 
 processedBW <- setUp(BWpriorities)
