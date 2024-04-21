@@ -12,7 +12,7 @@ run_sims(
   models,
   m_list,
   n_sims,
-  p = 2,
+  colvars = 2,
   file = NULL
 )
 }
@@ -31,7 +31,7 @@ run_sims(
 
 \item{n_sims}{no of sims}
 
-\item{p}{number of columns}
+\item{colvars}{number of columns}
 
 \item{file}{outfile for save}
 }

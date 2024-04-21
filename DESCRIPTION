@@ -42,7 +42,8 @@ LinkingTo:
     RcppEigen,
     TMB
 Depends: 
-    R (>= 3.5.0)
+    R (>= 3.5.0),
+    foreach
 URL: https://github.com/andrewthomasjones/DCM
 BugReports: https://github.com/andrewthomasjones/DCM/issues
 Roxygen: list(markdown = TRUE)

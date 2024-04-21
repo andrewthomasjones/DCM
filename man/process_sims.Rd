@@ -13,7 +13,8 @@ process_sims(
   models,
   m_list,
   n_sims,
-  conf_level = 0.95
+  conf_level = 0.95,
+  colvars = 2
 )
 }
 \arguments{

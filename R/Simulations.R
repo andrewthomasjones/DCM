@@ -256,14 +256,24 @@ simulation <- function(chosen_values,  model,  processed) {
   data2 <- data
   nlines  <-  dim(data)[1]
 
-  delta <-
-    Rfast::rmvnorm(ndecisionmakers,
-                   mudeltaparameters,
-                   diag(sigmadeltaparameters))
-  epsilon <-
-    Rfast::rmvnorm(ndecisionmakers,
-                   muepsilonparameters,
-                   diag(sigmaepsilonparameters))
+  if(sum(sigmadeltaparameters) > 0) {
+    delta <-
+      Rfast::rmvnorm(ndecisionmakers,
+                     mudeltaparameters,
+                     diag(sigmadeltaparameters))
+  }else{
+    delta <- array(0, c(ndecisionmakers, length(mudeltaparameters)))
+  }
+
+
+  if(sum(sigmaepsilonparameters) > 0) {
+    epsilon <-
+      Rfast::rmvnorm(ndecisionmakers,
+                     muepsilonparameters,
+                     diag(sigmaepsilonparameters))
+  }else{
+    epsilon <- array(0, c(ndecisionmakers, length(muepsilonparameters)))
+  }
 
   for (i in 1:nlines) {
     j <- groups[i]
@@ -536,7 +546,7 @@ generate_simulation_templates <- function(m, p = 2) {
 #' @param models model types to test
 #' @param m_list list of sample sizes for sims
 #' @param n_sims no of sims
-#' @param p number of columns
+#' @param colvars number of columns
 #' @param file outfile for save
 #' @returns list of results
 #' @export
@@ -547,7 +557,7 @@ run_sims <- function(data_sets,
                      models,
                      m_list,
                      n_sims,
-                     p = 2,
+                     colvars = 2,
                      file = NULL) {
   params <- list(
     data_sets = data_sets,
@@ -557,7 +567,7 @@ run_sims <- function(data_sets,
     models = models,
     m_list = m_list,
     n_sims = n_sims,
-    p = p
+    colvars = colvars
   )
 
   big_list <- list()
@@ -565,7 +575,7 @@ run_sims <- function(data_sets,
   for (m in m_list) {
     m_size <- paste0("m_", m)
 
-    processed <- generate_simulation_templates(m, p)
+    processed <- generate_simulation_templates(m, colvars)
 
     for (model_type in models) {
       for (data_type in data_sets) {
@@ -582,12 +592,15 @@ run_sims <- function(data_sets,
             )
 
           if (!is.na(chosen_values[[model_type]][[data_type]][1])) {
-            for (i in 1:n_sims) {
-              n_name <- paste0("n_", i)
-              message(paste(m_size, model_type, data_type, eg_name, i))
 
-              big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][["sim"]] <-
-                simulate_dataset(processed[[data_type]],
+            n_names <- paste0("n_", 1:n_sims)
+            message(paste(m_size, model_type, data_type, eg_name))
+            per_n_list <- foreach::foreach(x = n_names , .final = function(x) setNames(x, names(n_names)), .packages='DCM') %dopar% {
+              temp_list <- list()
+
+              #message(paste(m_size, model_type, data_type, eg_name, i))
+
+              temp_sim <- simulate_dataset(processed[[data_type]],
                                  model_type,
                                  chosen_values[[model_type]][[data_type]],
                                  easy_guess = eg)
@@ -595,13 +608,15 @@ run_sims <- function(data_sets,
               for (g in integral_types) {
                 for (p in precision_levels[[g]]) {
                   p_name <- paste0("p_", p)
-                  message(paste(".   sim:", i, g, p_name))
-                  temp_sim <- big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][["sim"]]
-                  big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][[g]][[p_name]] <-
-                    estimate_model(temp_sim, g, p)
+                  #message(paste(".   sim:", i, g, p_name))
+                  temp_list[[g]][[p_name]] <- estimate_model(temp_sim, g, p)
                 }
               }
+              return(temp_list)
             }
+
+            big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]] <- per_n_list
+
             if (!is.null(file)) {
               save(big_list, params, file = file)
             }
@@ -636,7 +651,8 @@ process_sims <-
            models,
            m_list,
            n_sims,
-           conf_level = 0.95) {
+           conf_level = 0.95,
+           colvars = 2) {
     alpha <- 1 - (1 - conf_level) / 2
     critical_val <- qnorm(alpha)
 
@@ -652,7 +668,13 @@ process_sims <-
 
             if (!is.na(chosen_values[[model_type]][[data_type]][1])) {
               true <- big_list[[m_size]][[model_type]][[data_type]][["specs"]]$values
-              for_labs <- big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][["n_1"]][["sim"]]
+
+              processed <- generate_simulation_templates(m, colvars)
+              for_labs <- simulate_dataset(processed[[data_type]],
+                                           model_type,
+                                           chosen_values[[model_type]][[data_type]],
+                                           easy_guess = eg)
+
               names <- parameter_labels(for_labs)
               estimates <- list()
               standard_errors <- list()
@@ -664,10 +686,10 @@ process_sims <-
                   for (i in 1:n_sims) {
                     n_name <- paste0("n_", i)
                     na_check <-
-                      big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][[g]][[p_name]][1]
+                      big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[i]][[g]][[p_name]][1]
                     if (!is.na(na_check)) {
                       temp_result <-
-                        big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[n_name]][[g]][[p_name]]
+                        big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[i]][[g]][[p_name]]
                       estimates[[i]] <- temp_result$results$estimate
                       standard_errors[[i]] <-
                         temp_result$results$standard_errors

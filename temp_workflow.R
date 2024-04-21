@@ -4,6 +4,7 @@ library(tictoc)
 processedDCE <- setUp(DCEpriorities)
 model <- model_generator(processedDCE, "random")
 res <- runModel(model, dev_mode = "TMB")
+res2 <- runModel(model)
 
 processedBW <- setUp(BWpriorities)
 processedDCE <- setUp(DCEpriorities)
@@ -13,15 +14,21 @@ processedBW <- remove_variables(processedBW , "Accessibility_BW" )
 processedDCE <- setUp(DCEpriorities)
 joined <- join_choicedatasets(processedBW, processedDCE)
 
-model_1f <- model_generator(processedDCE, "one-factor")
-model_fixed <- model_generator(processedDCE, "fixed")
-model_random <- model_generator(processedDCE, "random")
+model_1f <- model_generator(processedBW, "one-factor")
+model_fixed <- model_generator(processedBW, "fixed")
+model_random <- model_generator(processedBW, "random")
 model_mtmm <- model_generator(joined, "mtmm")
 
 res_1f <- runModel(model_1f)
 res_fixed <- runModel(model_fixed)
 res_random <- runModel(model_random)
+
+res_1f2 <- runModel(model_1f, dev_mode = "TMB")
+res_fixed2 <- runModel(model_fixed, dev_mode = "TMB")
+res_random2<- runModel(model_random, dev_mode = "TMB")
+
 res_mtmm  <- runModel(model_mtmm)
+res_mtmm2  <- runModel(model_mtmm, dev_mode = "TMB")
 
 round(res_1f$results$estimate,1)
 round(res_fixed$results$estimate,1)

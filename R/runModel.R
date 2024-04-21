@@ -155,9 +155,14 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
     parameters  <-  paste0(para_stems, "_",
                            "[", subscripts[, 1], ", ", subscripts[, 2], "]")
 
+
     results  <-  data.frame(parameters = parameters,
                             estimate = loglik1$estimate,
                             standard_errors = standard_errors)
+
+    #make sure standard deviation estimates corrected to be positive
+    results$estimate[str_detect(results$parameters, "_sig_")] <-
+      abs(results$estimate[str_detect(results$parameters, "_sig_")])
 
     results$LL  <-   c(loglik1$minimum,  rep(".",  nrow(results) - 1))
 

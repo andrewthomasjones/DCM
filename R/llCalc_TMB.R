@@ -169,9 +169,6 @@ run_model_TMB <- function(model) {
                          AIC = 2 * K - 2 * LL,
                          BIC = -2 * LL + K * log(nrow(model$data$data)),
                          par_count = K,
-                         rep = rep,
-                         adrep = adrep,
-                         rep2 = rep2,
                          execution_time = as.numeric(time_taken)
   )
 

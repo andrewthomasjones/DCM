@@ -42,6 +42,7 @@
 #' @importFrom TMB sdreport
 #' @importFrom stats nlminb rmultinom rnorm setNames shapiro.test
 #' @importFrom Rfast rmvnorm
-#'
+#' @importFrom foreach foreach
+#' @importFrom foreach %dopar%
 ## usethis namespace: end
 NULL
