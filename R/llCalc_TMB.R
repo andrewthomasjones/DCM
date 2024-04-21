@@ -2,7 +2,10 @@ choice_picker <- function(data) {
   choices <- data[, 2]
   slots <- data[, 5:ncol(data)]
   locations <-
-     unlist(mapply(function(x, a){which(slots[x, ] == a)[1]}, seq_len(nrow(slots)), choices))
+    unlist(mapply(function(x, a) {
+      which(slots[x, ] == a)[1]
+    },
+    seq_len(nrow(slots)), choices))
   d <- slots * 0
   for (i in seq_len(nrow(slots))) {
     d[i, locations[i]] <- 1

@@ -256,22 +256,22 @@ simulation <- function(chosen_values,  model,  processed) {
   data2 <- data
   nlines  <-  dim(data)[1]
 
-  if(sum(sigmadeltaparameters) > 0) {
+  if (sum(sigmadeltaparameters) > 0) {
     delta <-
       Rfast::rmvnorm(ndecisionmakers,
                      mudeltaparameters,
                      diag(sigmadeltaparameters))
-  }else{
+  } else {
     delta <- array(0, c(ndecisionmakers, length(mudeltaparameters)))
   }
 
 
-  if(sum(sigmaepsilonparameters) > 0) {
+  if (sum(sigmaepsilonparameters) > 0) {
     epsilon <-
       Rfast::rmvnorm(ndecisionmakers,
                      muepsilonparameters,
                      diag(sigmaepsilonparameters))
-  }else{
+  } else {
     epsilon <- array(0, c(ndecisionmakers, length(muepsilonparameters)))
   }
 
@@ -592,30 +592,37 @@ run_sims <- function(data_sets,
             )
 
           if (!is.na(chosen_values[[model_type]][[data_type]][1])) {
-
             n_names <- paste0("n_", 1:n_sims)
             message(paste(m_size, model_type, data_type, eg_name))
-            per_n_list <- foreach::foreach(x = n_names , .final = function(x) setNames(x, names(n_names)), .packages='DCM') %dopar% {
+            per_n_list <- foreach::foreach(
+              x = n_names,
+              .final = function(x) {
+                setNames(x, names(n_names))
+              },
+              .packages = "DCM"
+            ) %dopar% {
               temp_list <- list()
 
               #message(paste(m_size, model_type, data_type, eg_name, i))
 
               temp_sim <- simulate_dataset(processed[[data_type]],
-                                 model_type,
-                                 chosen_values[[model_type]][[data_type]],
-                                 easy_guess = eg)
+                                           model_type,
+                                           chosen_values[[model_type]][[data_type]],
+                                           easy_guess = eg)
 
               for (g in integral_types) {
                 for (p in precision_levels[[g]]) {
                   p_name <- paste0("p_", p)
                   #message(paste(".   sim:", i, g, p_name))
-                  temp_list[[g]][[p_name]] <- estimate_model(temp_sim, g, p)
+                  temp_list[[g]][[p_name]] <-
+                    estimate_model(temp_sim, g, p)
                 }
               }
               return(temp_list)
             }
 
-            big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]] <- per_n_list
+            big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]] <-
+              per_n_list
 
             if (!is.null(file)) {
               save(big_list, params, file = file)
@@ -667,7 +674,8 @@ process_sims <-
             eg_name <- paste0("eg_", eg)
 
             if (!is.na(chosen_values[[model_type]][[data_type]][1])) {
-              true <- big_list[[m_size]][[model_type]][[data_type]][["specs"]]$values
+              true <-
+                big_list[[m_size]][[model_type]][[data_type]][["specs"]]$values
 
               processed <- generate_simulation_templates(m, colvars)
               for_labs <- simulate_dataset(processed[[data_type]],
@@ -684,7 +692,7 @@ process_sims <-
                 for (p in precision_levels[[g]]) {
                   p_name <- paste0("p_", p)
                   for (i in 1:n_sims) {
-                    n_name <- paste0("n_", i)
+                    #n_name <- paste0("n_", i)
                     na_check <-
                       big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[i]][[g]][[p_name]][1]
                     if (!is.na(na_check)) {
@@ -719,11 +727,12 @@ process_sims <-
                     lower_bounds <-
                       estimates_j - critical_val * standard_errors_j
 
-                    sw_p_value <- if (sum(is.finite(z_scores)) > 3) {
-                      stats::shapiro.test(z_scores)$p.value
-                    } else {
-                      NA
-                    }
+                    sw_p_value <-
+                      if (sum(is.finite(z_scores)) > 3) {
+                        stats::shapiro.test(z_scores)$p.value
+                      } else {
+                        NA
+                      }
                     coverage_probability <-
                       (sum(1.0 * ((true_j > lower_bounds) & (true_j < upper_bounds)),
                            na.rm = TRUE) / length(estimates))
