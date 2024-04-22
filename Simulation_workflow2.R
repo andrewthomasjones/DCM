@@ -5,7 +5,6 @@ registerDoParallel(cores=6)
 
 chosen_values <- list()
 colvars <- 2
-
 chosen_values[["fixed"]][["DCE"]] <- c(1.2, 1.4)
 chosen_values[["fixed"]][["BW"]] <- c(1.8, 0.7)
 chosen_values[["fixed"]][["BWDCE"]] <- c(1.2, 1.4, 1.8, 0.7)
@@ -29,12 +28,12 @@ precision_levels <- list()
 precision_levels[["draws"]] <- c(1000)
 precision_levels[["TMB"]] <- c(0)
 
-n_sims <-  300
+n_sims <-  12
 m_list <- c(250) #, 100, 250)
 models <- c("one-factor",  "random", "fixed", "mtmm")
 precision_levels[["ghq"]] <- c(4)
 
-filename <- "./TESTING_DUMP/par_test_20240422_b.Rdata"
+filename <- "./TESTING_DUMP/par_test_20240422.Rdata"
 
 big_list <- run_sims(data_sets, chosen_values, precision_levels, integral_types, models, m_list, n_sims, colvars, filename)
 
@@ -42,18 +41,11 @@ gc()
 load(file=filename)
 sim_results <- process_sims(big_list, params$data_sets, params$chosen_values, params$precision_levels, params$integral_types, params$models, params$m_list, params$n_sims,  0.95, params$colvars)
 
-sim_results$data_type <- factor(sim_results$data_type, levels = c("BW", "DCE","BWDCE"))
-
-sim_results %>% ggplot(aes(x=name, colour=integral_type, shape =start , y=coverage_probability)) +
-  geom_point(size=2) + facet_grid(cols = vars(data_type), scales="free_x") + theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + geom_hline(yintercept=0.95, linetype="dashed")
-
-sim_results %>% ggplot(aes(x=name, colour=integral_type, shape =start , y=coverage_probability)) +
-  geom_point(size=2) + facet_grid(cols = vars(model_type), scales="free_x") + theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + geom_hline(yintercept=0.95, linetype="dashed")
-
-
-
-
-
+sim_results
+sim_results %>% ggplot(aes(x=name, colour=data_type, shape =start , y=coverage_probability)) + geom_point(size=2) + facet_wrap(~integral_type) + theme_bw()
+#
+#
+#
 # filename <- "./TESTING_DUMP/simulation_saved_results0.Rdata"
 #
 # n_sims <-  1

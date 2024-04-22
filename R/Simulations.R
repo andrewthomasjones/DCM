@@ -256,24 +256,14 @@ simulation <- function(chosen_values,  model,  processed) {
   data2 <- data
   nlines  <-  dim(data)[1]
 
-  if (sum(sigmadeltaparameters) > 0) {
-    delta <-
-      Rfast::rmvnorm(ndecisionmakers,
+  delta <- mvtnorm::rmvnorm(ndecisionmakers,
                      mudeltaparameters,
                      diag(sigmadeltaparameters))
-  } else {
-    delta <- array(0, c(ndecisionmakers, length(mudeltaparameters)))
-  }
 
-
-  if (sum(sigmaepsilonparameters) > 0) {
-    epsilon <-
-      Rfast::rmvnorm(ndecisionmakers,
+  epsilon <- mvtnorm::rmvnorm(ndecisionmakers,
                      muepsilonparameters,
                      diag(sigmaepsilonparameters))
-  } else {
-    epsilon <- array(0, c(ndecisionmakers, length(muepsilonparameters)))
-  }
+
 
   for (i in 1:nlines) {
     j <- groups[i]
@@ -425,7 +415,7 @@ estimate_model <- function(model_sims, type, precision) {
   } else if (type == "TMB") {
     tryCatch(
       expr = {
-        results <- runModel(model_sims)
+        results <- run_model_TMB(model_sims)
         return(results)
       },
       error = function(e) {
@@ -717,7 +707,7 @@ process_sims <-
                     standard_errors_j <-
                       unlist(lapply(standard_errors,  "[[", j))
 
-                    mu <- mean(estimates_j)
+                    mu <- mean(estimates_j, na.rm = TRUE)
                     std_deviations <-
                       mean((estimates_j - mu) ^ 2, na.rm = TRUE)
                     z_scores <-

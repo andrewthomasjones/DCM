@@ -41,7 +41,7 @@
 #' @importFrom crossdes find.BIB
 #' @importFrom TMB sdreport
 #' @importFrom stats nlminb rmultinom rnorm setNames shapiro.test
-#' @importFrom Rfast rmvnorm
+#' @importFrom mvtnorm rmvnorm
 #' @importFrom foreach foreach
 #' @importFrom foreach %dopar%
 #' @importFrom stringr str_detect str_replace

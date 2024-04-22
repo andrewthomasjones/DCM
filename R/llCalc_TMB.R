@@ -15,7 +15,10 @@ choice_picker <- function(data) {
   return(d)
 }
 
-
+#' Runs Model
+#' @param model model list
+#' @returns fitted model.
+#' @export
 run_model_TMB <- function(model) {
 
   start_time <- Sys.time()
@@ -154,10 +157,19 @@ run_model_TMB <- function(model) {
   K <-  length(obj$par)
   LL <- opt$objective
 
-  results  <-  data.frame(parameters = parameters_labels, #FIXME order is wrong
-                          estimate = se_final[, 1],
-                          standard_errors = se_final[, 2])
+  clean_names_old <- stringr::str_replace(parameters_labels, "[^[:alpha:]]+", "")
+  clean_names_new <- row.names(se_final)
+  clean_names_new <- stringr::str_replace(clean_names_new, "mu", "")
 
+  sorting_frame <- data.frame(clean_names_old =clean_names_old, clean_names_new = clean_names_new, frame_order = seq_len(nrow(se_final)))
+  sorting_frame <- sorting_frame %>% group_by(clean_names_old) %>% mutate(order_old = row_number()) %>% ungroup()
+  sorting_frame <- sorting_frame %>% group_by(clean_names_new) %>% mutate(order_new = row_number()) %>% ungroup()
+  sorting_frame$clean_names_new2 <- factor(clean_names_new, levels = unique(clean_names_old))
+  sorting_frame <- sorting_frame %>% arrange(clean_names_new2, order_new)
+
+  results  <-  data.frame(oparameters = parameters_labels, #FIXME order is wrong
+                          estimate = se_final[sorting_frame$frame_order, 1],
+                          standard_errors = se_final[sorting_frame$frame_order, 2])
 
 
   end_time <- Sys.time()

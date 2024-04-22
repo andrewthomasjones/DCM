@@ -164,6 +164,7 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
     results$estimate[stringr::str_detect(results$parameters, "_sig_")] <-
       abs(results$estimate[stringr::str_detect(results$parameters, "_sig_")])
 
+
     results$LL  <-   c(loglik1$minimum,  rep(".",  nrow(results) - 1))
 
     result_name <- paste0(model_name,  " ",
