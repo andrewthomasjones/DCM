@@ -1,50 +1,72 @@
 library(DCM)
 library(tidyverse)
 library(doParallel)
-registerDoParallel(cores=6)
+registerDoParallel(cores=2)
 
-chosen_values <- list()
-colvars <- 2
-chosen_values[["fixed"]][["DCE"]] <- c(1.2, 1.4)
-chosen_values[["fixed"]][["BW"]] <- c(1.8, 0.7)
-chosen_values[["fixed"]][["BWDCE"]] <- c(1.2, 1.4, 1.8, 0.7)
+# chosen_values <- list()
+# colvars <- 2
+# chosen_values[["fixed"]][["DCE"]] <- c(1.2, 1.4)
+# chosen_values[["fixed"]][["BW"]] <- c(1.8, 0.7)
+# chosen_values[["fixed"]][["BWDCE"]] <- c(1.2, 1.4, 1.8, 0.7)
+#
+# chosen_values[["random"]][["DCE"]] <- c(0.7, 2.0, 2.8, 1.8)
+# chosen_values[["random"]][["BW"]] <- c(1.3, 0.5, 3.0, 1.8)
+# chosen_values[["random"]][["BWDCE"]] <- c(0.7, 2.0, 1.3, 0.5, 2.8, 1.8, 3.0, 1.8)
+#
+# chosen_values[["one-factor"]][["DCE"]] <- c(2.2, 1.6, 1.9, 0.2)
+# chosen_values[["one-factor"]][["BW"]] <- c(2.4, 0.7, 1.5, 0.0)
+# chosen_values[["one-factor"]][["BWDCE"]] <- c(2.2, 1.6, 2.4, 0.7, 1.9, 0.2, 1.5, 0.0)
+#
+# chosen_values[["mtmm"]][["DCE"]] <- NA
+# chosen_values[["mtmm"]][["BW"]] <- NA
+# chosen_values[["mtmm"]][["BWDCE"]] <- c(3.0,  1.9,  3.0,  0.5, 2.5,  1.5,  1.5, -1.5,  2.7,  2.2,  2.1,  0.6,  0.9, -0.5)
 
-chosen_values[["random"]][["DCE"]] <- c(0.7, 2.0, 2.8, 1.8)
-chosen_values[["random"]][["BW"]] <- c(1.3, 0.5, 3.0, 1.8)
-chosen_values[["random"]][["BWDCE"]] <- c(0.7, 2.0, 1.3, 0.5, 2.8, 1.8, 3.0, 1.8)
-
-chosen_values[["one-factor"]][["DCE"]] <- c(2.2, 1.6, 1.9, 0.2)
-chosen_values[["one-factor"]][["BW"]] <- c(2.4, 0.7, 1.5, 0.0)
-chosen_values[["one-factor"]][["BWDCE"]] <- c(2.2, 1.6, 2.4, 0.7, 1.9, 0.2, 1.5, 0.0)
-
-chosen_values[["mtmm"]][["DCE"]] <- NA
-chosen_values[["mtmm"]][["BW"]] <- NA
-chosen_values[["mtmm"]][["BWDCE"]] <- c(3.0,  1.9,  3.0,  0.5, 2.5,  1.5,  1.5, -1.5,  2.7,  2.2,  2.1,  0.6,  0.9, -0.5)
-
-data_sets <- c("DCE", "BW", "BWDCE")
+data_sets <- c("BW") #DCE", "BW", "BWDCE")
 integral_types <- c("TMB", "draws", "ghq")
 
 precision_levels <- list()
 precision_levels[["draws"]] <- c(1000)
 precision_levels[["TMB"]] <- c(0)
 
-n_sims <-  12
-m_list <- c(250) #, 100, 250)
-models <- c("one-factor",  "random", "fixed", "mtmm")
+n_sims <-  600
+m_list <- c(200) #, 100, 250)
+models <- c("one-factor",  "random", "fixed") #, "mtmm")
 precision_levels[["ghq"]] <- c(4)
 
-filename <- "./TESTING_DUMP/par_test_20240422.Rdata"
+chosen_values <- list()
+for (colvars in seq(2,7)) {
 
-big_list <- run_sims(data_sets, chosen_values, precision_levels, integral_types, models, m_list, n_sims, colvars, filename)
+  filename <- paste0("./TESTING_DUMP/par_test_20240422_BW_", colvars, ".Rdata")
 
-gc()
-load(file=filename)
-sim_results <- process_sims(big_list, params$data_sets, params$chosen_values, params$precision_levels, params$integral_types, params$models, params$m_list, params$n_sims,  0.95, params$colvars)
+  processedBW <- setUp(BWpriorities)
+  processedBW <- select_variables(processedBW , processedBW$attribute_names[seq_len(colvars)])
 
-sim_results
-sim_results %>% ggplot(aes(x=name, colour=data_type, shape =start , y=coverage_probability)) + geom_point(size=2) + facet_wrap(~integral_type) + theme_bw()
+  model_1f <- model_generator(processedBW, "one-factor")
+  model_fixed <- model_generator(processedBW, "fixed")
+  model_random <- model_generator(processedBW, "random")
+
+  res_1f <- runModel(model_1f)
+  res_fixed <- runModel(model_fixed)
+  res_random <- runModel(model_random)
+
+  chosen_values[["one-factor"]][["BW"]] <- res_1f$results$estimate
+  chosen_values[["fixed"]][["BW"]] <- res_fixed$results$estimate
+  chosen_values[["random"]][["BW"]] <- res_random$results$estimate
+
+  big_list <- run_sims(data_sets, chosen_values, precision_levels, integral_types, models, m_list, n_sims, colvars, filename)
+
+}
+
+
 #
-#
+# gc()
+# load(file=filename)
+# sim_results <- process_sims(big_list, params$data_sets, params$chosen_values, params$precision_levels, params$integral_types, params$models, params$m_list, params$n_sims,  0.95, params$colvars)
+
+# sim_results
+# sim_results %>% ggplot(aes(x=name, colour=data_type, shape =start , y=coverage_probability)) + geom_point(size=2) + facet_wrap(~integral_type) + theme_bw()
+# #
+# #
 #
 # filename <- "./TESTING_DUMP/simulation_saved_results0.Rdata"
 #

@@ -1,65 +1,53 @@
 library(DCM)
 library(tidyverse)
 library(doParallel)
-registerDoParallel(cores=5)
+registerDoParallel(cores=8)
 
 chosen_values <- list()
 colvars <- 2
 
-chosen_values[["fixed"]][["DCE"]] <- c(1.2, 1.4)
-chosen_values[["fixed"]][["BW"]] <- c(1.8, 0.7)
-chosen_values[["fixed"]][["BWDCE"]] <- c(1.2, 1.4, 1.8, 0.7)
-
-chosen_values[["random"]][["DCE"]] <- c(0.7, 2.0, 2.8, 1.8)
-chosen_values[["random"]][["BW"]] <- c(1.3, 0.5, 3.0, 1.8)
-chosen_values[["random"]][["BWDCE"]] <- c(0.7, 2.0, 1.3, 0.5, 2.8, 1.8, 3.0, 1.8)
-
-chosen_values[["one-factor"]][["DCE"]] <- c(2.2, 1.6, 1.9, 0.2)
-chosen_values[["one-factor"]][["BW"]] <- c(2.4, 0.7, 1.5, 0.0)
-chosen_values[["one-factor"]][["BWDCE"]] <- c(2.2, 1.6, 2.4, 0.7, 1.9, 0.2, 1.5, 0.0)
-
-chosen_values[["mtmm"]][["DCE"]] <- NA
-chosen_values[["mtmm"]][["BW"]] <- NA
+# chosen_values[["fixed"]][["DCE"]] <- c(1.2, 1.4)
+# chosen_values[["fixed"]][["BW"]] <- c(1.8, 0.7)
+# chosen_values[["fixed"]][["BWDCE"]] <- c(1.2, 1.4, 1.8, 0.7)
+#
+# chosen_values[["random"]][["DCE"]] <- c(0.7, 2.0, 2.8, 1.8)
+# chosen_values[["random"]][["BW"]] <- c(1.3, 0.5, 3.0, 1.8)
+# chosen_values[["random"]][["BWDCE"]] <- c(0.7, 2.0, 1.3, 0.5, 2.8, 1.8, 3.0, 1.8)
+#
+# chosen_values[["one-factor"]][["DCE"]] <- c(2.2, 1.6, 1.9, 0.2)
+# chosen_values[["one-factor"]][["BW"]] <- c(2.4, 0.7, 1.5, 0.0)
+# chosen_values[["one-factor"]][["BWDCE"]] <- c(2.2, 1.6, 2.4, 0.7, 1.9, 0.2, 1.5, 0.0)
+#
+# chosen_values[["mtmm"]][["DCE"]] <- NA
+# chosen_values[["mtmm"]][["BW"]] <- NA
 chosen_values[["mtmm"]][["BWDCE"]] <- c(3.0,  1.9,  3.0,  0.5, 2.5,  1.5,  1.5, -1.5,  2.7,  2.2,  2.1,  0.6,  0.9, -0.5)
 
-data_sets <- c("DCE", "BW", "BWDCE")
+data_sets <- c("BWDCE") #DCE", "BW", "BWDCE")
 integral_types <- c("TMB", "draws", "ghq")
 
 precision_levels <- list()
 precision_levels[["draws"]] <- c(1000)
 precision_levels[["TMB"]] <- c(0)
 
-n_sims <-  500
+n_sims <-  150
 m_list <- c(200) #, 100, 250)
-models <- c("one-factor",  "random", "mtmm") #"fixed",
-precision_levels[["ghq"]] <- c(4)
+models <- c("one-factor",  "random", "fixed") #, "mtmm")
+precision_levels[["ghq"]] <- 2:10
 
-filename <- "./TESTING_DUMP/par_test_20240422.Rdata"
+filename <- paste0("./TESTING_DUMP/par_test_20240422_qhq.Rdata")
 
 big_list <- run_sims(data_sets, chosen_values, precision_levels, integral_types, models, m_list, n_sims, colvars, filename)
+
 #
 # gc()
 # load(file=filename)
 # sim_results <- process_sims(big_list, params$data_sets, params$chosen_values, params$precision_levels, params$integral_types, params$models, params$m_list, params$n_sims,  0.95, params$colvars)
-#
-# sim_results$data_type <- factor(sim_results$data_type, levels = c("BW", "DCE","BWDCE"))
-#
-# sim_results %>% ggplot(aes(x=name, colour=integral_type, shape =start , y=coverage_probability)) +
-#   geom_point(size=2) + facet_grid(cols = vars(data_type), scales="free_x") + theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + geom_hline(yintercept=0.95, linetype="dashed")
-#
-# sim_results %>% ggplot(aes(x=name, colour=integral_type, shape =start , y=coverage_probability)) +
-#   geom_point(size=2) + facet_grid(cols = vars(model_type), scales="free_x") + theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + geom_hline(yintercept=0.95, linetype="dashed")
-#
-#
-# sim_results %>% ggplot(aes(x=name, colour=integral_type, shape =start , y=coverage_probability)) +
-#   geom_point(size=2) + facet_grid(cols = vars(data_type), scales="free_x") + theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + geom_hline(yintercept=0.95, linetype="dashed")
-#
-# sim_results %>% filter(start == "eg_FALSE") %>% ggplot(aes(x=name, colour=integral_type, y=coverage_probability)) +
-#   geom_point(size=2, position=position_dodge(0.5)) + facet_grid(cols = vars(model_type), rows = vars(data_type), scales="free_x") + theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + geom_hline(yintercept=0.95, linetype="dashed")
-#
 
-
-
+# sim_results
+# sim_results %>% ggplot(aes(x=name, colour=data_type, shape =start , y=coverage_probability)) + geom_point(size=2) + facet_wrap(~integral_type) + theme_bw()
+# #
+# #
+#
 # filename <- "./TESTING_DUMP/simulation_saved_results0.Rdata"
 #
 # n_sims <-  1

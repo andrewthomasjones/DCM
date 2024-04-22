@@ -167,7 +167,7 @@ run_model_TMB <- function(model) {
   sorting_frame$clean_names_new2 <- factor(clean_names_new, levels = unique(clean_names_old))
   sorting_frame <- sorting_frame %>% arrange(clean_names_new2, order_new)
 
-  results  <-  data.frame(oparameters = parameters_labels, #FIXME order is wrong
+  results  <-  data.frame(parameters = parameters_labels, #FIXME order is wrong
                           estimate = se_final[sorting_frame$frame_order, 1],
                           standard_errors = se_final[sorting_frame$frame_order, 2])
 
