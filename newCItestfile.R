@@ -1,7 +1,7 @@
 
 sd_CI <- function(s, SE, upper = FALSE, alpha = 0.05){
 
-  k <- 2 * s^4 / (2 * SE^2 * s^2 - SE^4)
+  k <-  s^2 / SE^2
 
   crit1 <- qchisq(1 - alpha / 2, k)
   crit2 <- qchisq(alpha / 2, k)
@@ -54,7 +54,7 @@ res2 <- runModel(model)
 res3 <- runModel(model, dev_mode = "Cdraws")
 
 CI_results(res$results)
-CI_results(res2$results[, 1:3])
+#CI_results(res2$results[, 1:3])
 CI_results(res3$results[, 1:3])
 
 
