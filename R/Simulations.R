@@ -440,7 +440,7 @@ generate_simulation_templates <- function(m, p = 2) {
   #-----------------------------
   desVarNames <- LETTERS[1:p]
   desLevels <- rep(4, p)
-  n <- p      #number of choice sets
+  n <- p+2      #number of choice sets
   desOpt <- 4  #num option per choice set
   #generate full factorial
   dat <-
