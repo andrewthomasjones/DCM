@@ -1,8 +1,8 @@
 library(DCM)
 library(tictoc)
 
-processedDCE <- setUp(DCEpriorities)
-model <- model_generator(processedDCE, "random")
+processedDCE <- setUp(DCEpriorities[,1:7])
+model <- model_generator(processedDCE, "one-factor")
 res <- runModel(model, dev_mode = "TMB")
 res2 <- runModel(model)
 
