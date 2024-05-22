@@ -676,6 +676,8 @@ process_sims <-
 
               names <- parameter_labels(for_labs)
               estimates <- list()
+              uppers <- list()
+              lowers <- list()
               standard_errors <- list()
               times <- list()
 
@@ -689,11 +691,15 @@ process_sims <-
                     if (!is.na(na_check)) {
                       temp_result <-
                         big_list[[m_size]][[model_type]][[data_type]][[eg_name]][["results"]][[i]][[g]][[p_name]]
-                      estimates[[i]] <- temp_result$results$estimate
-                      standard_errors[[i]] <-
-                        temp_result$results$standard_errors
-                      times[[i]] <-
-                        temp_result$execution_time
+
+                      temp_result2 <- CI_results(temp_result$results)
+
+                      estimates[[i]] <- temp_result2$estimate
+                      standard_errors[[i]] <- temp_result2$standard_errors
+                      uppers[[i]] <- temp_result2$upper
+                      lowers[[i]] <- temp_result2$lower
+
+                      times[[i]] <- temp_result$execution_time
                     } else {
                       estimates[[i]] <- true * NA
                       standard_errors[[i]] <- true * NA
@@ -701,22 +707,22 @@ process_sims <-
                     }
 
                   }
+
                   for (j in seq_len(length(true))) {
                     estimates_j <- unlist(lapply(estimates, "[[", j))
                     true_j <- true[j]
-                    standard_errors_j <-
-                      unlist(lapply(standard_errors,  "[[", j))
+                    standard_errors_j <- unlist(lapply(standard_errors,  "[[", j))
 
                     mu <- mean(estimates_j, na.rm = TRUE)
-                    std_deviations <-
-                      mean((estimates_j - mu) ^ 2, na.rm = TRUE)
-                    z_scores <-
-                      (estimates_j - true_j) / standard_errors_j
+                    mu2 <- median(estimates_j, na.rm = TRUE)
+                    std_deviations <- mean((estimates_j - mu) ^ 2, na.rm = TRUE)
+                    z_scores <- (estimates_j - true_j) / standard_errors_j
 
-                    upper_bounds <-
-                      estimates_j + critical_val * standard_errors_j
-                    lower_bounds <-
-                      estimates_j - critical_val * standard_errors_j
+                    upper_bounds2 <- unlist(lapply(uppers,  "[[", j))
+                    lower_bounds2 <- unlist(lapply(lowers,  "[[", j))
+
+                    upper_bounds <- estimates_j + critical_val * standard_errors_j
+                    lower_bounds <- estimates_j - critical_val * standard_errors_j
 
                     sw_p_value <-
                       if (sum(is.finite(z_scores)) > 3) {
@@ -726,6 +732,10 @@ process_sims <-
                       }
                     coverage_probability <-
                       (sum(1.0 * ((true_j > lower_bounds) & (true_j < upper_bounds)),
+                           na.rm = TRUE) / length(estimates))
+
+                    coverage_probability2 <-
+                      (sum(1.0 * ((true_j > lower_bounds2) & (true_j < upper_bounds2)),
                            na.rm = TRUE) / length(estimates))
 
                     row_list[[row_count]] <- data.frame(
@@ -741,10 +751,16 @@ process_sims <-
                       name = names[j],
                       bias = mean(estimates_j - true_j, na.rm = TRUE),
                       coverage_probability = coverage_probability,
+                      coverage_probability2 = coverage_probability2,
+                      mean_upper = mean(upper_bounds, na.rm = TRUE),
+                      mean_lower = mean(lower_bounds, na.rm = TRUE),
+                      mean_upper2 = mean(upper_bounds2, na.rm = TRUE),
+                      mean_lower2 = mean(lower_bounds2, na.rm = TRUE),
                       mse = mean((estimates_j - true_j) ^ 2, na.rm = TRUE),
                       mean_std_deviation = mean(std_deviations, na.rm = TRUE),
                       bias_pc = 100 * mean(estimates_j - true_j, na.rm = TRUE) / true_j,
                       mu = mean(estimates_j, na.rm = TRUE),
+                      mu2 = median(estimates_j, na.rm = TRUE),
                       sw_p_value = sw_p_value,
                       good_estimate = coverage_probability > 0.90 &
                         sw_p_value > 0.01
@@ -760,4 +776,62 @@ process_sims <-
     }
     results_table <- dplyr::bind_rows(row_list)
     return(results_table)
+}
+
+
+
+sd_CI <- function(s, SE, upper = FALSE, alpha = 0.05){
+  SE <- SE * 4
+  k <-  s^2 / SE^2
+
+  crit1 <- qchisq(1 - alpha / 2, k)
+  crit2 <- qchisq(alpha / 2, k)
+
+  if(upper == TRUE){
+    res <- sqrt(k / crit2) * s
+  }else{
+    res <- sqrt(k / crit1) * s
   }
+
+  return(res)
+}
+
+n_CI <- function(x, SE, upper = FALSE, alpha = 0.05){
+
+  crit1 <- qnorm(alpha / 2)
+  crit2 <- qnorm(1 - alpha / 2)
+
+  if(upper == TRUE){
+    res <- x + SE * crit2
+  }else{
+    res <- x + SE * crit1
+  }
+
+  return(res)
+}
+
+CI_results <- function(results, alpha = 0.05){
+
+  results$lower <- NA
+  results$upper <- NA
+
+  results$idx <- seq_len(nrow(results))
+  results$variance <- case_when(str_detect(results$parameters, "_sig_") ~ TRUE,
+                                TRUE ~ FALSE)
+
+  results$estimate <- case_when(str_detect(results$parameters, "_sig_") ~ results$estimate^2,
+                                TRUE ~ results$estimate)
+
+  temp1 <- results %>% filter(variance) %>% mutate(lower = sd_CI(estimate, standard_errors, FALSE), upper = sd_CI(estimate, standard_errors, TRUE))
+  temp2 <- results %>% filter(!variance) %>% mutate(lower = n_CI(estimate, standard_errors, FALSE), upper = n_CI(estimate, standard_errors, TRUE))
+
+  results_CI <- rbind(temp1, temp2) %>% arrange(idx)
+
+  return(results_CI[, 1:5])
+}
+
+
+
+
+
+

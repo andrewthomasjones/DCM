@@ -43,19 +43,19 @@ CI_results <- function(results, alpha = 0.05){
 
   return(results_CI)
 }
-
-library(DCM)
-
-processedDCE <- setUp(DCEpriorities)
-model <- model_generator(processedDCE, "random")
-
-res <- runModel(model, dev_mode = "TMB")
-res2 <- runModel(model)
-res3 <- runModel(model, dev_mode = "Cdraws")
-
-CI_results(res$results)
-#CI_results(res2$results[, 1:3])
-CI_results(res3$results[, 1:3])
+#
+# library(DCM)
+#
+# processedDCE <- setUp(DCEpriorities[, 1:7])
+# model <- model_generator(processedDCE, "random")
+#
+# res <- runModel(model, dev_mode = "TMB")
+# res2 <- runModel(model)
+# res3 <- runModel(model, dev_mode = "Cdraws")
+#
+# CI_results(res$results)
+# #CI_results(res2$results[, 1:3])
+# CI_results(res3$results[, 1:3])
 
 
 
