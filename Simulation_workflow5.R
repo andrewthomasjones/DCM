@@ -1,7 +1,7 @@
 library(DCM)
 library(tidyverse)
 library(doParallel)
-registerDoParallel(cores=6)
+registerDoParallel(cores=5)
 
 chosen_values <- list()
 
@@ -26,10 +26,10 @@ data_sets <- c("DCE", "BW", "BWDCE")
 integral_types <- c("TMB", "draws")#, "ghq")
 
 precision_levels <- list()
-precision_levels[["draws"]] <- c(100, 1000, 5000, 10000, 50000)
+precision_levels[["draws"]] <- c(100, 500, 1000, 5000)
 precision_levels[["TMB"]] <- c(0)
 
-n_sims <-  200
+n_sims <-  100
 m_list <- c(200) #, 100, 250)
 models <- c("one-factor",  "random", "fixed", "mtmm")
 #precision_levels[["ghq"]] <- c(3, 4)
@@ -100,14 +100,23 @@ colvars <- 3
 #
 #
 #
-#
-#   filename <- paste0("./TESTING_DUMP/par_test_20240529_draws.Rdata")
-#
-#   gc()
-#   load(file=filename)
-#   sim_results <- process_sims(big_list, params$data_sets, params$chosen_values, params$precision_levels, params$integral_types, params$models, params$m_list, params$n_sims,  0.95, params$colvars)
-#   sim_results$n_cols <- colvars
-#
+
+  filename <- paste0("./TESTING_DUMP/par_test_20240529_draws.Rdata")
+
+  gc()
+  load(file=filename)
+  sim_results <- process_sims(big_list, params$data_sets, params$chosen_values, params$precision_levels, params$integral_types, params$models, params$m_list, params$n_sims,  0.95, params$colvars)
+  #sim_results$n_cols <- colvars
+  sim_results$name %>% str_extract("^([a-z_]{3,20})") %>% str_replace_all("_", "") -> sim_results$name2
+  sim_results$precision <- factor(sim_results$precision)
+  sim_results %>% filter(integral_type == "draws") %>% filter(start== "eg_TRUE") %>% ggplot(aes(x=name, colour=precision, y=coverage_probability2)) +
+    geom_point(size=2, position=position_dodge(0.5))  + theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    geom_hline(yintercept=0.95, linetype="dashed")  + facet_wrap(~name2, scales = "free")
+
+
+
+
+
 #
 #
 #
