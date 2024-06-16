@@ -9,7 +9,7 @@ createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder =
   model_types <- c("fixed",  "random",  "one-factor",  "mtmm")
 
   if (!(model_type %in% model_types)) {
-    stop(paste("model_type not one of ",  paste(model_types,  collapse = ",  ")))
+    cli::cli_abort(paste("model_type not one of ",  paste(model_types,  collapse = ",  ")))
   }
 
   if (is.null(working_folder)) {
@@ -83,7 +83,7 @@ createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder =
 
   #save workbook
   openxlsx::saveWorkbook(wb,  file = emi_name,  overwrite = TRUE)
-  message(paste0("\n", "EMI model file ",  emi_name, " saved."))
+  cli::cli_inform(paste0("\n", "EMI model file ",  emi_name, " saved."))
 
   return(emi_name)
 }

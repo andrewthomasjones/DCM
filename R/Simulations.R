@@ -583,7 +583,7 @@ run_sims <- function(data_sets,
 
           if (!is.na(chosen_values[[model_type]][[data_type]][1])) {
             n_names <- paste0("n_", 1:n_sims)
-            message(paste(m_size, model_type, data_type, eg_name))
+            cli::cli_inform(paste(m_size, model_type, data_type, eg_name))
             per_n_list <- foreach::foreach(
               x = n_names,
               .final = function(x) {
@@ -593,7 +593,7 @@ run_sims <- function(data_sets,
             ) %dopar% {
               temp_list <- list()
 
-              #message(paste(m_size, model_type, data_type, eg_name, i))
+              #cli::cli_inform(paste(m_size, model_type, data_type, eg_name, i))
 
               temp_sim <- simulate_dataset(processed[[data_type]],
                                            model_type,
@@ -603,7 +603,7 @@ run_sims <- function(data_sets,
               for (g in integral_types) {
                 for (p in precision_levels[[g]]) {
                   p_name <- paste0("p_", p)
-                  #message(paste(".   sim:", i, g, p_name))
+                  #cli::cli_inform(paste(".   sim:", i, g, p_name))
                   temp_list[[g]][[p_name]] <-
                     estimate_model(temp_sim, g, p)
                 }

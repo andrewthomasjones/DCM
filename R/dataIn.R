@@ -15,7 +15,7 @@ readData  <-  function(filename, header = TRUE) {
   }else if (tools::file_ext(filename) == "tsv") {
     data <- read.table(filename, sep = "\t", header = header)
   }else {
-    stop("File type not supported. Currently supported formats are: csv, xls, xlsx, tsv.")
+    cli::cli_abort("File type not supported. Currently supported formats are: csv, xls, xlsx, tsv.")
   }
 
   if (header == FALSE) {
@@ -52,7 +52,7 @@ setUp <- function(data, header = TRUE) {
     data_matrix <-  as.data.frame(data)
     filename  <-  NULL
   }else {
-    stop("Data must either be a filename or data as a matrix, tibble, or data.frame")
+    cli::cli_abort("Data must either be a filename or data as a matrix, tibble, or data.frame")
   }
 
 
@@ -103,21 +103,21 @@ remove_variables <- function(processed_data, variable, verbose = 0) {
   data <- processed_data$data_original
 
   if (!inherits(variable, "character") && !inherits(variable, "numeric")) {
-    stop("Variables must either be named or selected by column number.")
+    cli::cli_abort("Variables must either be named or selected by column number.")
   }
 
   if (inherits(variable, "numeric")) {
 
     if (any(variable <= 3)) {
-      stop("Cannot remove first three columns.")
+      cli::cli_abort("Cannot remove first three columns.")
     }
 
     if (any(!variable %in% (4:ncol(data)))) {
-      stop("Columns not in range.")
+      cli::cli_abort("Columns not in range.")
     }
 
     if (verbose > 0) {
-      message(paste0("Removing variables: ",  paste(names(data)[c(variable)], collapse = ", ")))
+      cli::cli_inform(paste0("Removing variables: ",  paste(names(data)[c(variable)], collapse = ", ")))
     }
 
     data <- data[, -c(variable)]
@@ -129,15 +129,15 @@ remove_variables <- function(processed_data, variable, verbose = 0) {
     idx <- which(names(data) %in% c(variable))
 
     if (length(idx) != length(variable)) {
-      stop("Columns not found.")
+      cli::cli_abort("Columns not found.")
     }
 
     if (any(idx <= 3)) {
-      stop("Cannot remove first three columns.")
+      cli::cli_abort("Cannot remove first three columns.")
     }
 
     if (verbose > 0) {
-      message(paste0("Removing variables: ",  paste(names(data)[c(idx)], collapse = ", ")))
+      cli::cli_inform(paste0("Removing variables: ",  paste(names(data)[c(idx)], collapse = ", ")))
     }
 
     data <- data[, !names(data) %in% c(variable)]
@@ -160,21 +160,21 @@ select_variables <- function(processed_data, variable, verbose = 0) {
   data <- processed_data$data_original
 
   if (!inherits(variable, "character") && !inherits(variable, "numeric")) {
-    stop("Variables must either be named or selected by column number.")
+    cli::cli_abort("Variables must either be named or selected by column number.")
   }
 
   if (inherits(variable, "numeric")) {
 
     if (any(variable <= 3)) {
-      stop("Cannot select first three columns - they are always included.")
+      cli::cli_abort("Cannot select first three columns - they are always included.")
     }
 
     if (any(!variable %in% (4:ncol(data)))) {
-      stop("Selected columns not in range.")
+      cli::cli_abort("Selected columns not in range.")
     }
 
     if (verbose > 0) {
-      message(paste0("Selecting variables: ",  paste(names(data)[c(variable)], collapse = ", ")))
+      cli::cli_inform(paste0("Selecting variables: ",  paste(names(data)[c(variable)], collapse = ", ")))
     }
 
     data <- cbind(data[, 1:3], data[, c(variable)])
@@ -186,15 +186,15 @@ select_variables <- function(processed_data, variable, verbose = 0) {
     idx <- which(names(data) %in% c(variable))
 
     if (length(idx) != length(variable)) {
-      stop("Selected columns not found.")
+      cli::cli_abort("Selected columns not found.")
     }
 
     if (any(idx <= 3)) {
-      stop("Cannot select first three columns - they are always included.")
+      cli::cli_abort("Cannot select first three columns - they are always included.")
     }
 
     if (verbose > 0) {
-      message(paste0("Selecting variables: ",  paste(names(data)[c(idx)], collapse = ", ")))
+      cli::cli_inform(paste0("Selecting variables: ",  paste(names(data)[c(idx)], collapse = ", ")))
     }
 
     data <- cbind(data[, 1:3], data[, names(data) %in% c(variable)])

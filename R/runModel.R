@@ -43,11 +43,11 @@ runModel  <-  function(model,  verbose = 0,
 
   if (length(model$initial_values) == parcount$total) {
     if (verbose > 0) {
-      message("You have the correct number of initial values.")
+      cli::cli_inform("You have the correct number of initial values.")
     }
 
   }else {
-    stop("ERROR - you have the incorrect number of initial values.")
+    cli::cli_abort("ERROR - you have the incorrect number of initial values.")
     return(NA)
   }
 
@@ -56,12 +56,12 @@ runModel  <-  function(model,  verbose = 0,
     data_names <- stringr::str_match(model$data$attribute_names, "^([[:alnum:]]{1,})_([[:alnum:]]{1,})$")
 
     if (length(unique(data_names[, 3])) < 2) {
-      stop("Only one sub-dataset, MTMM model is not appropriate")
+      cli::cli_abort("Only one sub-dataset, MTMM model is not appropriate")
     }
 
     unique_name_length <- length(unique(data_names[, 2])) * length(unique(data_names[, 3]))
     if (unique_name_length != length(model$data$attribute_names)) {
-      stop("Naming inconsistent.")
+      cli::cli_abort("Naming inconsistent.")
     }
 
   }

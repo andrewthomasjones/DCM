@@ -197,7 +197,7 @@ generateModelMatrices  <-  function(pre_processed_data,  model_type)  {
     nhop <- 1
 
     if ((ncovariates %% n_methods)) {
-      stop("number of covariates is not a multiple of number of methods.") # just say is not even?
+      cli::cli_abort("number of covariates is not a multiple of number of methods.") # just say is not even?
     }
 
     n_traits <- ncovariates / n_methods
@@ -354,7 +354,7 @@ modelGenerator  <-  function(pre_processed_data,
   model_types  <-  c("fixed",  "random",  "one-factor", "manual", "emi", "mtmm")
 
   if (!(model_type %in% model_types)) {
-    stop(paste("model_type not one of ",  paste(model_types,  collapse = ",  ")))
+    cli::cli_abort(paste("model_type not one of ",  paste(model_types,  collapse = ",  ")))
   }
 
   if (model_type %in% c("fixed",  "random",  "one-factor", "mtmm")) {
@@ -385,7 +385,7 @@ modelGenerator  <-  function(pre_processed_data,
 
   }else if (model_type == "manual") {
     if (is.null(matrix_list)) {
-      stop("Need to supply matrix_list for manual model design.")
+      cli::cli_abort("Need to supply matrix_list for manual model design.")
     }
 
     name_checks <- c(
@@ -400,7 +400,7 @@ modelGenerator  <-  function(pre_processed_data,
     )
 
     if (any(name_checks)) {
-      stop("Matrix list does not contain all required model elements.")
+      cli::cli_abort("Matrix list does not contain all required model elements.")
     }
 
     description  <-  paste0("Manually entered model")
@@ -429,7 +429,7 @@ modelGenerator  <-  function(pre_processed_data,
 
   }else if (model_type == "emi") {
     if (is.null(file_name)) {
-      stop(paste("Need to supply file_name for EMI model design."))
+      cli::cli_abort(paste("Need to supply file_name for EMI model design."))
     }
     description  <-  paste0("EMI model via spreadsheet.")
 
@@ -443,11 +443,11 @@ modelGenerator  <-  function(pre_processed_data,
     nhop <- nhop_emi
 
     if (npp_emi != npp) {
-      stop(paste("npp from EMI does not agree with npp from data"))
+      cli::cli_abort(paste("npp from EMI does not agree with npp from data"))
     }
 
     if (ncovariates_emi != ncovariates) {
-      stop(paste("ncovariates from EMI does not agree with npp from data"))
+      cli::cli_abort(paste("ncovariates from EMI does not agree with npp from data"))
     } #dont need this for nhop
 
     code     <- matrix(c(1:ncovariates * npp) * 0, ncovariates, npp)

@@ -30,7 +30,8 @@ Imports:
     crossdes,
     Rfast,
     stringr,
-    mvtnorm
+    mvtnorm,
+    cli
 Suggests: 
     knitr,
     rmarkdown,

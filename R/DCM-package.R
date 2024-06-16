@@ -45,5 +45,6 @@
 #' @importFrom foreach foreach
 #' @importFrom foreach %dopar%
 #' @importFrom stringr str_detect str_replace
+#' @importFrom cli cli_abort cli_warn cli_inform
 ## usethis namespace: end
 NULL
