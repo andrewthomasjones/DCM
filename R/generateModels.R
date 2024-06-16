@@ -4,7 +4,7 @@
 #' @param model_type string
 #' @returns model matrices
 #' @export
-generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
+generateModelMatrices  <-  function(pre_processed_data,  model_type)  {
 
   #setup values
   ncovariates  <-  pre_processed_data$ncovariates
@@ -346,10 +346,10 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
 #' @param matrix_list only for manual
 #' @returns model
 #' @export
-model_generator  <-  function(pre_processed_data,
-                              model_type,
-                              file_name = NULL,
-                              matrix_list = NULL) {
+modelGenerator  <-  function(pre_processed_data,
+                             model_type,
+                             file_name = NULL,
+                             matrix_list = NULL) {
 
   model_types  <-  c("fixed",  "random",  "one-factor", "manual", "emi", "mtmm")
 

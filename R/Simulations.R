@@ -674,7 +674,7 @@ process_sims <-
                                            chosen_values[[model_type]][[data_type]],
                                            easy_guess = eg)
 
-              names <- parameter_labels(for_labs)
+              names <- parameterLabels(for_labs)
               estimates <- list()
               uppers <- list()
               lowers <- list()

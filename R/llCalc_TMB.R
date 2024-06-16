@@ -27,7 +27,7 @@ run_model_TMB <- function(model) {
 
   model_type <- model$description
 
-  parameters_labels  <-  parameter_labels(model)
+  parameters_labels  <-  parameterLabels(model)
 
   data <- list(concept = model$data$concept,
                data = model$data$data[, 5:ncol(model$data$data)],
@@ -170,14 +170,14 @@ run_model_TMB <- function(model) {
   #   mutate(order_old = row_number()) %>%
   #   ungroup()
 
-  sorting_frame$order_old  <- ave(sorting_frame$frame_order, sorting_frame$clean_names_old , FUN = seq_along)
+  sorting_frame$order_old  <- ave(sorting_frame$frame_order, sorting_frame$clean_names_old, FUN = seq_along)
 
   # sorting_frame <- sorting_frame %>%
   #   group_by(clean_names_new) %>%
   #   mutate(order_new = row_number()) %>%
   #   ungroup()
 
-  sorting_frame$order_new  <- ave(sorting_frame$frame_order, sorting_frame$clean_names_new , FUN = seq_along)
+  sorting_frame$order_new  <- ave(sorting_frame$frame_order, sorting_frame$clean_names_new, FUN = seq_along)
 
   sorting_frame$clean_names_new2 <- factor(clean_names_new, levels = unique(clean_names_old))
   sorting_frame <- sorting_frame[order(sorting_frame$clean_names_new2, sorting_frame$order_new), ]

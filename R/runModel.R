@@ -21,14 +21,14 @@ runModel  <-  function(model,  verbose = 0,
 
   model_type <- model$description
 
-  if(model_type == "mtmm") {
+  if (model_type == "mtmm") {
     integral_type <- "Draws"
     draws <- 1000
-  }else{
+  }else {
     integral_type <- "TMB"
   }
 
-  if(integral_type == "GHQ" & is.null(ghq_size)) {
+  if (integral_type == "GHQ" & is.null(ghq_size)) {
     ghq_size <- 3
   }
 
@@ -68,7 +68,7 @@ runModel  <-  function(model,  verbose = 0,
     )
 
 
-    if(integral_type == "GHQ") {
+    if (integral_type == "GHQ") {
       delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = nhop + npp,
                                                           type = "GHe",
                                                           level = ghq_size,
@@ -76,7 +76,7 @@ runModel  <-  function(model,  verbose = 0,
 
       ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
 
-    }else if(integral_type == "Draws") {
+    }else if (integral_type == "Draws") {
       shuffle <- TRUE
       gq_int_matrix <- gqIntMatrix(draws, nrc, shuffle)
       weights <- rep(1 / (draws), draws)

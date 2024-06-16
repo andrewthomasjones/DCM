@@ -2,7 +2,7 @@
 #' @param model model list
 #' @returns list of parmeter names
 #' @export
-parameter_labels <- function(model) {
+parameterLabels <- function(model) {
 
   npp <- model$npp
   nhop <- model$nhop
