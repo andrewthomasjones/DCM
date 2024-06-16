@@ -348,13 +348,13 @@ simulate_dataset <-
            chosen_values,
            easy_guess = FALSE) {
     #processed <- setUp(template)
-    model <- model_generator(processed, model_type)
+    model <- modelGenerator(processed, model_type)
     test_sims <- simulation(chosen_values,  model,  processed)
 
 
 
     processed_sims <- setUp(test_sims)
-    model_sims <- model_generator(processed_sims, model_type)
+    model_sims <- modelGenerator(processed_sims, model_type)
 
     if (easy_guess) {
       model_sims$initial_values <- chosen_values
@@ -372,7 +372,7 @@ simulate_dataset <-
 #' @export
 estimate_model <- function(model_sims, type, precision) {
   if (type == "ghq") {
-    dev_mode <- "C"
+    integral_type <- "GHQ"
     ghq_size <- precision
 
     tryCatch(
@@ -380,7 +380,7 @@ estimate_model <- function(model_sims, type, precision) {
         results <-
           runModel(
             model_sims,
-            dev_mode = dev_mode,
+            integral_type = integral_type,
             ghq_size = ghq_size,
             verbose = 0
           )
@@ -392,7 +392,7 @@ estimate_model <- function(model_sims, type, precision) {
     )
 
   } else if (type == "draws") {
-    dev_mode <- "Cdraws"
+    integral_type <- "Draws"
     draws <- precision
 
     tryCatch(
@@ -400,7 +400,7 @@ estimate_model <- function(model_sims, type, precision) {
         results <-
           runModel(
             model_sims,
-            dev_mode = dev_mode,
+            integral_type = integral_type,
             draws = draws,
             verbose = 0
           )
@@ -517,7 +517,7 @@ generate_simulation_templates <- function(m, p = 2) {
     remove_variables(processed_template_BW, name)
   processed_template_DCE <- setUp(template_DCE)
   processed_template_BWDCE  <-
-    join_choicedatasets(processed_template_BW, processed_template_DCE)
+    joinChoiceDatasets(processed_template_BW, processed_template_DCE)
 
   processed <- list()
 
@@ -714,7 +714,7 @@ process_sims <-
                     standard_errors_j <- unlist(lapply(standard_errors,  "[[", j))
 
                     mu <- mean(estimates_j, na.rm = TRUE)
-                    mu2 <- median(estimates_j, na.rm = TRUE)
+                    #mu2 <- median(estimates_j, na.rm = TRUE)
                     std_deviations <- mean((estimates_j - mu) ^ 2, na.rm = TRUE)
                     z_scores <- (estimates_j - true_j) / standard_errors_j
 
@@ -811,28 +811,27 @@ n_CI <- function(x, SE, upper = FALSE, alpha = 0.05) {
 }
 
 CI_results <- function(results, alpha = 0.05) {
-
   results$lower <- NA
   results$upper <- NA
 
   results$idx <- seq_len(nrow(results))
-  results$variance <- case_when(str_detect(results$parameters, "_sig_") ~ TRUE,
-                                TRUE ~ FALSE)
+  results$variance <- dplyr::case_when(str_detect(results$parameters, "_sig_") ~ TRUE,
+                                       TRUE ~ FALSE)
 
-  results$estimate <- case_when(str_detect(results$parameters, "_sig_") ~ results$estimate^2,
-                                TRUE ~ results$estimate)
+  results$estimate <- dplyr::case_when(str_detect(results$parameters, "_sig_") ~ results$estimate^2,
+                                       TRUE ~ results$estimate)
 
-  temp1 <- results %>%
-    filter(variance) %>%
-    mutate(lower = sd_CI(estimate, standard_errors, FALSE),
-           upper = sd_CI(estimate, standard_errors, TRUE))
+  temp1 <- results[results$variance, ]
+  temp1$lower <- sd_CI(temp1$estimate, temp1$standard_errors, FALSE)
+  temp1$upper <- sd_CI(temp1$stimate, temp1$standard_errors, TRUE)
 
-  temp2 <- results %>%
-    filter(!variance) %>%
-    mutate(lower = n_CI(estimate, standard_errors, FALSE),
-           upper = n_CI(estimate, standard_errors, TRUE))
 
-  results_CI <- rbind(temp1, temp2) %>% arrange(idx)
+  temp2 <- results[!results$variance, ]
+  temp2$lower <- n_CI(temp2$estimate, temp2$standard_errors, FALSE)
+  temp2$upper <- n_CI(temp2$estimate, temp2$standard_errors, TRUE)
+
+  results_CI <- rbind(temp1, temp2)
+  results_CI <- results_CI[order(results_CI$idx), ]
 
   return(results_CI[, 1:5])
 }

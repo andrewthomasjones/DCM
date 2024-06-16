@@ -22,9 +22,9 @@ runModel  <-  function(model,  verbose = 0,
   model_type <- model$description
 
   #defaults for various things if entered as NULL
-  if (model_type == "mtmm" & is.null(integral_type)) {
+  if (model_type == "mtmm" && is.null(integral_type)) {
     integral_type <- "Draws"
-  } else if (model_type == "manual" & is.null(integral_type)) {
+  } else if (model_type == "manual" && is.null(integral_type)) {
     integral_type <- "GHQ"
   } else if (is.null(integral_type)) {
     integral_type <- "TMB"
@@ -34,7 +34,7 @@ runModel  <-  function(model,  verbose = 0,
     draws <-  1000
   }
 
-  if (integral_type == "GHQ" & is.null(ghq_size)) {
+  if (integral_type == "GHQ" && is.null(ghq_size)) {
     ghq_size <- 3
   }
 
@@ -55,12 +55,12 @@ runModel  <-  function(model,  verbose = 0,
   if (model_type == "mtmm") {
     data_names <- stringr::str_match(model$data$attribute_names, "^([[:alnum:]]{1,})_([[:alnum:]]{1,})$")
 
-    if(length(unique(data_names[, 3])) < 2) {
+    if (length(unique(data_names[, 3])) < 2) {
       stop("Only one sub-dataset, MTMM model is not appropriate")
     }
 
     unique_name_length <- length(unique(data_names[, 2])) * length(unique(data_names[, 3]))
-    if(unique_name_length != length(model$data$attribute_names)){
+    if (unique_name_length != length(model$data$attribute_names)) {
       stop("Naming inconsistent.")
     }
 

@@ -13,8 +13,8 @@ readData  <-  function(filename, header = TRUE) {
   }else if (tools::file_ext(filename) == "xls" || file_ext(filename) == "xlsx") {
     data <- as.data.frame(readxl::read_excel(filename, sheet = 1, col_names = header))
   }else if (tools::file_ext(filename) == "tsv") {
-    data <- read.table(filename, sep = '\t', header = header)
-  }else{
+    data <- read.table(filename, sep = "\t", header = header)
+  }else {
     stop("File type not supported. Currently supported formats are: csv, xls, xlsx, tsv.")
   }
 
@@ -30,7 +30,7 @@ readData  <-  function(filename, header = TRUE) {
   }
 
   #some later methods with fail if data is not sorted by the ID column
-  data <- data[order(data[,1]), ]
+  data <- data[order(data[, 1]), ]
 
   return(data)
 }

@@ -20,7 +20,7 @@ createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder =
   emi_name <- paste0(working_folder,  "/EMI_",  model_type, ".xlsx")
   wb <- openxlsx::createWorkbook(emi_name)
 
-  matrix_list <- generate_model_matrices(pre_processed_data,  model_type)
+  matrix_list <- generateModelMatrices(pre_processed_data,  model_type)
 
   #Write all sheets
 
