@@ -2,7 +2,7 @@
 % Please edit documentation in R/generateModels.R
 \name{generateModelMatrices}
 \alias{generateModelMatrices}
-\title{generate_model_matrices}
+\title{generateModelMatrices}
 \usage{
 generateModelMatrices(pre_processed_data, model_type)
 }
@@ -15,5 +15,5 @@ generateModelMatrices(pre_processed_data, model_type)
 model matrices
 }
 \description{
-generate_model_matrices
+generateModelMatrices
 }

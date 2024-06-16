@@ -24,15 +24,15 @@ runModel  <-  function(model,  verbose = 0,
   if (model_type == "mtmm") {
     integral_type <- "Draws"
     draws <- 1000
-  }else {
+  }else if (model_type == "manual") {
+    integral_type <- "GHQ"
+  } else {
     integral_type <- "TMB"
   }
 
   if (integral_type == "GHQ" & is.null(ghq_size)) {
     ghq_size <- 3
   }
-
-
 
   npp <- model$npp
   nhop <- model$nhop

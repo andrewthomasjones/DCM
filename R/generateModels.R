@@ -1,4 +1,4 @@
-#' generate_model_matrices
+#' generateModelMatrices
 #'
 #' @param pre_processed_data processed data list
 #' @param model_type string
@@ -359,7 +359,7 @@ modelGenerator  <-  function(pre_processed_data,
 
   if (model_type %in% c("fixed",  "random",  "one-factor", "mtmm")) {
 
-    matrix_list <- generate_model_matrices(pre_processed_data,  model_type)
+    matrix_list <- generateModelMatrices(pre_processed_data,  model_type)
     description  <-  model_type
 
     nhop <- nrow(matrix_list$delta_model)
@@ -404,7 +404,7 @@ modelGenerator  <-  function(pre_processed_data,
     }
 
     description  <-  paste0("Manually entered model")
-    description  <-  paste0("Generated model of type ", model_type)
+    #description  <-  paste0("Generated model of type ", model_type)
 
     nhop <- nrow(matrix_list$delta_model)
     npp <- pre_processed_data$npp
@@ -486,9 +486,6 @@ modelGenerator  <-  function(pre_processed_data,
     matrix_list[["gamma_model"]] <- gamma
     matrix_list[["beta_model"]] <- beta
 
-
-  }else if (model_type == "mtmm") {
-    #FIX
   }
 
   model <- list(description = description,
