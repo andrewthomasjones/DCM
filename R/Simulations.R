@@ -257,12 +257,12 @@ simulation <- function(chosen_values,  model,  processed) {
   nlines  <-  dim(data)[1]
 
   delta <- mvtnorm::rmvnorm(ndecisionmakers,
-                     mudeltaparameters,
-                     diag(sigmadeltaparameters))
+                            mudeltaparameters,
+                            diag(sigmadeltaparameters))
 
   epsilon <- mvtnorm::rmvnorm(ndecisionmakers,
-                     muepsilonparameters,
-                     diag(sigmaepsilonparameters))
+                              muepsilonparameters,
+                              diag(sigmaepsilonparameters))
 
 
   for (i in 1:nlines) {
@@ -440,7 +440,7 @@ generate_simulation_templates <- function(m, p = 2) {
   #-----------------------------
   desVarNames <- LETTERS[1:p]
   desLevels <- rep(4, p)
-  n <- p+2      #number of choice sets
+  n <- p + 2      #number of choice sets
   desOpt <- 4  #num option per choice set
   #generate full factorial
   dat <-
@@ -776,41 +776,41 @@ process_sims <-
     }
     results_table <- dplyr::bind_rows(row_list)
     return(results_table)
-}
+  }
 
 
 
-sd_CI <- function(s, SE, upper = FALSE, alpha = 0.05){
+sd_CI <- function(s, SE, upper = FALSE, alpha = 0.05) {
   SE <- SE * 4
   k <-  s^2 / SE^2
 
   crit1 <- qchisq(1 - alpha / 2, k)
   crit2 <- qchisq(alpha / 2, k)
 
-  if(upper == TRUE){
+  if (upper == TRUE) {
     res <- sqrt(k / crit2) * s
-  }else{
+  } else {
     res <- sqrt(k / crit1) * s
   }
 
   return(res)
 }
 
-n_CI <- function(x, SE, upper = FALSE, alpha = 0.05){
+n_CI <- function(x, SE, upper = FALSE, alpha = 0.05) {
 
   crit1 <- qnorm(alpha / 2)
   crit2 <- qnorm(1 - alpha / 2)
 
-  if(upper == TRUE){
+  if (upper == TRUE) {
     res <- x + SE * crit2
-  }else{
+  } else {
     res <- x + SE * crit1
   }
 
   return(res)
 }
 
-CI_results <- function(results, alpha = 0.05){
+CI_results <- function(results, alpha = 0.05) {
 
   results$lower <- NA
   results$upper <- NA
@@ -822,16 +822,17 @@ CI_results <- function(results, alpha = 0.05){
   results$estimate <- case_when(str_detect(results$parameters, "_sig_") ~ results$estimate^2,
                                 TRUE ~ results$estimate)
 
-  temp1 <- results %>% filter(variance) %>% mutate(lower = sd_CI(estimate, standard_errors, FALSE), upper = sd_CI(estimate, standard_errors, TRUE))
-  temp2 <- results %>% filter(!variance) %>% mutate(lower = n_CI(estimate, standard_errors, FALSE), upper = n_CI(estimate, standard_errors, TRUE))
+  temp1 <- results %>%
+    filter(variance) %>%
+    mutate(lower = sd_CI(estimate, standard_errors, FALSE),
+           upper = sd_CI(estimate, standard_errors, TRUE))
+
+  temp2 <- results %>%
+    filter(!variance) %>%
+    mutate(lower = n_CI(estimate, standard_errors, FALSE),
+           upper = n_CI(estimate, standard_errors, TRUE))
 
   results_CI <- rbind(temp1, temp2) %>% arrange(idx)
 
   return(results_CI[, 1:5])
 }
-
-
-
-
-
-
