@@ -28,7 +28,6 @@ Imports:
     TMB (>= 1.9.11),
     AlgDesign,
     crossdes,
-    Rfast,
     stringr,
     mvtnorm,
     cli

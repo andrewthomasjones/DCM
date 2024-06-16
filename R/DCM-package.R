@@ -31,6 +31,7 @@
 #' @importFrom stats na.omit
 #' @importFrom stats nlm
 #' @importFrom stats qnorm
+#' @importFrom stats ave median qchisq
 #' @importFrom tools file_ext
 #' @importFrom utils packageVersion
 #' @importFrom utils read.table

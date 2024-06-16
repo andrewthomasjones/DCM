@@ -760,7 +760,7 @@ process_sims <-
                       mean_std_deviation = mean(std_deviations, na.rm = TRUE),
                       bias_pc = 100 * mean(estimates_j - true_j, na.rm = TRUE) / true_j,
                       mu = mean(estimates_j, na.rm = TRUE),
-                      mu2 = median(estimates_j, na.rm = TRUE),
+                      mu2 = stats::median(estimates_j, na.rm = TRUE),
                       sw_p_value = sw_p_value,
                       good_estimate = coverage_probability > 0.90 &
                         sw_p_value > 0.01
@@ -784,8 +784,8 @@ sd_CI <- function(s, SE, upper = FALSE, alpha = 0.05) {
   SE <- SE * 4
   k <-  s^2 / SE^2
 
-  crit1 <- qchisq(1 - alpha / 2, k)
-  crit2 <- qchisq(alpha / 2, k)
+  crit1 <- stats::qchisq(1 - alpha / 2, k)
+  crit2 <- stats::qchisq(alpha / 2, k)
 
   if (upper == TRUE) {
     res <- sqrt(k / crit2) * s
@@ -798,8 +798,8 @@ sd_CI <- function(s, SE, upper = FALSE, alpha = 0.05) {
 
 n_CI <- function(x, SE, upper = FALSE, alpha = 0.05) {
 
-  crit1 <- qnorm(alpha / 2)
-  crit2 <- qnorm(1 - alpha / 2)
+  crit1 <- stats::qnorm(alpha / 2)
+  crit2 <- stats::qnorm(1 - alpha / 2)
 
   if (upper == TRUE) {
     res <- x + SE * crit2

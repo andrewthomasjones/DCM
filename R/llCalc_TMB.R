@@ -178,14 +178,14 @@ run_model_TMB <- function(model, verbose = FALSE) {
   #   mutate(order_old = row_number()) %>%
   #   ungroup()
 
-  sorting_frame$order_old  <- ave(sorting_frame$frame_order, sorting_frame$clean_names_old, FUN = seq_along)
+  sorting_frame$order_old  <- stats::ave(sorting_frame$frame_order, sorting_frame$clean_names_old, FUN = seq_along)
 
   # sorting_frame <- sorting_frame %>%
   #   group_by(clean_names_new) %>%
   #   mutate(order_new = row_number()) %>%
   #   ungroup()
 
-  sorting_frame$order_new  <- ave(sorting_frame$frame_order, sorting_frame$clean_names_new, FUN = seq_along)
+  sorting_frame$order_new  <- stats::ave(sorting_frame$frame_order, sorting_frame$clean_names_new, FUN = seq_along)
 
   sorting_frame$clean_names_new2 <- factor(clean_names_new, levels = unique(clean_names_old))
   sorting_frame <- sorting_frame[order(sorting_frame$clean_names_new2, sorting_frame$order_new), ]
