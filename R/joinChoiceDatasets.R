@@ -15,9 +15,10 @@ joinChoiceDatasets  <-  function(data1,  data2) {
   data1_names <- stringr::str_match(data1$attribute_names, "^([[:alnum:]]{1,})_([[:alnum:]]{1,})$")
   data2_names <- stringr::str_match(data2$attribute_names, "^([[:alnum:]]{1,})_([[:alnum:]]{1,})$")
 
-  if (length(unique(data1_names[, 3])) != 1) {
-    stop("Variable Name Suffixes in first dataset are not consistent.")
-  }
+  #removed so first dataset can have multiple so this can be done for more than just 2
+  # if (length(unique(data1_names[, 3])) != 1) {
+  #   stop("Variable Name Suffixes in first dataset are not consistent.")
+  # }
 
   if (length(unique(data2_names[, 3])) != 1) {
     stop("Variable Name Suffixes in second dataset are not consistent.")
@@ -27,9 +28,9 @@ joinChoiceDatasets  <-  function(data1,  data2) {
     stop("Variable names are not consistent between first and second dataset.")
   }
 
-  if (data1_names[, 2] == data2_names[, 2]) {
-    stop("Variables are not in the same order in both datasets.")
-  }
+  # if (!all(data1_names[, 2] == data2_names[, 2])) {
+  #   stop("Variables are not in the same order in both datasets.")
+  # }
 
   nconcepts_data1 <- dim(data1$concept)[1]
   nconcepts_data2 <- dim(data2$concept)[1]

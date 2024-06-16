@@ -13,21 +13,25 @@ runModel  <-  function(model,  verbose = 0,
                        gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
                        integral_type = NULL, ghq_size = NULL, draws = NULL) {
 
+  #start timer
   start_time <- Sys.time()
-  #integral_type = "GHQ", ghq_size = 3, draws = 100
 
+  #basic data properties
   parcount <- parameterCount(model)
   processed <- model$data
-
   model_type <- model$description
 
-  if (model_type == "mtmm") {
+  #defaults for various things if entered as NULL
+  if (model_type == "mtmm" & is.null(integral_type)) {
     integral_type <- "Draws"
-    draws <- 1000
-  }else if (model_type == "manual") {
+  } else if (model_type == "manual" & is.null(integral_type)) {
     integral_type <- "GHQ"
-  } else {
+  } else if (is.null(integral_type)) {
     integral_type <- "TMB"
+  }
+
+  if (is.null(draws)) {
+    draws <-  1000
   }
 
   if (integral_type == "GHQ" & is.null(ghq_size)) {
@@ -45,6 +49,21 @@ runModel  <-  function(model,  verbose = 0,
   }else {
     stop("ERROR - you have the incorrect number of initial values.")
     return(NA)
+  }
+
+
+  if (model_type == "mtmm") {
+    data_names <- stringr::str_match(model$data$attribute_names, "^([[:alnum:]]{1,})_([[:alnum:]]{1,})$")
+
+    if(length(unique(data_names[, 3])) < 2) {
+      stop("Only one sub-dataset, MTMM model is not appropriate")
+    }
+
+    unique_name_length <- length(unique(data_names[, 2])) * length(unique(data_names[, 3]))
+    if(unique_name_length != length(model$data$attribute_names)){
+      stop("Naming inconsistent.")
+    }
+
   }
 
   nrc <- dim(model$epsilon)[1] + dim(model$delta)[1]
