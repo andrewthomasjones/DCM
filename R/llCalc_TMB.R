@@ -17,9 +17,10 @@ choice_picker <- function(data) {
 
 #' Runs Model
 #' @param model model list
+#' @param verbose default FALSE
 #' @returns fitted model.
 #' @export
-run_model_TMB <- function(model) {
+run_model_TMB <- function(model, verbose = FALSE) {
 
   start_time <- Sys.time()
 
@@ -113,6 +114,9 @@ run_model_TMB <- function(model) {
 
   map_f <- lapply(map, as.factor)
 
+  if (verbose) {
+    cli::cli_inform("Setting up TMB ADFun...")
+  }
 
   # instantiate ModelA object
   obj <- TMB::MakeADFun(data = c(model = "DCMLL", # which model to use
@@ -135,6 +139,10 @@ run_model_TMB <- function(model) {
 
   ## Fit model
   opt <- nlminb(obj$par, obj$fn, obj$gr, upper = upper_lims, lower = lower_lims)
+
+  if (verbose) {
+    cli::cli_inform("Running TMB SD report...")
+  }
 
   rep <- TMB::sdreport(obj, bias.correct = TRUE, getReportCovariance = FALSE, bias.correct.control = list(sd = TRUE))
 

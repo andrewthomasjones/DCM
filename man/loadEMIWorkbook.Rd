@@ -4,12 +4,14 @@
 \alias{loadEMIWorkbook}
 \title{Loads an existing workbook}
 \usage{
-loadEMIWorkbook(pre_processed_data, emi_file_name)
+loadEMIWorkbook(pre_processed_data, emi_file_name, verbose = FALSE)
 }
 \arguments{
 \item{pre_processed_data}{processed data list}
 
 \item{emi_file_name}{filename string}
+
+\item{verbose}{default FALSE}
 }
 \value{
 model

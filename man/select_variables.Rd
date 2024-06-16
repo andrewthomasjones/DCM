@@ -4,14 +4,14 @@
 \alias{select_variables}
 \title{select variables This documentation is incomplete.}
 \usage{
-select_variables(processed_data, variable, verbose = 0)
+select_variables(processed_data, variable, verbose = FALSE)
 }
 \arguments{
 \item{processed_data}{processes data list}
 
 \item{variable}{variable to remove, string or number or vector}
 
-\item{verbose}{1 means print more, 0 no print, default 1}
+\item{verbose}{TRUE}
 }
 \value{
 a new processed data object with everything updated

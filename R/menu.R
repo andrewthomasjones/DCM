@@ -31,6 +31,6 @@ version ",
 
 .onAttach <- function(lib, pkg) {
   msg <- inform_startup()
-  packageStartupcli::cli_inform(msg)
+  packageStartupMessage(msg)
   invisible()
 }

@@ -4,14 +4,14 @@
 \alias{remove_variables}
 \title{remove variables This documentation is incomplete.}
 \usage{
-remove_variables(processed_data, variable, verbose = 0)
+remove_variables(processed_data, variable, verbose = FALSE)
 }
 \arguments{
 \item{processed_data}{processes data list}
 
 \item{variable}{variable to remove, string or number or vector}
 
-\item{verbose}{1 means print more}
+\item{verbose}{TRUE means print more}
 }
 \value{
 a new processed data object with everything updated

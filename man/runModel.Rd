@@ -6,7 +6,7 @@
 \usage{
 runModel(
   model,
-  verbose = 0,
+  verbose = FALSE,
   gradtol = 1e-06,
   stepmax = NULL,
   steptol = 1e-06,
@@ -18,7 +18,7 @@ runModel(
 \arguments{
 \item{model}{model list}
 
-\item{verbose}{default 0}
+\item{verbose}{default FALSE}
 
 \item{gradtol}{default 1e-6}
 

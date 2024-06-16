@@ -39,22 +39,26 @@ readData  <-  function(filename, header = TRUE) {
 #'
 #' @param data input
 #' @param header deafult TRUE
+#' @param verbose default FALSE
 #' @returns A list of the processed data.
 #' @export
-setUp <- function(data, header = TRUE) {
+setUp <- function(data, header = TRUE, verbose = FALSE) {
 
 
   if (inherits(data, "character")) {
     #read in data
     data_matrix <- readData(data, header = header)
     filename  <-  data
+
+    if (verbose) {
+      cli::cli_inform("Data read in from {data}.")
+    }
   }else if (inherits(data, c("data.frame", "tibble", "matrix"))) {
     data_matrix <-  as.data.frame(data)
     filename  <-  NULL
   }else {
     cli::cli_abort("Data must either be a filename or data as a matrix, tibble, or data.frame")
   }
-
 
   #from Kobe code
   nmax_choiceset_size <- as.numeric(max(unlist(rle(data_matrix[, 2])[1])))
@@ -89,6 +93,10 @@ setUp <- function(data, header = TRUE) {
                     attribute_names  =  names(data_matrix)[-(1:3)]
   )
 
+  if (verbose) {
+    cli::cli_inform("Data successfully processed.")
+  }
+
   return(processed)
 
 }
@@ -96,10 +104,10 @@ setUp <- function(data, header = TRUE) {
 #' remove variables This documentation is incomplete.
 #' @param processed_data processes data list
 #' @param variable variable to remove, string or number or vector
-#' @param verbose 1 means print more
+#' @param verbose TRUE means print more
 #' @returns a new processed data object with everything updated
 #' @export
-remove_variables <- function(processed_data, variable, verbose = 0) {
+remove_variables <- function(processed_data, variable, verbose = FALSE) {
   data <- processed_data$data_original
 
   if (!inherits(variable, "character") && !inherits(variable, "numeric")) {
@@ -116,7 +124,7 @@ remove_variables <- function(processed_data, variable, verbose = 0) {
       cli::cli_abort("Columns not in range.")
     }
 
-    if (verbose > 0) {
+    if (verbose) {
       cli::cli_inform(paste0("Removing variables: ",  paste(names(data)[c(variable)], collapse = ", ")))
     }
 
@@ -136,7 +144,7 @@ remove_variables <- function(processed_data, variable, verbose = 0) {
       cli::cli_abort("Cannot remove first three columns.")
     }
 
-    if (verbose > 0) {
+    if (verbose) {
       cli::cli_inform(paste0("Removing variables: ",  paste(names(data)[c(idx)], collapse = ", ")))
     }
 
@@ -153,10 +161,10 @@ remove_variables <- function(processed_data, variable, verbose = 0) {
 #' select variables This documentation is incomplete.
 #' @param processed_data processes data list
 #' @param variable variable to remove, string or number or vector
-#' @param verbose 1 means print more, 0 no print, default 1
+#' @param verbose TRUE
 #' @returns a new processed data object with everything updated
 #' @export
-select_variables <- function(processed_data, variable, verbose = 0) {
+select_variables <- function(processed_data, variable, verbose = FALSE) {
   data <- processed_data$data_original
 
   if (!inherits(variable, "character") && !inherits(variable, "numeric")) {
@@ -173,7 +181,7 @@ select_variables <- function(processed_data, variable, verbose = 0) {
       cli::cli_abort("Selected columns not in range.")
     }
 
-    if (verbose > 0) {
+    if (verbose) {
       cli::cli_inform(paste0("Selecting variables: ",  paste(names(data)[c(variable)], collapse = ", ")))
     }
 
@@ -193,7 +201,7 @@ select_variables <- function(processed_data, variable, verbose = 0) {
       cli::cli_abort("Cannot select first three columns - they are always included.")
     }
 
-    if (verbose > 0) {
+    if (verbose) {
       cli::cli_inform(paste0("Selecting variables: ",  paste(names(data)[c(idx)], collapse = ", ")))
     }
 

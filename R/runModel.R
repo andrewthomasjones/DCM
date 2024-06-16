@@ -1,6 +1,6 @@
 #' Runs Model
 #' @param model model list
-#' @param verbose default 0
+#' @param verbose default FALSE
 #' @param gradtol default 1e-6
 #' @param stepmax default as in nlm
 #' @param steptol default 1e-6
@@ -9,9 +9,13 @@
 #' @param draws NULL
 #' @returns fitted model.
 #' @export
-runModel  <-  function(model,  verbose = 0,
+runModel  <-  function(model,  verbose = FALSE,
                        gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
                        integral_type = NULL, ghq_size = NULL, draws = NULL) {
+
+  if (verbose) {
+    cli::cli_inform("Perfoming initial checks...")
+  }
 
   #start timer
   start_time <- Sys.time()
@@ -42,7 +46,7 @@ runModel  <-  function(model,  verbose = 0,
   nhop <- model$nhop
 
   if (length(model$initial_values) == parcount$total) {
-    if (verbose > 0) {
+    if (verbose) {
       cli::cli_inform("You have the correct number of initial values.")
     }
 
@@ -74,10 +78,15 @@ runModel  <-  function(model,  verbose = 0,
 
   }
 
+  if (verbose) {
+    cli::cli_inform("Solving for log-liklihood...")
+  }
 
   if (integral_type == "TMB") {
-    fitted_model <- run_model_TMB(model)
+
+    fitted_model <- run_model_TMB(model, verbose)
   }else {
+
     #pass through in case these need to be accessed
     nlm_params <- list(
       gradtol = gradtol,
@@ -106,6 +115,10 @@ runModel  <-  function(model,  verbose = 0,
       loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, nlm_params))
     }else if (integral_type == "Draws") {
       loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix2, nlm_params))
+    }
+
+    if (verbose) {
+      cli::cli_inform("Processing results for output...")
     }
 
     #print(loglik1$hessian)
@@ -214,6 +227,10 @@ runModel  <-  function(model,  verbose = 0,
                            par_count = parcount,
                            execution_time = as.numeric(time_taken)
     )
+  }
+
+  if (verbose) {
+    cli::cli_inform("Model estimation complete.")
   }
 
   return(fitted_model)

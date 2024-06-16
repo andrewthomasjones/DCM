@@ -2,9 +2,10 @@
 #' @param pre_processed_data processed data list
 #' @param model_type string
 #' @param working_folder string
+#' @param verbose default FALSE
 #' @returns name of workbook
 #' @export
-createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder = NULL) {
+createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder = NULL, verbose = FALSE) {
 
   model_types <- c("fixed",  "random",  "one-factor",  "mtmm")
 
@@ -83,7 +84,9 @@ createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder =
 
   #save workbook
   openxlsx::saveWorkbook(wb,  file = emi_name,  overwrite = TRUE)
-  cli::cli_inform(paste0("\n", "EMI model file ",  emi_name, " saved."))
+  if (verbose) {
+    cli::cli_inform("EMI model file {emi_name} saved.")
+  }
 
   return(emi_name)
 }
@@ -92,9 +95,10 @@ createEMIWorkbook <- function(pre_processed_data,  model_type,  working_folder =
 #' Loads an existing workbook
 #' @param pre_processed_data processed data list
 #' @param emi_file_name filename string
+#' @param verbose default FALSE
 #' @returns model
 #' @export
-loadEMIWorkbook <- function(pre_processed_data, emi_file_name) {
+loadEMIWorkbook <- function(pre_processed_data, emi_file_name, verbose = FALSE) {
 
   EMI <- openxlsx::loadWorkbook(emi_file_name, isUnzipped = FALSE)
 
@@ -139,6 +143,10 @@ loadEMIWorkbook <- function(pre_processed_data, emi_file_name) {
                 beta = beta,
                 phi = phi,
                 initial_values = initial_values)
+
+  if (verbose) {
+    cli::cli_inform(paste0("Model read from {emi_name}."))
+  }
 
   return(model)
 

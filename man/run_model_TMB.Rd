@@ -4,10 +4,12 @@
 \alias{run_model_TMB}
 \title{Runs Model}
 \usage{
-run_model_TMB(model)
+run_model_TMB(model, verbose = FALSE)
 }
 \arguments{
 \item{model}{model list}
+
+\item{verbose}{default FALSE}
 }
 \value{
 fitted model.
