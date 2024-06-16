@@ -165,18 +165,22 @@ run_model_TMB <- function(model) {
                               clean_names_new = clean_names_new,
                               frame_order = seq_len(nrow(se_final)))
 
-  sorting_frame <- sorting_frame %>%
-    group_by(clean_names_old) %>%
-    mutate(order_old = row_number()) %>%
-    ungroup()
+  # sorting_frame <- sorting_frame %>%
+  #   group_by(clean_names_old) %>%
+  #   mutate(order_old = row_number()) %>%
+  #   ungroup()
 
-  sorting_frame <- sorting_frame %>%
-    group_by(clean_names_new) %>%
-    mutate(order_new = row_number()) %>%
-    ungroup()
+  sorting_frame$order_old  <- ave(sorting_frame$frame_order, sorting_frame$clean_names_old , FUN = seq_along)
+
+  # sorting_frame <- sorting_frame %>%
+  #   group_by(clean_names_new) %>%
+  #   mutate(order_new = row_number()) %>%
+  #   ungroup()
+
+  sorting_frame$order_new  <- ave(sorting_frame$frame_order, sorting_frame$clean_names_new , FUN = seq_along)
 
   sorting_frame$clean_names_new2 <- factor(clean_names_new, levels = unique(clean_names_old))
-  sorting_frame <- sorting_frame[order(clean_names_new2, order_new), ]
+  sorting_frame <- sorting_frame[order(sorting_frame$clean_names_new2, sorting_frame$order_new), ]
 
   results  <-  data.frame(parameters = parameters_labels, #FIXME order is wrong
                           estimate = se_final[sorting_frame$frame_order, 1],

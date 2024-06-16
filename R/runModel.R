@@ -1,25 +1,38 @@
 #' Runs Model
 #' @param model model list
-#' @param model_name string default "name"
 #' @param verbose default 0
 #' @param gradtol default 1e-6
 #' @param stepmax default as in nlm
 #' @param steptol default 1e-6
-#' @param dev_mode default "orig"
-#' @param ghq_size 3
-#' @param draws 100 fro now when needed
+#' @param integral_type NULL
+#' @param ghq_size NUL
+#' @param draws NULL
 #' @returns fitted model.
 #' @export
-runModel  <-  function(model,  model_name = "name", verbose = 0,
+runModel  <-  function(model,  verbose = 0,
                        gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
-                       dev_mode = "C", ghq_size = 3, draws = 100) {
+                       integral_type = NULL, ghq_size = NULL, draws = NULL) {
 
   start_time <- Sys.time()
+  #integral_type = "GHQ", ghq_size = 3, draws = 100
 
   parcount <- parameterCount(model)
   processed <- model$data
 
-  model_name <- model$description
+  model_type <- model$description
+
+  if(model_type == "mtmm") {
+    integral_type <- "Draws"
+    draws <- 1000
+  }else{
+    integral_type <- "TMB"
+  }
+
+  if(integral_type == "GHQ" & is.null(ghq_size)) {
+    ghq_size <- 3
+  }
+
+
 
   npp <- model$npp
   nhop <- model$nhop
@@ -43,7 +56,7 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
   }
 
 
-  if (dev_mode == "TMB") {
+  if (integral_type == "TMB") {
     fitted_model <- run_model_TMB(model)
   }else {
     #pass through in case these need to be accessed
@@ -55,28 +68,25 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
     )
 
 
-    delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = nhop + npp,
-                                                        type = "GHe",
-                                                        level = ghq_size,
-                                                        ndConstruction = "sparse"))
+    if(integral_type == "GHQ") {
+      delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = nhop + npp,
+                                                          type = "GHe",
+                                                          level = ghq_size,
+                                                          ndConstruction = "sparse"))
 
-    ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
+      ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
 
+    }else if(integral_type == "Draws") {
+      shuffle <- TRUE
+      gq_int_matrix <- gqIntMatrix(draws, nrc, shuffle)
+      weights <- rep(1 / (draws), draws)
+      ghq_matrix2 <- as.matrix(cbind(weights, gq_int_matrix))
+    }
 
-    ghq_steps <- draws
-    shuffle <- TRUE
-    gq_int_matrix <- gqIntMatrix(ghq_steps, nrc, shuffle)
-    weights <- rep(1 / (ghq_steps), ghq_steps)
-    ghq_matrix2 <- as.matrix(cbind(weights, gq_int_matrix))
-
-    if (dev_mode == "C") {
+    if (integral_type == "GHQ") {
       loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, nlm_params))
-    }else if (dev_mode == "R") {
-      loglik1 <- suppressWarnings(llMax(model,  processed,  ghq_matrix1, nlm_params))
-    }else if (dev_mode == "Cdraws") {
+    }else if (integral_type == "Draws") {
       loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix2, nlm_params))
-    }else if (dev_mode == "Rdraws") {
-      loglik1 <- suppressWarnings(llMax(model,  processed,  ghq_matrix2, nlm_params))
     }
 
     #print(loglik1$hessian)
@@ -167,7 +177,7 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
 
     results$LL  <-   c(loglik1$minimum,  rep(".",  nrow(results) - 1))
 
-    result_name <- paste0(model_name,  " ",
+    result_name <- paste0(model_type,  " ",
                           format(Sys.time(),
                                  "%Y-%m-%d %H:%M"))
 
@@ -176,7 +186,7 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
 
     fitted_model  <-  list(result_name = result_name,
                            model = model,
-                           model_name = model_name,
+                           model_type = model_type,
                            LL = loglik1$minimum,
                            loglikf = loglik1,
                            results = results,

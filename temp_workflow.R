@@ -1,9 +1,33 @@
 library(DCM)
-library(tictoc)
 
 processedDCE <- setUp(DCEpriorities[,1:6])
+processedBW <- setUp(BWpriorities[,1:6])
+joined <- join_choicedatasets(processedBW, processedDCE)
+
+model_1f <- model_generator(processedBW, "one-factor")
+model_fixed <- model_generator(processedBW, "fixed")
+model_random <- model_generator(processedBW, "random")
+model_mtmm <- model_generator(joined, "mtmm")
+
+res_1f <- runModel(model_1f)
+res_fixed <- runModel(model_fixed)
+res_random <- runModel(model_random)
+res_mtmm  <- runModel(model_mtmm)
+
+
+
+
+
+
+
+
+
+processedDCE <- setUp(DCEpriorities[,1:6])
+
 model <- model_generator(processedDCE, "random")
-res <- runModel(model, dev_mode = "TMB")
+res <- runModel(model, dev_mode = "TMB", scaling = TRUE)
+
+resF <- runModel(model, dev_mode = "TMB", scaling = FALSE)
 
 
 res2 <- runModel(model)
