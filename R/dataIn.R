@@ -4,6 +4,7 @@
 #' @returns A dataframe of the input data.
 #' @export
 readData  <-  function(filename, header = TRUE) {
+
   #checks file type and then reads accordingly
   if (tools::file_ext(filename) == "txt") {
     data <- read.table(filename, header = header)
@@ -11,6 +12,10 @@ readData  <-  function(filename, header = TRUE) {
     data <- read.csv(filename, header = header)
   }else if (tools::file_ext(filename) == "xls" || file_ext(filename) == "xlsx") {
     data <- as.data.frame(readxl::read_excel(filename, sheet = 1, col_names = header))
+  }else if (tools::file_ext(filename) == "tsv") {
+    data <- read.table(filename, sep = '\t', header = header)
+  }else{
+    stop("File type not supported. Currently supported formats are: csv, xls, xlsx, tsv.")
   }
 
   if (header == FALSE) {
@@ -20,7 +25,12 @@ readData  <-  function(filename, header = TRUE) {
                      paste0("V", 1:(ncol(data) - 3)))
 
 
+  } else {
+    names(data)[1:3] <- c("ID", "group", "choice") #keep first 3 column names consistent
   }
+
+  #some later methods with fail if data is not sorted by the ID column
+  data <- data[order(data[,1]), ]
 
   return(data)
 }
