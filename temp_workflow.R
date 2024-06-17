@@ -1,8 +1,60 @@
 library(DCM)
 
+processedDCE <- setUp(DCEpriorities[,1:7])
+test2 <- remove_variables(processedDCE, c("Safety_DCE"), verbose = T)
+
+
 processedDCE <- setUp(DCEpriorities[,1:6])
 processedBW <- setUp(BWpriorities[,1:6])
-joined <- joinChoiceDatasets(processedBW, processedDCE)
+test1 <- joinChoiceDatasets(processedBW, processedDCE)
+
+
+model_1f2 <- modelGenerator(test2, "one-factor")
+model_fixed2 <- modelGenerator(test2, "fixed")
+model_random2 <- modelGenerator(test2, "random")
+
+res_1f2 <- runModel(model_1f2)
+res_fixed2 <- runModel(model_fixed2)
+res_random2 <- runModel(model_random2)
+
+
+model_1f <- modelGenerator(test1, "one-factor")
+model_fixed <- modelGenerator(test1, "fixed")
+model_random <- modelGenerator(test1, "random")
+model_mtmm <- modelGenerator(test1, "mtmm")
+
+res_1f <- runModel(model_1f)
+res_fixed <- runModel(model_fixed)
+res_random <- runModel(model_random)
+res_mtmm  <- runModel(model_mtmm)
+
+
+
+
+fixed_model_graph(res_fixed) %>% DiagrammeR::render_graph()
+
+
+
+
+
+
+
+
+
+
+
+
+
+test1 <- select_variables(processedDCE, c("Safety_DCE", "Reliability_DCE"), verbose = T)
+
+
+joined2 <- remove_variables(joined, c("Safety_DCE", "Safety_BW"))
+
+joined3 <- select_variables(joined, c("Safety_DCE", "Safety_BW"), verbose = T)
+
+
+
+
 
 model_1f <- modelGenerator(processedBW, "one-factor")
 model_fixed <- modelGenerator(processedBW, "fixed")

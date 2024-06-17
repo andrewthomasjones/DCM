@@ -30,6 +30,7 @@ parameterLabels <- function(model) {
     if (model$delta[i, 1] == 1) {
       printpara[3] <- printpara[3] + 1
     }
+
     if (model$delta[i, 2] == 1) {
       printpara[4] <- printpara[4] + 1
     }
