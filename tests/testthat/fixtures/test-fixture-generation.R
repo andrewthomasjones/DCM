@@ -7,5 +7,5 @@ saveRDS(test_concepts, file = ".tests/testthat/fixtures/test_concepts.rds")
 test_processed_set <- setUp(BWpriorities)
 saveRDS(test_processed_set, file = "./tests/testthat/fixtures/test_processed_set.rds")
 
-test_processed_set2  <- remove_variables(test_processed_set, "Accessibility_BW")
+test_processed_set2  <- removeVariables(test_processed_set, "Accessibility_BW")
 saveRDS(test_processed_set2, file = "./DCM/tests/testthat/fixtures/test_processed_set2.rds")

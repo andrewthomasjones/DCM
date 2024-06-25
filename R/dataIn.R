@@ -107,12 +107,12 @@ setUp <- function(data, header = TRUE, verbose = FALSE) {
 #' @param verbose TRUE means print more
 #' @returns a new processed data object with everything updated
 #' @export
-remove_variables <- function(processed_data, variable, verbose = FALSE) {
+removeVariables <- function(processed_data, variable, verbose = FALSE) {
   data <- processed_data$data_original
 
   if (any(is.na(data))) {
     cli::cli_abort("processed_data$data_original is NA.
-                   select_variables and remove_variables must use prior to joinChoiceDatasets.")
+                   selectVariables and removeVariables must use prior to joinChoiceDatasets.")
   }
 
   if (!inherits(variable, "character") && !inherits(variable, "numeric")) {
@@ -169,13 +169,13 @@ remove_variables <- function(processed_data, variable, verbose = FALSE) {
 #' @param verbose TRUE
 #' @returns a new processed data object with everything updated
 #' @export
-select_variables <- function(processed_data, variable, verbose = FALSE) {
+selectVariables <- function(processed_data, variable, verbose = FALSE) {
 
   data <- processed_data$data_original
 
   if (any(is.na(data))) {
     cli::cli_abort("processed_data$data_original is NA.
-                   select_variables and remove_variables must use prior to joinChoiceDatasets.")
+                   selectVariables and removeVariables must use prior to joinChoiceDatasets.")
   }
 
 

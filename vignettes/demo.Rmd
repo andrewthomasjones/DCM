@@ -70,9 +70,9 @@ processedRP_SP<-setUp(filename, header = FALSE)
 ## Add remove variables
 ```{r add}
 
-processedRP_SP_12345 <- select_variables(processedRP_SP, c("V1", "V2", "V3", "V4", "V5"))
+processedRP_SP_12345 <- selectVariables(processedRP_SP, c("V1", "V2", "V3", "V4", "V5"))
 
-processedBW_rem <- remove_variables(processedBW, "Accessibility_BW")
+processedBW_rem <- removeVariables(processedBW, "Accessibility_BW")
 
 ```
 
@@ -230,7 +230,7 @@ graph will eventually be able to be done from model design also. only works for 
 
 ```{r graph1}
 
-processedRP_SP_12345 <- select_variables(processedRP_SP, c("V1", "V2", "V3", "V4", "V5"))
+processedRP_SP_12345 <- selectVariables(processedRP_SP, c("V1", "V2", "V3", "V4", "V5"))
 m1RPSP<-model_generator(processedRP_SP_12345, "fixed")
 m1RPSP_fit1 <- runModel(m1RPSP)
 g<-fixed_model_graph(m1RPSP_fit1)

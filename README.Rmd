@@ -36,23 +36,106 @@ This is a basic example which shows you how to solve a common problem:
 ```{r example}
 library(DCM)
 
-processedBW<-setUp(BWpriorities)
+processedBW <- setUp(BWpriorities)
 
-m1BW<-model_generator(processedBW, "fixed")
-m2BW<-model_generator(processedBW, "random")
-m3BW<-model_generator(processedBW, "one-factor")
+m1BW <- modelGenerator(processedBW, "fixed")
+m2BW <- modelGenerator(processedBW, "random")
+m3BW <- modelGenerator(processedBW, "one-factor")
 
 
-r1BW<-runModel(m1BW)
-r2BW<-runModel(m2BW)
-r3BW<-runModel(m3BW)
+r1BW <- runModel(m1BW)
+r2BW <- runModel(m2BW)
+r3BW <- runModel(m3BW)
 
 ```
 
 ```{r table}
-summariseModelList(list(r1BW,r2BW,r3BW))
+summariseModelList(list(r1BW, r2BW, r3BW))
 ```
 
 ```{r table2}
 parPrint(r1BW)
 ```
+
+# MTMM Models
+
+Join two datasets:
+
+```{r join}
+processedDCE <- setUp(DCEpriorities)
+
+processedBW_rem <- removeVariables(processedBW, "Accessibility_BW")
+
+combined_data <- joinChoiceDatasets(processedBW_rem, processedDCE)
+
+
+```
+
+Run MTMM model
+
+```{r mttm}
+mtmm_model <- modelGenerator(combined_data, "mtmm")
+
+mtmm_results <- runModel(mtmm_model)
+
+```
+
+Print results:
+
+```{r mttm2}
+parPrint(mtmm_results)
+```
+
+# Graph Output
+
+## Graph the basic models:
+
+```{r graph1}
+modelGraph(m1BW) 
+```
+
+```{r graph2}
+modelGraph(m2BW) 
+```
+
+
+```{r graph3}
+modelGraph(m3BW) 
+```
+
+
+## Graph model estimates:
+
+```{r graph1r}
+modelGraph(r1BW) 
+```
+
+```{r graph2r}
+modelGraph(r21BW) 
+```
+
+
+```{r graph3r}
+modelGraph(r3BW) 
+```
+
+
+
+## Same with MTMM mode and estimate:
+
+```{r mttm2m}
+modelGraph(mtmm_model)
+
+```
+
+
+```{r mttm3r}
+
+modelGraph(mtmm_results)
+
+```
+
+
+
+
+

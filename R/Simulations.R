@@ -514,7 +514,7 @@ generate_simulation_templates <- function(m, p = 2) {
   name <-
     processed_template_BW$attribute_names[length(processed_template_BW$attribute_names)]
   processed_template_BW  <-
-    remove_variables(processed_template_BW, name)
+    removeVariables(processed_template_BW, name)
   processed_template_DCE <- setUp(template_DCE)
   processed_template_BWDCE  <-
     joinChoiceDatasets(processed_template_BW, processed_template_DCE)

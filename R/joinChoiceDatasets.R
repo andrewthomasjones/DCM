@@ -12,8 +12,8 @@ joinChoiceDatasets  <-  function(data1,  data2) {
     cli::cli_abort("Differing numbers of variables between first and second dataset.")
   }
 
-  data1_names <- stringr::str_match(data1$attribute_names, "^([[:alnum:]]{1,})_([[:alnum:]]{1,})$")
-  data2_names <- stringr::str_match(data2$attribute_names, "^([[:alnum:]]{1,})_([[:alnum:]]{1,})$")
+  data1_names <- stringr::str_match(data1$attribute_names, "^(.*)_(.*)$")
+  data2_names <- stringr::str_match(data2$attribute_names, "^(.*)_(.*)$")
 
   #removed so first dataset can have multiple so this can be done for more than just 2
   # if (length(unique(data1_names[, 3])) != 1) {

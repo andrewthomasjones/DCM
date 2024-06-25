@@ -1,7 +1,7 @@
 library(DCM)
 
 processedDCE <- setUp(DCEpriorities[,1:7])
-test2 <- remove_variables(processedDCE, c("Safety_DCE"), verbose = T)
+test2 <- removeVariables(processedDCE, c("Safety_DCE"), verbose = T)
 
 
 processedDCE <- setUp(DCEpriorities[,1:6])
@@ -45,12 +45,12 @@ fixed_model_graph(res_fixed) %>% DiagrammeR::render_graph()
 
 
 
-test1 <- select_variables(processedDCE, c("Safety_DCE", "Reliability_DCE"), verbose = T)
+test1 <- selectVariables(processedDCE, c("Safety_DCE", "Reliability_DCE"), verbose = T)
 
 
-joined2 <- remove_variables(joined, c("Safety_DCE", "Safety_BW"))
+joined2 <- removeVariables(joined, c("Safety_DCE", "Safety_BW"))
 
-joined3 <- select_variables(joined, c("Safety_DCE", "Safety_BW"), verbose = T)
+joined3 <- selectVariables(joined, c("Safety_DCE", "Safety_BW"), verbose = T)
 
 
 
@@ -132,7 +132,7 @@ res2 <- runModel(model)
 processedBW <- setUp(BWpriorities)
 processedDCE <- setUp(DCEpriorities)
 
-processedBW <- remove_variables(processedBW , "Accessibility_BW" )
+processedBW <- removeVariables(processedBW , "Accessibility_BW" )
 
 processedDCE <- setUp(DCEpriorities)
 joined <- joinChoiceDatasets (processedBW, processedDCE)
@@ -158,7 +158,7 @@ round(res_fixed$results$estimate,1)
 round(res_random$results$estimate,1)
 round(res_mtmm$results$estimate,1)
 
-processed <- remove_variables(processed, "Accessibility_BW" )
+processed <- removeVariables(processed, "Accessibility_BW" )
 model<- modelGenerator(processed, "fixed")
 res <- runModel(model)
 chosen_values <- res$results$estimate

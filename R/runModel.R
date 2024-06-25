@@ -57,7 +57,7 @@ runModel  <-  function(model,  verbose = FALSE,
 
 
   if (model_type == "mtmm") {
-    data_names <- stringr::str_match(model$data$attribute_names, "^([[:alnum:]]{1,})_([[:alnum:]]{1,})$")
+    data_names <- stringr::str_match(model$data$attribute_names, "^(.*)_(.*)$")
 
     if (length(unique(data_names[, 3])) < 2) {
       cli::cli_abort("Only one sub-dataset, MTMM model is not appropriate")
