@@ -1,5 +1,6 @@
 ---
 output: github_document
+always_allow_html: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -29,35 +30,41 @@ You can install the development version of DCM from [GitHub](https://github.com/
 devtools::install_github("andrewthomasjones/DCM")
 ```
 
-## Example
+## Examples
 
-This is a basic example which shows you how to solve a common problem:
+### Basic Models
 
-```{r example}
+Load example data
+```{r}
 library(DCM)
-
+#load test data
 processedBW <- setUp(BWpriorities)
+```
 
+
+Set up models of different kinds
+```{r BW}
+# set up models for best-worst data
 m1BW <- modelGenerator(processedBW, "fixed")
 m2BW <- modelGenerator(processedBW, "random")
 m3BW <- modelGenerator(processedBW, "one-factor")
+```
 
-
+Get estimates
+```{r BW2}
+#run models for best-worst data
 r1BW <- runModel(m1BW)
 r2BW <- runModel(m2BW)
 r3BW <- runModel(m3BW)
 
 ```
 
-```{r table}
-summariseModelList(list(r1BW, r2BW, r3BW))
-```
-
+Print results for a model
 ```{r table2}
 parPrint(r1BW)
 ```
 
-# MTMM Models
+### MTMM Models
 
 Join two datasets:
 
@@ -67,8 +74,6 @@ processedDCE <- setUp(DCEpriorities)
 processedBW_rem <- removeVariables(processedBW, "Accessibility_BW")
 
 combined_data <- joinChoiceDatasets(processedBW_rem, processedDCE)
-
-
 ```
 
 Run MTMM model
@@ -86,56 +91,46 @@ Print results:
 parPrint(mtmm_results)
 ```
 
-# Graph Output
+### Graph Output
 
-## Graph the basic models:
+#### Graph the basic models:
 
 ```{r graph1}
-modelGraph(m1BW) 
+library(DiagrammeR)
+render_graph(modelGraph(m2BW))
 ```
 
 ```{r graph2}
-modelGraph(m2BW) 
+render_graph(modelGraph(m2BW))
 ```
-
 
 ```{r graph3}
-modelGraph(m3BW) 
+render_graph(modelGraph(m3BW))
 ```
 
-
-## Graph model estimates:
+#### Graph model estimates:
 
 ```{r graph1r}
-modelGraph(r1BW) 
+render_graph(modelGraph(r1BW))
 ```
 
 ```{r graph2r}
-modelGraph(r21BW) 
+render_graph(modelGraph(r2BW))
 ```
-
 
 ```{r graph3r}
-modelGraph(r3BW) 
+render_graph(modelGraph(r3BW))
 ```
 
-
-
-## Same with MTMM mode and estimate:
+#### Same with MTMM mode and estimate:
 
 ```{r mttm2m}
-modelGraph(mtmm_model)
-
+render_graph(modelGraph(mtmm_model))
 ```
-
 
 ```{r mttm3r}
-
-modelGraph(mtmm_results)
-
+render_graph(modelGraph(mtmm_results))
 ```
-
-
 
 
 

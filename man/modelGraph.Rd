@@ -4,7 +4,7 @@
 \alias{modelGraph}
 \title{generateModelMatrices}
 \usage{
-modelGraph(object)
+modelGraph(object, model_type = NULL)
 }
 \arguments{
 \item{object}{model or results object}

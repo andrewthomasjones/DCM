@@ -1,6 +1,6 @@
 library(DCM)
 
-processedDCE <- setUp(DCEpriorities[,1:7])
+processedDCE <- setUp(DCEpriorities)
 test2 <- removeVariables(processedDCE, c("Safety_DCE"), verbose = T)
 
 
@@ -29,21 +29,7 @@ res_random <- runModel(model_random)
 res_mtmm  <- runModel(model_mtmm)
 
 
-
-
 fixed_model_graph(res_fixed) %>% DiagrammeR::render_graph()
-
-
-
-
-
-
-
-
-
-
-
-
 
 test1 <- selectVariables(processedDCE, c("Safety_DCE", "Reliability_DCE"), verbose = T)
 
