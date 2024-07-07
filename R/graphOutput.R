@@ -7,6 +7,7 @@
 modelGraph <- function(object, model_type = NULL) {
 
   have_estimates <- FALSE
+  estimates <- NA
 
   if ("results" %in% names(object)) {
 
@@ -19,12 +20,11 @@ modelGraph <- function(object, model_type = NULL) {
 
   }else {
     have_estimates <- FALSE
-
     model <- object
     names <- model$data$attribute_names
 
   }
-
+  estimates <- estimates
   estimated_params <- parameterLabels(model)
 
   betas <- which(model$beta == 1, arr.ind = TRUE)
