@@ -2,11 +2,39 @@
 #' @param data1 processed data list
 #' @param data2 processed data list
 #' @returns joins two processed objects by cols. only takes  ID ChoiceSet Choice from data1
+#' variable names must be in format variable_dataset and match across the two datasets
 #' @export
-join_choicedatasets  <-  function(data1,  data2) {
+joinChoiceDatasets  <-  function(data1,  data2) {
+
+  #a lot of checks because a lot can go wrong here
+
+  if (length(data1$attribute_names) != length(data2$attribute_names)) {
+    cli::cli_abort("Differing numbers of variables between first and second dataset.")
+  }
+
+  data1_names <- stringr::str_match(data1$attribute_names, "^(.*)_(.*)$")
+  data2_names <- stringr::str_match(data2$attribute_names, "^(.*)_(.*)$")
+
+  #removed so first dataset can have multiple so this can be done for more than just 2
+  # if (length(unique(data1_names[, 3])) != 1) {
+  #   cli::cli_abort("Variable Name Suffixes in first dataset are not consistent.")
+  # }
+
+  if (length(unique(data2_names[, 3])) != 1) {
+    cli::cli_abort("Variable Name Suffixes in second dataset are not consistent.")
+  }
+
+  if (length(setdiff(data1_names[, 2], data2_names[, 2]))) {
+    cli::cli_abort("Variable names are not consistent between first and second dataset.")
+  }
+
+  # if (!all(data1_names[, 2] == data2_names[, 2])) {
+  #   cli::cli_abort("Variables are not in the same order in both datasets.")
+  # }
 
   nconcepts_data1 <- dim(data1$concept)[1]
   nconcepts_data2 <- dim(data2$concept)[1]
+
   ncovariates_data1 <- data1$ncovariates
   ncovariates_data2 <- data2$ncovariates
 

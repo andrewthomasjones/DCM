@@ -1,5 +1,6 @@
 ---
 output: github_document
+always_allow_html: true
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -29,30 +30,107 @@ You can install the development version of DCM from [GitHub](https://github.com/
 devtools::install_github("andrewthomasjones/DCM")
 ```
 
-## Example
+## Examples
 
-This is a basic example which shows you how to solve a common problem:
+### Basic Models
 
-```{r example}
+Load example data
+```{r}
 library(DCM)
-
-processedBW<-setUp(BWpriorities)
-
-m1BW<-model_generator(processedBW, "fixed")
-m2BW<-model_generator(processedBW, "random")
-m3BW<-model_generator(processedBW, "one-factor")
+#load test data
+processedBW <- setUp(BWpriorities)
+```
 
 
-r1BW<-runModel(m1BW)
-r2BW<-runModel(m2BW)
-r3BW<-runModel(m3BW)
+Set up models of different kinds
+```{r BW}
+# set up models for best-worst data
+m1BW <- modelGenerator(processedBW, "fixed")
+m2BW <- modelGenerator(processedBW, "random")
+m3BW <- modelGenerator(processedBW, "one-factor")
+```
+
+Get estimates
+```{r BW2}
+#run models for best-worst data
+r1BW <- runModel(m1BW)
+r2BW <- runModel(m2BW)
+r3BW <- runModel(m3BW)
 
 ```
 
-```{r table}
-summariseModelList(list(r1BW,r2BW,r3BW))
+Print results for a model
+```{r table2}
+parPrint(r1BW)
 ```
 
-```{r table2, results='as.is'}
-cat(parPrint(r1BW))
+### MTMM Models
+
+Join two datasets:
+
+```{r join}
+processedDCE <- setUp(DCEpriorities)
+
+processedBW_rem <- removeVariables(processedBW, "Accessibility_BW")
+
+combined_data <- joinChoiceDatasets(processedBW_rem, processedDCE)
 ```
+
+Run MTMM model
+
+```{r mttm}
+mtmm_model <- modelGenerator(combined_data, "mtmm")
+
+mtmm_results <- runModel(mtmm_model)
+
+```
+
+Print results:
+
+```{r mttm2}
+parPrint(mtmm_results)
+```
+
+### Graph Output
+
+#### Graph the basic models:
+
+```{r graph1}
+library(DiagrammeR)
+render_graph(modelGraph(m2BW))
+```
+
+```{r graph2}
+render_graph(modelGraph(m2BW))
+```
+
+```{r graph3}
+render_graph(modelGraph(m3BW))
+```
+
+#### Graph model estimates:
+
+```{r graph1r}
+render_graph(modelGraph(r1BW))
+```
+
+```{r graph2r}
+render_graph(modelGraph(r2BW))
+```
+
+```{r graph3r}
+render_graph(modelGraph(r3BW))
+```
+
+#### Same with MTMM mode and estimate:
+
+```{r mttm2m}
+render_graph(modelGraph(mtmm_model))
+```
+
+```{r mttm3r}
+render_graph(modelGraph(mtmm_results))
+```
+
+
+

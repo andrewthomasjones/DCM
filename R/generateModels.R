@@ -1,10 +1,10 @@
-#' generate_model_matrices
+#' generateModelMatrices
 #'
 #' @param pre_processed_data processed data list
 #' @param model_type string
 #' @returns model matrices
 #' @export
-generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
+generateModelMatrices  <-  function(pre_processed_data,  model_type)  {
 
   #setup values
   ncovariates  <-  pre_processed_data$ncovariates
@@ -197,7 +197,7 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
     nhop <- 1
 
     if ((ncovariates %% n_methods)) {
-      stop("number of covariates is not a multiple of number of methods.") # just say is not even?
+      cli::cli_abort("number of covariates is not a multiple of number of methods.") # just say is not even?
     }
 
     n_traits <- ncovariates / n_methods
@@ -346,21 +346,21 @@ generate_model_matrices  <-  function(pre_processed_data,  model_type)  {
 #' @param matrix_list only for manual
 #' @returns model
 #' @export
-model_generator  <-  function(pre_processed_data,
-                              model_type,
-                              file_name = NULL,
-                              matrix_list = NULL) {
+modelGenerator  <-  function(pre_processed_data,
+                             model_type,
+                             file_name = NULL,
+                             matrix_list = NULL) {
 
   model_types  <-  c("fixed",  "random",  "one-factor", "manual", "emi", "mtmm")
 
   if (!(model_type %in% model_types)) {
-    stop(paste("model_type not one of ",  paste(model_types,  collapse = ",  ")))
+    cli::cli_abort(paste("model_type not one of ",  paste(model_types,  collapse = ",  ")))
   }
 
   if (model_type %in% c("fixed",  "random",  "one-factor", "mtmm")) {
 
-    matrix_list <- generate_model_matrices(pre_processed_data,  model_type)
-    description  <-  paste0("Generated model of type ", model_type)
+    matrix_list <- generateModelMatrices(pre_processed_data,  model_type)
+    description  <-  model_type
 
     nhop <- nrow(matrix_list$delta_model)
     npp <- pre_processed_data$npp
@@ -385,7 +385,7 @@ model_generator  <-  function(pre_processed_data,
 
   }else if (model_type == "manual") {
     if (is.null(matrix_list)) {
-      stop("Need to supply matrix_list for manual model design.")
+      cli::cli_abort("Need to supply matrix_list for manual model design.")
     }
 
     name_checks <- c(
@@ -400,11 +400,11 @@ model_generator  <-  function(pre_processed_data,
     )
 
     if (any(name_checks)) {
-      stop("Matrix list does not contain all required model elements.")
+      cli::cli_abort("Matrix list does not contain all required model elements.")
     }
 
     description  <-  paste0("Manually entered model")
-    description  <-  paste0("Generated model of type ", model_type)
+    #description  <-  paste0("Generated model of type ", model_type)
 
     nhop <- nrow(matrix_list$delta_model)
     npp <- pre_processed_data$npp
@@ -429,7 +429,7 @@ model_generator  <-  function(pre_processed_data,
 
   }else if (model_type == "emi") {
     if (is.null(file_name)) {
-      stop(paste("Need to supply file_name for EMI model design."))
+      cli::cli_abort(paste("Need to supply file_name for EMI model design."))
     }
     description  <-  paste0("EMI model via spreadsheet.")
 
@@ -443,11 +443,11 @@ model_generator  <-  function(pre_processed_data,
     nhop <- nhop_emi
 
     if (npp_emi != npp) {
-      stop(paste("npp from EMI does not agree with npp from data"))
+      cli::cli_abort(paste("npp from EMI does not agree with npp from data"))
     }
 
     if (ncovariates_emi != ncovariates) {
-      stop(paste("ncovariates from EMI does not agree with npp from data"))
+      cli::cli_abort(paste("ncovariates from EMI does not agree with npp from data"))
     } #dont need this for nhop
 
     code     <- matrix(c(1:ncovariates * npp) * 0, ncovariates, npp)
@@ -486,9 +486,6 @@ model_generator  <-  function(pre_processed_data,
     matrix_list[["gamma_model"]] <- gamma
     matrix_list[["beta_model"]] <- beta
 
-
-  }else if (model_type == "mtmm") {
-    #FIX
   }
 
   model <- list(description = description,

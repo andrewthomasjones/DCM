@@ -4,12 +4,14 @@
 \alias{setUp}
 \title{Read data. This documentation is incomplete.}
 \usage{
-setUp(data, header = TRUE)
+setUp(data, header = TRUE, verbose = FALSE)
 }
 \arguments{
 \item{data}{input}
 
 \item{header}{deafult TRUE}
+
+\item{verbose}{default FALSE}
 }
 \value{
 A list of the processed data.

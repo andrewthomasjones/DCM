@@ -11,19 +11,19 @@ library(DCM)
 
 test_check("DCM")
 
-# a<-remove_variables(processedRP_SP, c("V4", "V20"), 1)
-# a<-remove_variables(processedRP_SP, c(4, 8), 1)
+# a<-removeVariables(processedRP_SP, c("V4", "V20"), 1)
+# a<-removeVariables(processedRP_SP, c(4, 8), 1)
 #
-# a<-remove_variables(processedRP_SP, c("ChoiceSet", "V20"), 1)
-# a<-remove_variables(processedRP_SP, c(3, 8), 1)
-# a<-remove_variables(processedRP_SP, c("V4", "V25"), 1)
-# a<-remove_variables(processedRP_SP, c(6, 45), 1)
+# a<-removeVariables(processedRP_SP, c("ChoiceSet", "V20"), 1)
+# a<-removeVariables(processedRP_SP, c(3, 8), 1)
+# a<-removeVariables(processedRP_SP, c("V4", "V25"), 1)
+# a<-removeVariables(processedRP_SP, c(6, 45), 1)
 #
 #
-# a<-select_variables(processedRP_SP, c("V4", "V20"), 1)
-# a<-select_variables(processedRP_SP, c(4, 8), 1)
+# a<-selectVariables(processedRP_SP, c("V4", "V20"), 1)
+# a<-selectVariables(processedRP_SP, c(4, 8), 1)
 #
-# a<-select_variables(processedRP_SP, c("ChoiceSet", "V20"), 1)
-# a<-select_variables(processedRP_SP, c(3, 8), 1)
-# a<-select_variables(processedRP_SP, c("V4", "V25"), 1)
-# a<-select_variables(processedRP_SP, c(6, 45), 1)
+# a<-selectVariables(processedRP_SP, c("ChoiceSet", "V20"), 1)
+# a<-selectVariables(processedRP_SP, c(3, 8), 1)
+# a<-selectVariables(processedRP_SP, c("V4", "V25"), 1)
+# a<-selectVariables(processedRP_SP, c(6, 45), 1)

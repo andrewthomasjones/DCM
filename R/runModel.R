@@ -1,35 +1,73 @@
 #' Runs Model
 #' @param model model list
-#' @param model_name string default "name"
-#' @param verbose default 0
+#' @param verbose default FALSE
 #' @param gradtol default 1e-6
 #' @param stepmax default as in nlm
 #' @param steptol default 1e-6
-#' @param dev_mode default "orig"
-#' @param ghq_size 3
-#' @param draws 100 fro now when needed
+#' @param integral_type NULL
+#' @param ghq_size NUL
+#' @param draws NULL
 #' @returns fitted model.
 #' @export
-runModel  <-  function(model,  model_name = "name", verbose = 0,
+runModel  <-  function(model,  verbose = FALSE,
                        gradtol = 1e-6, stepmax = NULL, steptol = 1e-6,
-                       dev_mode = "C", ghq_size = 3, draws = 100) {
+                       integral_type = NULL, ghq_size = NULL, draws = NULL) {
 
+  if (verbose) {
+    cli::cli_inform("Perfoming initial checks...")
+  }
+
+  #start timer
+  start_time <- Sys.time()
+
+  #basic data properties
   parcount <- parameterCount(model)
   processed <- model$data
+  model_type <- model$description
 
-  model_name <- model$description
+  #defaults for various things if entered as NULL
+  if (model_type == "mtmm" && is.null(integral_type)) {
+    integral_type <- "Draws"
+  } else if (model_type == "manual" && is.null(integral_type)) {
+    integral_type <- "GHQ"
+  } else if (is.null(integral_type)) {
+    integral_type <- "TMB"
+  }
+
+  if (is.null(draws)) {
+    draws <-  1000
+  }
+
+  if (integral_type == "GHQ" && is.null(ghq_size)) {
+    ghq_size <- 3
+  }
 
   npp <- model$npp
   nhop <- model$nhop
 
   if (length(model$initial_values) == parcount$total) {
-    if (verbose > 0) {
-      message("You have the correct number of initial values.")
+    if (verbose) {
+      cli::cli_inform("You have the correct number of initial values.")
     }
 
   }else {
-    stop("ERROR - you have the incorrect number of initial values.")
+    cli::cli_abort("ERROR - you have the incorrect number of initial values.")
     return(NA)
+  }
+
+
+  if (model_type == "mtmm") {
+    data_names <- stringr::str_match(model$data$attribute_names, "^(.*)_(.*)$")
+
+    if (length(unique(data_names[, 3])) < 2) {
+      cli::cli_abort("Only one sub-dataset, MTMM model is not appropriate")
+    }
+
+    unique_name_length <- length(unique(data_names[, 2])) * length(unique(data_names[, 3]))
+    if (unique_name_length != length(model$data$attribute_names)) {
+      cli::cli_abort("Naming inconsistent.")
+    }
+
   }
 
   nrc <- dim(model$epsilon)[1] + dim(model$delta)[1]
@@ -40,135 +78,160 @@ runModel  <-  function(model,  model_name = "name", verbose = 0,
 
   }
 
-  #pass through in case these need to be accessed
-  nlm_params <- list(
-    gradtol = gradtol,
-    stepmax = stepmax,
-    steptol = steptol,
-    verbose = verbose
-  )
-
-
-  delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = nhop + npp,
-                                                      type = "GHe",
-                                                      level = ghq_size,
-                                                      ndConstruction = "sparse"))
-
-  ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
-
-
-  ghq_steps <- draws
-  shuffle <- TRUE
-  gq_int_matrix <- gqIntMatrix(ghq_steps, nrc, shuffle)
-  weights <- rep(1 / (ghq_steps), ghq_steps)
-  ghq_matrix2 <- as.matrix(cbind(weights, gq_int_matrix))
-
-  if (dev_mode == "C") {
-    loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, nlm_params))
-  }else if (dev_mode == "R") {
-    loglik1 <- suppressWarnings(llMax(model,  processed,  ghq_matrix1, nlm_params))
-  }else if (dev_mode == "Cdraws") {
-    loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix2, nlm_params))
-  }else if (dev_mode == "Rdraws") {
-    loglik1 <- suppressWarnings(llMax(model,  processed,  ghq_matrix2, nlm_params))
+  if (verbose) {
+    cli::cli_inform("Solving for log-liklihood...")
   }
 
-  #print(loglik1$hessian)
-  #standard_errors  <- array(NA, length(loglik1$estimate))
-  standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
+  if (integral_type == "TMB") {
+
+    fitted_model <- run_model_TMB(model, verbose)
+  }else {
+
+    #pass through in case these need to be accessed
+    nlm_params <- list(
+      gradtol = gradtol,
+      stepmax = stepmax,
+      steptol = steptol,
+      verbose = verbose
+    )
 
 
-  printpara  <-  matrix(0,  7,  1)
-  row.names(printpara)  <-  c("epsilon_mu",
-                              "epsilon_sig",
-                              "delta_mu",
-                              "delta_sig",
-                              "gamma",
-                              "beta",
-                              "phi")
+    if (integral_type == "GHQ") {
+      delta_grid <- suppressMessages(mvQuad::createNIGrid(dim = nhop + npp,
+                                                          type = "GHe",
+                                                          level = ghq_size,
+                                                          ndConstruction = "sparse"))
 
-  for (i in 1:npp) {
-    if (model$epsilon[i, 1] == 1) {
-      printpara[1] <- printpara[1] + 1
+      ghq_matrix1 <- as.matrix(cbind(delta_grid$weights, delta_grid$nodes))
+
+    }else if (integral_type == "Draws") {
+      shuffle <- TRUE
+      gq_int_matrix <- gqIntMatrix(draws, nrc, shuffle)
+      weights <- rep(1 / (draws), draws)
+      ghq_matrix2 <- as.matrix(cbind(weights, gq_int_matrix))
     }
-    if (model$epsilon[i, 2] == 1) {
-      printpara[2] <- printpara[2] + 1
-    }
-  }
 
-  for (i in 1:nhop) {
-    if (model$delta[i, 1] == 1) {
-      printpara[3] <- printpara[3] + 1
+    if (integral_type == "GHQ") {
+      loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix1, nlm_params))
+    }else if (integral_type == "Draws") {
+      loglik1 <- suppressWarnings(llMax_ghq(model,  processed,  ghq_matrix2, nlm_params))
     }
-    if (model$delta[i, 2] == 1) {
-      printpara[4] <- printpara[4] + 1
-    }
-  }
 
-  for (i in 1:npp) {
-    for (j in 1:nhop) {
-      if (model$gamma[i, j] == 1) {
-        printpara[5] <- printpara[5] + 1
+    if (verbose) {
+      cli::cli_inform("Processing results for output...")
+    }
+
+    #print(loglik1$hessian)
+    #standard_errors  <- array(NA, length(loglik1$estimate))
+    standard_errors  <-  sqrt(diag(solve(loglik1$hessian)))
+
+
+    printpara  <-  matrix(0,  7,  1)
+    row.names(printpara)  <-  c("epsilon_mu",
+                                "epsilon_sig",
+                                "delta_mu",
+                                "delta_sig",
+                                "gamma",
+                                "beta",
+                                "phi")
+
+    for (i in 1:npp) {
+      if (model$epsilon[i, 1] == 1) {
+        printpara[1] <- printpara[1] + 1
+      }
+      if (model$epsilon[i, 2] == 1) {
+        printpara[2] <- printpara[2] + 1
       }
     }
-  }
 
-  for (i in 1:nhop) {
-    for (j in 1:nhop) {
-      if (model$beta[i, j] == 1) {
-        printpara[6] <- printpara[6] + 1
+    for (i in 1:nhop) {
+      if (model$delta[i, 1] == 1) {
+        printpara[3] <- printpara[3] + 1
+      }
+      if (model$delta[i, 2] == 1) {
+        printpara[4] <- printpara[4] + 1
       }
     }
+
+    for (i in 1:npp) {
+      for (j in 1:nhop) {
+        if (model$gamma[i, j] == 1) {
+          printpara[5] <- printpara[5] + 1
+        }
+      }
+    }
+
+    for (i in 1:nhop) {
+      for (j in 1:nhop) {
+        if (model$beta[i, j] == 1) {
+          printpara[6] <- printpara[6] + 1
+        }
+      }
+    }
+
+    k <- parcount$total
+    n <- nrow(processed$data)
+    AIC  <-  2 * k - 2 * log(loglik1$minimum)
+    BIC  <-  k * log(n) - 2 * log(loglik1$minimum)
+
+
+    para_stems  <-  c(rep(("epsilon"),
+                          printpara[1]),
+                      rep(("epsilon_sig"),
+                          printpara[2]),
+                      rep(("delta_mu"),
+                          printpara[3]),
+                      rep(("delta_sig"),
+                          printpara[4]),
+                      rep(("gamma"),
+                          printpara[5]),
+                      rep(("beta"),
+                          printpara[6]))
+
+    subscripts  <-  matrix(rbind(which(model$epsilon > 0,  arr.ind = TRUE),
+                                 which(model$delta > 0,  arr.ind = TRUE),
+                                 which(model$gamma > 0,  arr.ind = TRUE),
+                                 which(model$beta > 0,  arr.ind = TRUE)),
+                           nrow = sum(printpara),  ncol = 2)
+
+    parameters  <-  paste0(para_stems, "_",
+                           "[", subscripts[, 1], ", ", subscripts[, 2], "]")
+
+
+    results  <-  data.frame(parameters = parameters,
+                            estimate = loglik1$estimate,
+                            standard_errors = standard_errors)
+
+    #make sure standard deviation estimates corrected to be positive
+    results$estimate[stringr::str_detect(results$parameters, "_sig_")] <-
+      abs(results$estimate[stringr::str_detect(results$parameters, "_sig_")])
+
+
+    results$LL  <-   c(loglik1$minimum,  rep(".",  nrow(results) - 1))
+
+    result_name <- paste0(model_type,  " ",
+                          format(Sys.time(),
+                                 "%Y-%m-%d %H:%M"))
+
+    end_time <- Sys.time()
+    time_taken <- end_time - start_time
+
+    fitted_model  <-  list(result_name = result_name,
+                           model = model,
+                           model_type = model_type,
+                           LL = loglik1$minimum,
+                           loglikf = loglik1,
+                           results = results,
+                           AIC = AIC,
+                           BIC = BIC,
+                           par_count = parcount,
+                           execution_time = as.numeric(time_taken)
+    )
   }
 
-  k <- parcount$total
-  n <- nrow(processed$data)
-  AIC  <-  2 * k - 2 * log(loglik1$minimum)
-  BIC  <-  k * log(n) - 2 * log(loglik1$minimum)
-
-
-  para_stems  <-  c(rep(("epsilon"),
-                        printpara[1]),
-                    rep(("epsilon_sig"),
-                        printpara[2]),
-                    rep(("delta_mu"),
-                        printpara[3]),
-                    rep(("delta_sig"),
-                        printpara[4]),
-                    rep(("gamma"),
-                        printpara[5]),
-                    rep(("beta"),
-                        printpara[6]))
-
-  subscripts  <-  matrix(rbind(which(model$epsilon > 0,  arr.ind = TRUE),
-                               which(model$delta > 0,  arr.ind = TRUE),
-                               which(model$gamma > 0,  arr.ind = TRUE),
-                               which(model$beta > 0,  arr.ind = TRUE)),
-                         nrow = sum(printpara),  ncol = 2)
-
-  parameters  <-  paste0(para_stems, "_",
-                         "[", subscripts[, 1], ", ", subscripts[, 2], "]")
-
-  results  <-  data.frame(parameters = parameters,
-                          estimate = loglik1$estimate,
-                          standard_errors = standard_errors)
-
-  results$LL  <-   c(loglik1$minimum,  rep(".",  nrow(results) - 1))
-
-  result_name <- paste0(model_name,  " ",
-                        format(Sys.time(),
-                               "%Y-%m-%d %H:%M"))
-
-  fitted_model  <-  list(result_name = result_name,
-                         model = model,
-                         model_name = model_name,
-                         LL = loglik1$minimum,
-                         loglikf = loglik1,
-                         results = results,
-                         AIC = AIC,
-                         BIC = BIC,
-                         par_count = parcount
-  )
+  if (verbose) {
+    cli::cli_inform("Model estimation complete.")
+  }
 
   return(fitted_model)
 }

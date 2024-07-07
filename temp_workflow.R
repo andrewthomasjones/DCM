@@ -1,27 +1,151 @@
 library(DCM)
-library(tictoc)
 
-processedBW <- setUp(BWpriorities)
-processedDCE <- setUp(DCEpriorities[, 1:5])
-joined <- join_choicedatasets(processedBW, processedDCE)
+processedDCE <- setUp(DCEpriorities)
+test2 <- removeVariables(processedDCE, c("Safety_DCE"), verbose = T)
 
-model_1f <- model_generator(joined, "one-factor")
-model_fixed<- model_generator(joined, "fixed")
-model_random <- model_generator(joined, "random")
-model_mtmm <- model_generator(joined, "mtmm")
+
+processedDCE <- setUp(DCEpriorities[,1:6])
+processedBW <- setUp(BWpriorities[,1:6])
+test1 <- joinChoiceDatasets(processedBW, processedDCE)
+
+
+model_1f2 <- modelGenerator(test2, "one-factor")
+model_fixed2 <- modelGenerator(test2, "fixed")
+model_random2 <- modelGenerator(test2, "random")
+
+res_1f2 <- runModel(model_1f2)
+res_fixed2 <- runModel(model_fixed2)
+res_random2 <- runModel(model_random2)
+
+
+model_1f <- modelGenerator(test1, "one-factor")
+model_fixed <- modelGenerator(test1, "fixed")
+model_random <- modelGenerator(test1, "random")
+model_mtmm <- modelGenerator(test1, "mtmm")
 
 res_1f <- runModel(model_1f)
 res_fixed <- runModel(model_fixed)
 res_random <- runModel(model_random)
 res_mtmm  <- runModel(model_mtmm)
 
+
+fixed_model_graph(res_fixed) %>% DiagrammeR::render_graph()
+
+test1 <- selectVariables(processedDCE, c("Safety_DCE", "Reliability_DCE"), verbose = T)
+
+
+joined2 <- removeVariables(joined, c("Safety_DCE", "Safety_BW"))
+
+joined3 <- selectVariables(joined, c("Safety_DCE", "Safety_BW"), verbose = T)
+
+
+
+
+
+model_1f <- modelGenerator(processedBW, "one-factor")
+model_fixed <- modelGenerator(processedBW, "fixed")
+model_random <- modelGenerator(processedBW, "random")
+model_mtmm <- modelGenerator(joined, "mtmm")
+
+res_1f <- runModel(model_1f)
+res_fixed <- runModel(model_fixed)
+res_random <- runModel(model_random)
+res_mtmm  <- runModel(model_mtmm)
+
+
+
+manual_example <- list(
+  "epsilon_model" = matrix(c(1, 1, 1, 0, 0 ,0), ncol = 2),
+  "delta_model"   = matrix(c(0, -1), ncol = 2),
+  "gamma_model"   = matrix(c(0, 0, 0), ncol = 1),
+  "beta_model"    = matrix(c(0), ncol = 1, nrow = 1),
+
+  "epsilon_model_initial" = matrix(c(.1, .2, .1, NA, NA, NA), ncol = 2),
+  "delta_model_initial"   = matrix(c(NA, NA), ncol = 2),
+  "gamma_model_initial"   = matrix(c(NA, NA, NA), ncol = 1),
+  "beta_model_initial"    = matrix(NA, ncol = 1, nrow = 1)
+)
+
+
+model_manual <- modelGenerator(processedBW,
+               model_type = "manual",
+               matrix_list = manual_example)
+
+res_manual  <- runModel(model_manual)
+
+
+
+
+
+default.muep  <- rep(1,length(colnames(datamatrix)[4:ncol(datamatrix)]))
+default.musig <- rep(0,length(colnames(datamatrix)[4:ncol(datamatrix)]))
+epsilon_model <- matrix(cbind(default.muep,default.musig),ncol=2,
+                        dimnames = list(c(colnames(datamatrix)[4:ncol(datamatrix)]),c("mu","sigma")))
+writeWorksheet(wb, epsilon_model, sheet = "epsilon_model", rownames = "Attribute Names")
+setColumnWidth(wb, sheet = "epsilon_model", column = 1, width = -1)
+createSheet(wb, name = "delta_model")
+default.deltaep   <- 0
+default.deltasig  <- -1
+delta_model <- matrix(cbind(default.deltaep,default.deltasig),ncol=2,
+                      dimnames = list("HoP_1",c("mu","sigma")))
+writeWorksheet(wb, delta_model, sheet = "delta_model", rownames = "")
+setColumnWidth(wb, sheet = "delta_model", column = 1, width = -1)
+createSheet(wb, name = "gamma_model")
+createSheet(wb, name = "beta_model")
+createSheet(wb, name = "epsilon_initialvalues")
+createSheet(wb, name = "delta_initialvalues")
+createSheet(wb, name = "gamma_initialvalues")
+createSheet(wb, name = "beta_initialvalues")
+
+
+
+
+
+
+
+
+
+processedDCE <- setUp(DCEpriorities[,1:6])
+
+model <- modelGenerator(processedDCE, "random")
+res <- runModel(model, dev_mode = "TMB", scaling = TRUE)
+
+resF <- runModel(model, dev_mode = "TMB", scaling = FALSE)
+
+
+res2 <- runModel(model)
+
+processedBW <- setUp(BWpriorities)
+processedDCE <- setUp(DCEpriorities)
+
+processedBW <- removeVariables(processedBW , "Accessibility_BW" )
+
+processedDCE <- setUp(DCEpriorities)
+joined <- joinChoiceDatasets (processedBW, processedDCE)
+
+model_1f <- modelGenerator(processedBW, "one-factor")
+model_fixed <- modelGenerator(processedBW, "fixed")
+model_random <- modelGenerator(processedBW, "random")
+model_mtmm <- modelGenerator(joined, "mtmm")
+
+res_1f <- runModel(model_1f)
+res_fixed <- runModel(model_fixed)
+res_random <- runModel(model_random)
+
+res_1f2 <- runModel(model_1f, dev_mode = "TMB")
+res_fixed2 <- runModel(model_fixed, dev_mode = "TMB")
+res_random2<- runModel(model_random, dev_mode = "TMB")
+
+res_mtmm  <- runModel(model_mtmm)
+res_mtmm2  <- runModel(model_mtmm, dev_mode = "TMB")
+
 round(res_1f$results$estimate,1)
 round(res_fixed$results$estimate,1)
 round(res_random$results$estimate,1)
 round(res_mtmm$results$estimate,1)
 
-processed <- remove_variables(processed, "Accessibility_BW" )
-model<- model_generator(processed, "fixed")
+processed <- removeVariables(processed, "Accessibility_BW" )
+model<- modelGenerator(processed, "fixed")
 res <- runModel(model)
 chosen_values <- res$results$estimate
 
@@ -39,12 +163,12 @@ sqrt(diag(solve(res$loglikf$hessian)))
 processedDCE <- setUp(DCEpriorities)
 processedBW <- setUp(BWpriorities)
 
-#joined <- join_choicedatasets(processedBWr , processedDCE)
+#joined <- joinChoiceDatasets (processedBWr , processedDCE)
 
 gt <- 1e-6
 st <- 1e-6
 
-model_fixed <- model_generator(processedDCE, "fixed")
+model_fixed <- modelGenerator(processedDCE, "fixed")
 test_fixed_C_DCE <- runModel(model_fixed,  dev_mode = "C",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
 
 
@@ -87,14 +211,14 @@ solve(hessian2) %*% %*% solve(hessian2)
 
 
 
-model_fixed <- model_generator(processedBW, "fixed")
+model_fixed <- modelGenerator(processedBW, "fixed")
 test_fixed_R_BW <- runModel(model_fixed,  dev_mode = "R",  ghq_size = 3, verbose = 0, gradtol = gt, steptol = st)
 test_fixed_R_BW$results
 
-model_fixed <- model_generator(processedDCE, "fixed")
+model_fixed <- modelGenerator(processedDCE, "fixed")
 test_fixed_R_DCE <- runModel(model_fixed,  dev_mode = "C",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
 
-model_fixed <- model_generator(joined, "fixed")
+model_fixed <- modelGenerator(joined, "fixed")
 test_fixed_R_BWDCE <- runModel(model_fixed,  dev_mode = "C",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
 
 
@@ -161,7 +285,7 @@ sum(abs(error))
 ##################################################################################################################
 
 
-model_fixed <- model_generator(processedDCE, "fixed")
+model_fixed <- modelGenerator(processedDCE, "fixed")
 test_fixed_R_DCE <- runModel(model_fixed,  dev_mode = "R",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
 test_fixed_C_DCE <- runModel(model_fixed,  dev_mode = "C",  ghq_size = 3, verbose = 2, gradtol = gt, steptol = st)
 

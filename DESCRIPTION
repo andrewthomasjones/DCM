@@ -1,7 +1,7 @@
 Package: DCM
 Type: Package
 Title: What the Package Does (Title Case)
-Version: 0.1.2
+Version: 0.2.0
 Author: Andrew Thomas Jones, Thomas Magor, Leonard V. Coote
 Maintainer: Andrew Thomas Jones <andrewthomasjones@gmail.com>
 Description: More about what it does (maybe more than one line)
@@ -24,19 +24,28 @@ Imports:
     stats,
     utils,
     Hmisc,
-    mvQuad
+    mvQuad,
+    TMB (>= 1.9.11),
+    AlgDesign,
+    crossdes,
+    stringr,
+    mvtnorm,
+    cli
 Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 VignetteBuilder: knitr
 LinkingTo: 
     Rcpp,
-    RcppArmadillo
+    RcppArmadillo,
+    RcppEigen,
+    TMB
 Depends: 
-    R (>= 3.5.0)
+    R (>= 3.5.0),
+    foreach
 URL: https://github.com/andrewthomasjones/DCM
 BugReports: https://github.com/andrewthomasjones/DCM/issues
 Roxygen: list(markdown = TRUE)

@@ -6,22 +6,19 @@
 \usage{
 runModel(
   model,
-  model_name = "name",
-  verbose = 0,
+  verbose = FALSE,
   gradtol = 1e-06,
   stepmax = NULL,
   steptol = 1e-06,
-  dev_mode = "C",
-  ghq_size = 4,
-  draws = 100
+  integral_type = NULL,
+  ghq_size = NULL,
+  draws = NULL
 )
 }
 \arguments{
 \item{model}{model list}
 
-\item{model_name}{string default "name"}
-
-\item{verbose}{default 0}
+\item{verbose}{default FALSE}
 
 \item{gradtol}{default 1e-6}
 
@@ -29,11 +26,11 @@ runModel(
 
 \item{steptol}{default 1e-6}
 
-\item{dev_mode}{default "orig"}
+\item{integral_type}{NULL}
 
-\item{ghq_size}{3}
+\item{ghq_size}{NUL}
 
-\item{draws}{100 fro now when needed}
+\item{draws}{NULL}
 }
 \value{
 fitted model.

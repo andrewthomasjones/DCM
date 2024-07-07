@@ -8,3 +8,5 @@
 ^temp_workflow2.R
 ^misc$
 ^.lintr$
+^TESTING_DUMP$
+^Simulation_workflow\.R$

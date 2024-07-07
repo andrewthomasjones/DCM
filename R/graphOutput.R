@@ -1,53 +1,143 @@
+#' generateModelMatrices
+#'
+#' @param object model or results object
+#' @param model_type string
+#' @returns model matrices
+#' @export
+modelGraph <- function(object, model_type = NULL) {
+
+  have_estimates <- FALSE
+  estimates <- NA
+
+  if ("results" %in% names(object)) {
+
+    have_estimates <- TRUE
+    results <- object$results
+    estimates <- results$estimate
+
+    model <- object$model
+    names <- model$data$attribute_names
+
+  }else {
+    have_estimates <- FALSE
+    model <- object
+    names <- model$data$attribute_names
+
+  }
+  estimates <- estimates
+  estimated_params <- parameterLabels(model)
+
+  betas <- which(model$beta == 1, arr.ind = TRUE)
+  gammas <- which(model$gamma != 0, arr.ind = TRUE)
+
+  zeta_nodes <- colnames(model$beta)
+  eta_nodes <- rownames(model$epsilon)
+
+  mus <- stringr::str_match(estimated_params, "epsilon_\\[([0-9]{1,})")[, 2]
+  mus <- mus[!is.na(mus)]
+
+  sigmas <- stringr::str_match(estimated_params, "delta_sig_\\[([0-9]{1,})")[, 2]
+  sigmas <- sigmas[!is.na(sigmas)]
 
 
+  zeta_labels <- paste0(zeta_nodes,  ": ", greekLetters::greeks("zeta"), "@_{", seq_len(length(zeta_nodes)), "}")
 
-#" fixed_model_graph
-#"
-#" @param fitted fitted model fixed only for now
-#" @returns graph object
-#" @export
-fixed_model_graph <- function(fitted) {
+  if (have_estimates) {
+    mu_labels <- paste0(eta_nodes, ": ", greekLetters::greeks("mu"), "@_{", mus, "}", " = ",
+                        round(results$estimate[stringr::str_detect(estimated_params, "epsilon_")], 3))
+  } else {
+    mu_labels <- paste0(eta_nodes, ": ", greekLetters::greeks("mu"), "@_{", mus, "}")
+  }
 
-  x_names <- fitted$model$data$attribute_names
-  n <- nrow(fitted$results)
 
-  lhs <- rep("V", n)
-  op  <- rep("~", n)
-  rhs <- x_names
-  est <- fitted$results$estimate
+  if (have_estimates) {
+    beta_labels <-  paste0(greekLetters::greeks("beta"), "@_{",  betas[, 1], ", ", betas[, 2], "}",
+                           " = ", round(results$estimate[stringr::str_detect(estimated_params, "beta_")], 3))
+  } else {
+    beta_labels <- paste0(greekLetters::greeks("beta"), "@_{",  betas[, 1], ", ", betas[, 2], "}")
+  }
 
-  paths <- data.frame(lhs, op, rhs, est)
+  if (sum(model$delta[, 2] == 1) > 0) {
+    if (have_estimates) {
+      gamma_labels <- paste0(greekLetters::greeks("sigma"), "@_{",  sigmas, "}", " = ",
+                             round(results$estimate[stringr::str_detect(estimated_params, "delta_sig_")], 3))
+    } else {
+      gamma_labels <- paste0(greekLetters::greeks("sigma"), "@_{", sigmas, "}")
+    }
+  }else {
 
-  label <- c(rhs, "V")
-  shape <- c(rep("rectangle", n), "circle")
-  type <- c(rep("a", n), "b")
+    if (have_estimates) {
+      gamma_labels <-  paste0(greekLetters::greeks("gamma"), "@_{", gammas[, 1], ", ", gammas[, 2],
+                              "}", " = ", round(results$estimate[stringr::str_detect(estimated_params, "gamma_")], 3))
+    } else {
+      gamma_labels <-  paste0(greekLetters::greeks("gamma"), "@_{", gammas[, 1], ", ", gammas[, 2], "}")
+    }
+  }
 
-  node_set <- DiagrammeR::create_node_df(n = length(label), label = label, type = type, shape = shape)
+  node_set_z <- DiagrammeR::create_node_df(n = length(zeta_nodes), label = zeta_labels, type = "zeta", shape = "circle")
+  node_set_e <- DiagrammeR::create_node_df(n = length(eta_nodes), label = mu_labels, type = "eta", shape = "circle")
+  node_set <- DiagrammeR::combine_ndfs(node_set_z, node_set_e)
 
-  paths <- dplyr::filter(paths, op == "~")
-  paths <- dplyr::rename(paths, to = lhs, from = rhs, label = est)
-  paths <- dplyr::mutate(paths, style = "solid")
-  paths <- dplyr::select(paths, "from", "to", "style", "label")
+  edge_set_b <- DiagrammeR::create_edge_df(from = betas[, 1], to = betas[, 2], rel = "beta", label = beta_labels)
+  edge_set_g <- DiagrammeR::create_edge_df(to = gammas[, 1] + length(zeta_nodes), from = gammas[, 2],
+                                           rel = "gamma",  label = gamma_labels)
+  edge_set <- DiagrammeR::combine_edfs(edge_set_b, edge_set_g)
 
-  edge_set <- DiagrammeR::create_edge_df(fontsize = "10", from = match(paths$from, node_set$label),
-                                         to = match(paths$to, node_set$label), rel = "a",
-                                         label = paste0(greekLetters::greeks("mu"),
-                                                        1:n, "=", round(paths$label, 3)))
+  zeta_node_check <- node_set[node_set$type == "zeta", "id"]
+  zeta_node_check2 <- c()
+
+  for (i in seq_len(length(zeta_node_check))) {
+    if (!(zeta_node_check[i] %in% edge_set$from || (zeta_node_check[i] %in% edge_set$to))) {
+      zeta_node_check2 <- c(zeta_node_check2, i)
+    }
+  }
+
+  if (!is.null(zeta_node_check2)) {
+    node_set <- node_set[-zeta_node_check2, ]
+  }
+
+
+  if (nrow(betas) > 0) {
+
+    node_set$y <- NA
+    node_set$x <- NA
+
+    node_set[node_set$type == "eta", "y"] <- 3
+    node_set[node_set$type == "zeta", "y"] <- 6
+
+    node_set[node_set$type == "eta", "x"] <- 2 * seq_len(length(eta_nodes))
+    node_set[node_set$type == "zeta", "x"] <- seq_len(length(zeta_nodes)) * 2 - 1
+
+    node_set[6, "y"] <- 8
+
+    node_set[1, "y"] <- 0
+    node_set[2, "y"] <- 0
+
+    node_set[6, "x"] <- max(seq_len(length(zeta_nodes)) * 2, 2 * seq_len(length(eta_nodes))) / 2 + 1
+
+    n_methods <- 2
+    method_spots <- seq(0, max(seq_len(length(zeta_nodes)), seq_len(length(eta_nodes))), length.out = n_methods + 2)
+
+    node_set[1, "x"] <- method_spots[2] * 2 + 1
+    node_set[2, "x"] <- method_spots[n_methods + 2 -  1] * 2 + 1
+
+    node_set[, "x"] <- node_set[, "x"] * 1.5
+  }
 
 
   g <- DiagrammeR::create_graph(
     nodes_df = node_set,
-    edges_df = edge_set,
-    attr_theme = "tb"
+    edges_df = edge_set
   )
 
 
-  g1 <- DiagrammeR::set_node_attrs(g, node_attr = "fixedsize", values = FALSE)
-  g2 <- DiagrammeR::add_global_graph_attrs(g1, "layout", "dot", "graph")
-  g3 <- DiagrammeR::add_global_graph_attrs(g2, "concentrate", "true", "graph")
-  g4 <- DiagrammeR::add_global_graph_attrs(graph = g3, attr = "ranksep", value = 2, attr_type = "graph")
+  if (nrow(betas) == 0) {
+    g <- DiagrammeR::set_node_attrs(g, node_attr = "fixedsize", values = FALSE)
+    g <- DiagrammeR::add_global_graph_attrs(g, "layout", "dot", "graph")
+    g <- DiagrammeR::add_global_graph_attrs(g, "concentrate", "true", "graph")
+    g <- DiagrammeR::add_global_graph_attrs(graph = g, attr = "ranksep", value = 2, attr_type = "graph")
+  }
 
-
-  return(g4)
+  return(g)
 
 }
