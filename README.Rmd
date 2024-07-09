@@ -38,7 +38,7 @@ Load example data
 ```{r}
 library(DCM)
 #load test data
-processedBW <- setUp(BWpriorities)
+processedBW <- setUp(BWpriorities[, 1:8])
 ```
 
 
@@ -69,16 +69,16 @@ parPrint(r1BW)
 Join two datasets:
 
 ```{r join}
-processedDCE <- setUp(DCEpriorities)
+processedDCE <- setUp(DCEpriorities[, 1:7])
 
-processedBW_rem <- removeVariables(processedBW, "Accessibility_BW")
+processedBW_rem <- removeVariables(processedBW, "Convenience_BW")
 
 combined_data <- joinChoiceDatasets(processedBW_rem, processedDCE)
 ```
 
 Run MTMM model
 
-```{r mttm}
+```{r mttm, cache=TRUE}
 mtmm_model <- modelGenerator(combined_data, "mtmm")
 
 mtmm_results <- runModel(mtmm_model)
@@ -97,40 +97,91 @@ parPrint(mtmm_results)
 
 ```{r graph1}
 library(DiagrammeR)
-render_graph(modelGraph(m2BW))
+
+graph1 <- modelGraph(m2BW)
 ```
+
+```{r, echo=FALSE, include=FALSE}
+export_graph(graph1, "man/figures/graph1.png")
+```
+
+<img src="man/figures/graph1.png">
 
 ```{r graph2}
-render_graph(modelGraph(m2BW))
+graph2 <- modelGraph(m2BW)
 ```
 
-```{r graph3}
-render_graph(modelGraph(m3BW))
+```{r, echo=FALSE, include=FALSE}
+export_graph(graph2, "man/figures/graph2.png")
 ```
+
+<img src="man/figures/graph2.png">
+
+
+```{r graph3}
+graph3 <- modelGraph(m3BW)
+```
+
+
+```{r, echo=FALSE, include=FALSE}
+export_graph(graph3, "man/figures/graph3.png")
+```
+
+<img src="man/figures/graph3.png">
+
 
 #### Graph model estimates:
 
 ```{r graph1r}
-render_graph(modelGraph(r1BW))
+graph4 <- modelGraph(r1BW)
 ```
+
+```{r, echo=FALSE, include=FALSE}
+export_graph(graph4, "man/figures/graph4.png")
+```
+
+<img src="man/figures/graph4.png">
+
 
 ```{r graph2r}
-render_graph(modelGraph(r2BW))
+graph5 <- modelGraph(r2BW)
 ```
 
-```{r graph3r}
-render_graph(modelGraph(r3BW))
+```{r, echo=FALSE, include=FALSE}
+export_graph(graph5, "man/figures/graph5.png")
 ```
+
+<img src="man/figures/graph5.png">
+
+```{r graph3r}
+graph6 <- modelGraph(r3BW)
+```
+
+```{r, echo=FALSE, include=FALSE}
+export_graph(graph6, "man/figures/graph6.png")
+```
+
+<img src="man/figures/graph6.png">
 
 #### Same with MTMM mode and estimate:
 
 ```{r mttm2m}
-render_graph(modelGraph(mtmm_model))
+graph7 <- modelGraph(mtmm_model)
 ```
+
+```{r, echo=FALSE, include=FALSE}
+export_graph(graph7, "man/figures/graph7.png")
+```
+
+<img src="man/figures/graph7.png">
 
 ```{r mttm3r}
-render_graph(modelGraph(mtmm_results))
+graph8 <- modelGraph(mtmm_results)
 ```
 
+```{r, echo=FALSE, include=FALSE}
+export_graph(graph8, "man/figures/graph8.png")
+```
 
+<img src="man/figures/graph8.png">
 

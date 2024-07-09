@@ -99,29 +99,36 @@ modelGraph <- function(object, model_type = NULL) {
 
   if (nrow(betas) > 0) {
 
-    node_set$y <- NA
-    node_set$x <- NA
+    # node_set$y <- NA
+    # node_set$x <- NA
+    #
+    #
+    #
+    #
+    # node_set[node_set$type == "beta", "y"] <- 0
+    # node_set[node_set$type == "eta", "y"] <- 0.33
+    # node_set[node_set$type == "sigma", "y"] <- 0.66
+    # node_set[node_set$type == "zeta", "y"] <- 1
+    #
+    # node_set[node_set$type == "eta", "x"] <- seq_len(length(eta_nodes)) /length(eta_nodes)
+    # node_set[node_set$type == "zeta", "x"] <- seq_len(length(zeta_nodes)) / length(zeta_nodes)
+    # node_set[node_set$type == "sigma", "x"] <- seq_len(length(sigma)) / length(sigma)
+    # node_set[node_set$type == "beta", "x"] <- seq_len(length(mus))/length(mus)
 
-    node_set[node_set$type == "eta", "y"] <- 3
-    node_set[node_set$type == "zeta", "y"] <- 6
-
-    node_set[node_set$type == "eta", "x"] <- 2 * seq_len(length(eta_nodes))
-    node_set[node_set$type == "zeta", "x"] <- seq_len(length(zeta_nodes)) * 2 - 1
-
-    node_set[6, "y"] <- 8
-
-    node_set[1, "y"] <- 0
-    node_set[2, "y"] <- 0
-
-    node_set[6, "x"] <- max(seq_len(length(zeta_nodes)) * 2, 2 * seq_len(length(eta_nodes))) / 2 + 1
-
-    n_methods <- 2
-    method_spots <- seq(0, max(seq_len(length(zeta_nodes)), seq_len(length(eta_nodes))), length.out = n_methods + 2)
-
-    node_set[1, "x"] <- method_spots[2] * 2 + 1
-    node_set[2, "x"] <- method_spots[n_methods + 2 -  1] * 2 + 1
-
-    node_set[, "x"] <- node_set[, "x"] * 1.5
+#     node_set[6, "y"] <- 8
+#
+#     node_set[1, "y"] <- 0
+#     node_set[2, "y"] <- 0
+#
+#     node_set[6, "x"] <- max(seq_len(length(zeta_nodes)) * 2, 2 * seq_len(length(eta_nodes))) / 2 + 1
+#
+#     n_methods <- 2
+#     method_spots <- seq(0, max(seq_len(length(zeta_nodes)), seq_len(length(eta_nodes))), length.out = n_methods + 2)
+#
+#     node_set[1, "x"] <- method_spots[2] * 2 + 1
+#     node_set[2, "x"] <- method_spots[n_methods + 2 -  1] * 2 + 1
+#
+#     node_set[, "x"] <- node_set[, "x"] * 1.5
   }
 
 
