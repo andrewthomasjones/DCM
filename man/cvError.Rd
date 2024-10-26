@@ -4,12 +4,16 @@
 \alias{cvError}
 \title{cvError}
 \usage{
-cvError(raw_dataset, k = 0, type = "fixed")
+cvError(raw_dataset, k = 0, type = "fixed", seed = 1)
 }
 \arguments{
 \item{raw_dataset}{raw_dataset}
 
 \item{k}{cv folds, 0 is LOOCV}
+
+\item{type}{model type, doesn't do custom yet}
+
+\item{seed}{random seed for cv folds}
 }
 \value{
 CV CE Loss

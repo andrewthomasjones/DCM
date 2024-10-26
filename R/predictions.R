@@ -183,9 +183,11 @@ CELoss <- function(true, predictions){
 #' cvError
 #' @param raw_dataset raw_dataset
 #' @param k cv folds, 0 is LOOCV
+#' @param type model type, doesn't do custom yet
+#' @param seed random seed for cv folds
 #' @returns CV CE Loss
 #' @export
-cvError <- function(raw_dataset, k = 0, type = "fixed"){
+cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1){
 
   dataset <- raw_dataset
   IDs <- unique(dataset$ID)
@@ -193,6 +195,7 @@ cvError <- function(raw_dataset, k = 0, type = "fixed"){
   if (k == 0){
     folds <- as.list(IDs)
   }else{
+    set.seed(seed)
     idx <- sample(1:k, size = length(IDs), replace = TRUE)
     folds <- list()
     for (i in 1:k){
