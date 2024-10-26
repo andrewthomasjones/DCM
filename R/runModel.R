@@ -200,9 +200,9 @@ runModel  <-  function(model,  verbose = FALSE,
 
     variable_names <- array(NA, length(para_stems))
 
-    for(i in seq_len(length(para_stems))){
+    for (i in seq_len(length(para_stems))){
 
-      variable_names[i] <- row.names(model[[para_stems[i]]])[subscripts[i,1]]
+      variable_names[i] <- row.names(model[[para_stems[i]]])[subscripts[i, 1]]
     }
 
 

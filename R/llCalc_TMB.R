@@ -38,6 +38,7 @@ run_model_TMB <- function(model, verbose = FALSE) {
                imatrix = diag(model$nhop)
   )
 
+  model_orig <- model
 
   model$gamma[model$gamma == -1] <- 1
   model$beta[model$beta == -1] <- 1
@@ -196,8 +197,8 @@ run_model_TMB <- function(model, verbose = FALSE) {
   variable_names <- array(NA, length(parameters_labels))
   parameters_label_idx <- stringr::str_match(parameters_labels, "^([a-z]{1,20})_\\[([0-9]{1,3}),")
 
-  for(i in seq_len(length(parameters_labels))){
-    variable_names[i] <- row.names(model[[parameters_label_idx[i,2]]])[as.numeric(parameters_label_idx[i,3])]
+  for (i in seq_len(length(parameters_labels))){
+    variable_names[i] <- row.names(model[[parameters_label_idx[i, 2]]])[as.numeric(parameters_label_idx[i, 3])]
   }
 
 
@@ -213,7 +214,7 @@ run_model_TMB <- function(model, verbose = FALSE) {
   time_taken <- end_time - start_time
 
   fitted_model  <-  list(result_name = result_name,
-                         model = model,
+                         model = model_orig,
                          model_name = model_type,
                          LL = opt$objective,
                          loglikf = opt,
