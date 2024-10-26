@@ -4,7 +4,14 @@
 \alias{cvError}
 \title{cvError}
 \usage{
-cvError(raw_dataset, k = 0, type = "fixed", seed = 1)
+cvError(
+  raw_dataset,
+  k = 0,
+  type = "fixed",
+  seed = 1,
+  emi_filename = NULL,
+  integral_type = NULL
+)
 }
 \arguments{
 \item{raw_dataset}{raw_dataset}
@@ -14,6 +21,8 @@ cvError(raw_dataset, k = 0, type = "fixed", seed = 1)
 \item{type}{model type, doesn't do custom yet}
 
 \item{seed}{random seed for cv folds}
+
+\item{emi_filename}{filename is using EMI rather than standard model}
 }
 \value{
 CV CE Loss

@@ -3,7 +3,7 @@
 #' @param data data to make predictions on
 #' @returns predictions
 #' @export
-predict.dcm <- function(results, data=NULL) {
+predictDCM <- function(results, data=NULL) {
 
   model <- results$model
 
@@ -172,7 +172,6 @@ CELoss <- function(true, predictions){
 
   for(i in seq_len(nrow(true))){
     for(j in seq_len(ncol(true))){
-
       loss <- loss - true[i,j]*log(predictions[i,j])
     }
   }
@@ -185,9 +184,10 @@ CELoss <- function(true, predictions){
 #' @param k cv folds, 0 is LOOCV
 #' @param type model type, doesn't do custom yet
 #' @param seed random seed for cv folds
+#' @param emi_filename filename is using EMI rather than standard model
 #' @returns CV CE Loss
 #' @export
-cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1){
+cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename = NULL, integral_type = NULL){
 
   dataset <- raw_dataset
   IDs <- unique(dataset$ID)
@@ -212,12 +212,23 @@ cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1){
     test_data <- dataset[dataset$ID %in% folds[[i]], ]
     test_processed <- setUp(test_data)
 
-    model <- modelGenerator(train_processed, type)
+    if(type != "EMI"){
+      if(is.null(integral_type)) {
+        integral_type <- "TMB"
+      }
+      model <- modelGenerator(train_processed, type)
+
+    }else{
+      if(is.null(integral_type)) {
+        integral_type <- "GHQ"
+      }
+      model <- loadEMIWorkbook(train_processed, emi_filename)
+    }
+    res <- runModel(model, integral_type = integral_type)
 
 
-    res <- runModel(model)
 
-    loss_fixed <- predict.dcm(res, test_processed)
+    loss_fixed <- predictDCM(res, test_processed)
     print(loss_fixed$ce_loss)
     loss_vector[i] <- loss_fixed$ce_loss
 

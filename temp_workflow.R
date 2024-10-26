@@ -1,21 +1,30 @@
 library(DCM)
 
+cvError(DCEpriorities, 3, "fixed", integral_type = "GHQ")
 
-cvError(DCEpriorities, 3, "fixed")
+cvError(DCEpriorities, 3, "one-factor", integral_type = "GHQ")
 
-cvError(DCEpriorities, 3, "one-factor")
+cvError(DCEpriorities, 3, "random", integral_type = "GHQ")
 
-cvError(DCEpriorities, 3, "random")
+cvError(DCEpriorities, 0, "fixed", integral_type = "GHQ")
 
-cvError(DCEpriorities, 0, "fixed")
 
-# processedDCE <- setUp(DCEpriorities)
+
+
+
+processedDCE <- setUp(DCEpriorities)
+createEMIWorkbook(processedDCE,  "fixed")
+cvError(DCEpriorities, 3, type="EMI", emi_filename = "/home/andew/Projects/DCM/EMI_fixed.xlsx")
+#FIXME cant do stuff thats been automatically joined
+
+
+
+
+#
 # test2 <- removeVariables(processedDCE, c("Safety_DCE"), verbose = T)
 #
 #
-# processedDCE <- setUp(DCEpriorities[,1:5])
-# processedBW <- setUp(BWpriorities[,1:5])
-# test1 <- joinChoiceDatasets(processedBW, processedDCE)
+
 #
 # model_1f2 <- modelGenerator(test2, "one-factor")
 # model_fixed2 <- modelGenerator(test2, "fixed")

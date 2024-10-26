@@ -56,19 +56,19 @@ runModel  <-  function(model,  verbose = FALSE,
   }
 
 
-  if (model_type == "mtmm") {
-    data_names <- stringr::str_match(model$data$attribute_names, "^(.*)_(.*)$")
-
-    if (length(unique(data_names[, 3])) < 2) {
-      cli::cli_abort("Only one sub-dataset, MTMM model is not appropriate")
-    }
-
-    unique_name_length <- length(unique(data_names[, 2])) * length(unique(data_names[, 3]))
-    if (unique_name_length != length(model$data$attribute_names)) {
-      cli::cli_abort("Naming inconsistent.")
-    }
-
-  }
+  # if (model_type == "mtmm") {
+  #   data_names <- stringr::str_match(model$data$attribute_names, "^(.*)_(.*)$")
+  #
+  #   if (length(unique(data_names[, 3])) < 2) {
+  #     cli::cli_abort("Only one sub-dataset, MTMM model is not appropriate")
+  #   }
+  #
+  #   unique_name_length <- length(unique(data_names[, 2])) * length(unique(data_names[, 3]))
+  #   if (unique_name_length != length(model$data$attribute_names)) {
+  #     cli::cli_abort("Naming inconsistent.")
+  #   }
+  #
+  # }
 
   nrc <- dim(model$epsilon)[1] + dim(model$delta)[1]
 
