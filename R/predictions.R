@@ -229,7 +229,7 @@ cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename =
 
 
     loss_fixed <- predictDCM(res, test_processed)
-    print(loss_fixed$ce_loss)
+    #print(loss_fixed$ce_loss)
     loss_vector[i] <- loss_fixed$ce_loss
 
   }

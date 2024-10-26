@@ -1,13 +1,26 @@
 library(DCM)
 
-cvError(DCEpriorities, 3, "fixed", integral_type = "GHQ")
+cvError(DCEpriorities, 5, "fixed", integral_type = "GHQ")
 
-cvError(DCEpriorities, 3, "one-factor", integral_type = "GHQ")
+cvError(DCEpriorities, 5, "one-factor", integral_type = "GHQ")
 
-cvError(DCEpriorities, 3, "random", integral_type = "GHQ")
+#cvError(DCEpriorities, 3, "random", integral_type = "TMB") #doesnt work for any of them
 
-cvError(DCEpriorities, 0, "fixed", integral_type = "GHQ")
+fix_cv <- cvError(DCEpriorities, 0, "fixed", integral_type = "GHQ")
+fix_cv
+onef_cv <- cvError(DCEpriorities, 0, "one-factor", integral_type = "GHQ")
+onef_cv
 
+
+
+processedDCE <- setUp(DCEpriorities)
+model_1f2 <- modelGenerator(processedDCE, "one-factor")
+model_fixed2 <- modelGenerator(processedDCE, "fixed")
+res_1f2 <- runModel(model_1f2, integral_type = "GHQ")
+res_fixed2 <- runModel(model_fixed2, integral_type = "GHQ")
+
+res_1f2$LL
+res_fixed2$LL #1f is better model
 
 
 
@@ -26,8 +39,7 @@ cvError(DCEpriorities, 3, type="EMI", emi_filename = "/home/andew/Projects/DCM/E
 #
 
 #
-# model_1f2 <- modelGenerator(test2, "one-factor")
-# model_fixed2 <- modelGenerator(test2, "fixed")
+
 #
 # res_fixed2 <- runModel(model_fixed2)
 # res_fixed2$results
