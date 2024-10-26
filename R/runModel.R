@@ -198,7 +198,16 @@ runModel  <-  function(model,  verbose = FALSE,
                            "[", subscripts[, 1], ", ", subscripts[, 2], "]")
 
 
-    results  <-  data.frame(parameters = parameters,
+    variable_names <- array(length(para_stems), NA)
+
+    for(i in seq_len(length(para_stems))){
+
+      variable_names <- row.names(model[[para_stems[i]]])[subscripts[i,1]]
+    }
+
+
+    results  <-  data.frame(variables = variable_names,
+                            parameters = parameters,
                             estimate = loglik1$estimate,
                             standard_errors = standard_errors)
 

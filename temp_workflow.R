@@ -4,17 +4,30 @@ processedDCE <- setUp(DCEpriorities)
 test2 <- removeVariables(processedDCE, c("Safety_DCE"), verbose = T)
 
 
-processedDCE <- setUp(DCEpriorities[,1:6])
-processedBW <- setUp(BWpriorities[,1:6])
+processedDCE <- setUp(DCEpriorities[,1:5])
+processedBW <- setUp(BWpriorities[,1:5])
 test1 <- joinChoiceDatasets(processedBW, processedDCE)
-
-
 model_1f2 <- modelGenerator(test2, "one-factor")
 model_fixed2 <- modelGenerator(test2, "fixed")
-model_random2 <- modelGenerator(test2, "random")
+
+res_fixed2 <- runModel(model_fixed2)
+res_fixed2$results
+
 
 res_1f2 <- runModel(model_1f2)
-res_fixed2 <- runModel(model_fixed2)
+
+
+
+
+
+
+
+
+
+
+model_random2 <- modelGenerator(test2, "random")
+
+
 res_random2 <- runModel(model_random2)
 
 
