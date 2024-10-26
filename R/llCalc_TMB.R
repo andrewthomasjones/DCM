@@ -196,18 +196,18 @@ run_model_TMB <- function(model, verbose = FALSE) {
   variable_names <- array(NA, length(parameters_labels))
   parameters_label_idx <- stringr::str_match(parameters_labels, "^([a-z]{1,20})_\\[([0-9]{1,3}),")
 
-  for(i in seqlen(length(parameters_labels))){
-
-    variable_names <- row.names(model[[parameters_label_idx[,2]]])[as.numeric(parameters_label_idx[i,3])]
+  for(i in seq_len(length(parameters_labels))){
+    variable_names[i] <- row.names(model[[parameters_label_idx[i,2]]])[as.numeric(parameters_label_idx[i,3])]
   }
 
 
 
-  results  <-  data.frame(variables = variable_names,
-                          parameters = parameters_labels, #FIXME order is wrong
+  results  <-  data.frame(variable = variable_names,
+                          parameter = parameters_labels, #FIXME order is wrong
                           estimate = se_final[sorting_frame$frame_order, 1],
-                          standard_errors = se_final[sorting_frame$frame_order, 2])
+                          standard_error = se_final[sorting_frame$frame_order, 2])
 
+  results$LL  <-   c(opt$objective,  rep(".",  nrow(results) - 1))
 
   end_time <- Sys.time()
   time_taken <- end_time - start_time

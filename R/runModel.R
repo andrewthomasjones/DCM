@@ -198,18 +198,18 @@ runModel  <-  function(model,  verbose = FALSE,
                            "[", subscripts[, 1], ", ", subscripts[, 2], "]")
 
 
-    variable_names <- array(length(para_stems), NA)
+    variable_names <- array(NA, length(para_stems))
 
     for(i in seq_len(length(para_stems))){
 
-      variable_names <- row.names(model[[para_stems[i]]])[subscripts[i,1]]
+      variable_names[i] <- row.names(model[[para_stems[i]]])[subscripts[i,1]]
     }
 
 
-    results  <-  data.frame(variables = variable_names,
-                            parameters = parameters,
+    results  <-  data.frame(variable = variable_names,
+                            parameter = parameters,
                             estimate = loglik1$estimate,
-                            standard_errors = standard_errors)
+                            standard_error = standard_errors)
 
     #make sure standard deviation estimates corrected to be positive
     results$estimate[stringr::str_detect(results$parameters, "_sig_")] <-

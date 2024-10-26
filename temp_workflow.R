@@ -7,28 +7,30 @@ test2 <- removeVariables(processedDCE, c("Safety_DCE"), verbose = T)
 processedDCE <- setUp(DCEpriorities[,1:5])
 processedBW <- setUp(BWpriorities[,1:5])
 test1 <- joinChoiceDatasets(processedBW, processedDCE)
+
 model_1f2 <- modelGenerator(test2, "one-factor")
 model_fixed2 <- modelGenerator(test2, "fixed")
 
 res_fixed2 <- runModel(model_fixed2)
 res_fixed2$results
 
+res_fixed2 <- runModel(model_fixed2, integral_type = "Draws")
+res_fixed2$results
 
 res_1f2 <- runModel(model_1f2)
+res_1f2$results
+
+res_1f2 <- runModel(model_1f2, integral_type = "GHQ")
+res_1f2$results
 
 
+model_mtmm <- modelGenerator(test1, "mtmm")
+res_mtmm <- runModel(model_mtmm, integral_type = "Draws")
+res_mtmm$results
 
+res_mtmm <- runModel(model_mtmm, integral_type = "TMB")
+res_mtmm$results
 
-
-
-
-
-
-
-model_random2 <- modelGenerator(test2, "random")
-
-
-res_random2 <- runModel(model_random2)
 
 
 model_1f <- modelGenerator(test1, "one-factor")
