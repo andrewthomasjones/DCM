@@ -166,36 +166,39 @@ run_model_TMB <- function(model, verbose = FALSE) {
   K <-  length(obj$par)
   LL <- opt$objective
 
-  # clean_names_old <- stringr::str_replace(parameters_labels, "[^[:alpha:]]+", "")
-  # clean_names_new <- row.names(se_final)
-  # clean_names_new <- stringr::str_replace(clean_names_new, "mu", "")
-  #
-  # sorting_frame <- data.frame(clean_names_old = clean_names_old,
-  #                             clean_names_new = clean_names_new,
-  #                             frame_order = seq_len(nrow(se_final)))
-  #
-  # # sorting_frame <- sorting_frame %>%
-  # #   group_by(clean_names_old) %>%
-  # #   mutate(order_old = row_number()) %>%
-  # #   ungroup()
-  #
-  # sorting_frame$order_old  <- stats::ave(sorting_frame$frame_order, sorting_frame$clean_names_old, FUN = seq_along)
-  #
-  # # sorting_frame <- sorting_frame %>%
-  # #   group_by(clean_names_new) %>%
-  # #   mutate(order_new = row_number()) %>%
-  # #   ungroup()
-  #
-  # sorting_frame$order_new  <- stats::ave(sorting_frame$frame_order, sorting_frame$clean_names_new, FUN = seq_along)
-  #
-  # sorting_frame$clean_names_new2 <- factor(clean_names_new, levels = unique(clean_names_old))
-  # sorting_frame <- sorting_frame[order(sorting_frame$clean_names_new2, sorting_frame$order_new), ]
-  #
+  clean_names_old <- stringr::str_replace(parameters_labels, "[^[:alpha:]]+", "")
+  clean_names_new <- row.names(se_final)
+  clean_names_new <- stringr::str_replace(clean_names_new, "mu", "")
+
+  sorting_frame <- data.frame(clean_names_old = clean_names_old,
+                              clean_names_new = clean_names_new,
+                              frame_order = seq_len(nrow(se_final)))
+
+  # sorting_frame <- sorting_frame %>%
+  #   group_by(clean_names_old) %>%
+  #   mutate(order_old = row_number()) %>%
+  #   ungroup()
+
+  sorting_frame$order_old  <- stats::ave(sorting_frame$frame_order, sorting_frame$clean_names_old, FUN = seq_along)
+
+  # sorting_frame <- sorting_frame %>%
+  #   group_by(clean_names_new) %>%
+  #   mutate(order_new = row_number()) %>%
+  #   ungroup()
+
+  sorting_frame$order_new  <- stats::ave(sorting_frame$frame_order, sorting_frame$clean_names_new, FUN = seq_along)
+
+  sorting_frame$clean_names_new2 <- factor(clean_names_new, levels = unique(clean_names_old))
+  sorting_frame <- sorting_frame[order(sorting_frame$clean_names_new2, sorting_frame$order_new), ]
+
 
 
 
   variable_names <- array(NA, length(parameters_labels))
   parameters_label_idx <- stringr::str_match(parameters_labels, "^([a-z]{1,20}|[a-z]{1,20}_sig)_\\[([0-9]{1,3}),")
+
+
+
 
   param_names <- str_replace(parameters_label_idx[, 2], "_sig", "")
   param_lab_pos <- as.numeric(parameters_label_idx[, 3])
@@ -209,8 +212,8 @@ run_model_TMB <- function(model, verbose = FALSE) {
 
   results  <-  data.frame(variable = variable_names,
                           parameter = parameters_labels,
-                          estimate = se_final[, 1],
-                          standard_error = se_final[, 2])
+                          estimate = se_final[sorting_frame$frame_order, 1],
+                          standard_error = se_final[sorting_frame$frame_order, 2])
 
   results$LL  <-   c(opt$objective,  rep(".",  nrow(results) - 1))
 

@@ -29,18 +29,18 @@ precision_levels <- list()
 precision_levels[["draws"]] <- c(1000)
 precision_levels[["TMB"]] <- c(0)
 
-n_sims <-  12
+n_sims <-  200
 m_list <- c(200) #, 100, 250)
 models <- c("one-factor",  "random", "mtmm") #"fixed",
 precision_levels[["ghq"]] <- c(3)
 
-filename <- "./TESTING_DUMP/par_test_20241026_TMBbug5.Rdata"
+filename <- "./TESTING_DUMP/par_test_20241026_TMBbug7.Rdata"
 
 big_list <- run_sims(data_sets, chosen_values, precision_levels, integral_types, models, m_list, n_sims, colvars, filename)
 #
 #gc()
 
-filename <- "./TESTING_DUMP/par_test_20241026_TMBbug5.Rdata"
+filename <- "./TESTING_DUMP/par_test_20241026_TMBbug7.Rdata"
 load(file=filename)
 sim_results <- process_sims(big_list, params$data_sets, params$chosen_values, params$precision_levels, params$integral_types, params$models, params$m_list, params$n_sims,  0.95, params$colvars)
 
