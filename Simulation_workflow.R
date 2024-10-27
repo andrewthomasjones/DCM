@@ -1,7 +1,7 @@
 library(DCM)
 library(tidyverse)
 library(doParallel)
-registerDoParallel(cores=6)
+registerDoParallel(cores=4)
 
 chosen_values <- list()
 colvars <- 2
