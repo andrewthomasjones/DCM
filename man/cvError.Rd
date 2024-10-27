@@ -23,6 +23,8 @@ cvError(
 \item{seed}{random seed for cv folds}
 
 \item{emi_filename}{filename is using EMI rather than standard model}
+
+\item{integral_type}{which method}
 }
 \value{
 CV CE Loss

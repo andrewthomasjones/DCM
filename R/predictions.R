@@ -192,6 +192,7 @@ CELoss <- function(true, predictions) {
 #' @param type model type, doesn't do custom yet
 #' @param seed random seed for cv folds
 #' @param emi_filename filename is using EMI rather than standard model
+#' @param integral_type  which method
 #' @returns CV CE Loss
 #' @export
 cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename = NULL, integral_type = NULL) {
