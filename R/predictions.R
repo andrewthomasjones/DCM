@@ -3,15 +3,15 @@
 #' @param data data to make predictions on
 #' @returns predictions
 #' @export
-predictDCM <- function(results, data=NULL) {
+predictDCM <- function(results, data = NULL) {
 
   model <- results$model
 
   chosen_values <- results$results$estimate
 
-  if(is.null(data)){
+  if (is.null(data)) {
     processed <-  results$model$data
-  }else{
+  }else {
     processed <- data
   }
 
@@ -126,15 +126,15 @@ predictDCM <- function(results, data=NULL) {
 
   delta <- mvtnorm::rmvnorm(ndecisionmakers,
                             mudeltaparameters,
-                            diag(sigmadeltaparameters)*0)
+                            diag(sigmadeltaparameters) * 0)
 
   epsilon <- mvtnorm::rmvnorm(ndecisionmakers,
                               muepsilonparameters,
-                              diag(sigmaepsilonparameters)*0)
+                              diag(sigmaepsilonparameters) * 0)
 
 
-  prob_matrix <- matrix(0, ncol= nmax_choiceset_size, nrow = nlines)
-  choice_matrix <- matrix(0, ncol= nmax_choiceset_size, nrow = nlines)
+  prob_matrix <- matrix(0, ncol = nmax_choiceset_size, nrow = nlines)
+  choice_matrix <- matrix(0, ncol = nmax_choiceset_size, nrow = nlines)
 
   for (i in 1:nlines) {
     j <- groups[i]
@@ -162,17 +162,24 @@ predictDCM <- function(results, data=NULL) {
   actual_choice <- data[, 2]
 
   ce_loss <- CELoss(choice_matrix, predictions)
-  return(list(ce_loss = ce_loss, predictions = predictions, true = choice_matrix, choices = choices, actual_choice = actual_choice))
+
+  loss_result <- list(ce_loss = ce_loss,
+                      predictions = predictions,
+                      true = choice_matrix,
+                      choices = choices,
+                      actual_choice = actual_choice)
+
+  return(loss_result)
 }
 
 
-CELoss <- function(true, predictions){
+CELoss <- function(true, predictions) {
 
   loss <- 0
 
-  for(i in seq_len(nrow(true))){
-    for(j in seq_len(ncol(true))){
-      loss <- loss - true[i,j]*log(predictions[i,j])
+  for (i in seq_len(nrow(true))) {
+    for (j in seq_len(ncol(true))) {
+      loss <- loss - true[i, j] * log(predictions[i, j])
     }
   }
 
@@ -187,14 +194,14 @@ CELoss <- function(true, predictions){
 #' @param emi_filename filename is using EMI rather than standard model
 #' @returns CV CE Loss
 #' @export
-cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename = NULL, integral_type = NULL){
+cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename = NULL, integral_type = NULL) {
 
   dataset <- raw_dataset
   IDs <- unique(dataset$ID)
 
-  if (k == 0){
+  if (k == 0) {
     folds <- as.list(IDs)
-  }else{
+  }else {
     set.seed(seed)
     idx <- sample(1:k, size = length(IDs), replace = TRUE)
     folds <- list()
@@ -204,7 +211,7 @@ cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename =
   }
 
   loss_vector <- array(0, length(folds))
-  for(i in seq_len(length(folds))){
+  for (i in seq_len(length(folds))) {
 
     train_data <- dataset[!dataset$ID %in% folds[[i]], ]
     train_processed <- setUp(train_data)
@@ -212,14 +219,14 @@ cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename =
     test_data <- dataset[dataset$ID %in% folds[[i]], ]
     test_processed <- setUp(test_data)
 
-    if(type != "EMI"){
-      if(is.null(integral_type)) {
+    if (type != "EMI") {
+      if (is.null(integral_type)) {
         integral_type <- "TMB"
       }
       model <- modelGenerator(train_processed, type)
 
-    }else{
-      if(is.null(integral_type)) {
+    }else {
+      if (is.null(integral_type)) {
         integral_type <- "GHQ"
       }
       model <- loadEMIWorkbook(train_processed, emi_filename)
@@ -234,5 +241,5 @@ cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename =
 
   }
 
- return(list(cv_loss = mean(loss_vector), fold_values = loss_vector))
+  return(list(cv_loss = mean(loss_vector), fold_values = loss_vector))
 }
