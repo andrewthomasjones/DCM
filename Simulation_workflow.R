@@ -1,7 +1,7 @@
 library(DCM)
 library(tidyverse)
 library(doParallel)
-registerDoParallel(cores=7)
+registerDoParallel(cores=4)
 
 chosen_values <- list()
 colvars <- 2
@@ -29,35 +29,43 @@ precision_levels <- list()
 precision_levels[["draws"]] <- c(1000)
 precision_levels[["TMB"]] <- c(0)
 
-n_sims <-  21
+n_sims <-  500
 m_list <- c(200) #, 100, 250)
 models <- c("one-factor",  "random", "mtmm") #"fixed",
-precision_levels[["ghq"]] <- c(4)
+precision_levels[["ghq"]] <- c(3)
 
-filename <- "./TESTING_DUMP/par_test_20240423_col4.Rdata"
+filename <- "./TESTING_DUMP/par_test_20241026_TMBbug8.Rdata"
 
 big_list <- run_sims(data_sets, chosen_values, precision_levels, integral_types, models, m_list, n_sims, colvars, filename)
 #
-gc()
+#gc()
+
+filename <- "./TESTING_DUMP/par_test_20241026_TMBbug8.Rdata"
 load(file=filename)
 sim_results <- process_sims(big_list, params$data_sets, params$chosen_values, params$precision_levels, params$integral_types, params$models, params$m_list, params$n_sims,  0.95, params$colvars)
 
 sim_results$data_type <- factor(sim_results$data_type, levels = c("BW", "DCE","BWDCE"))
 
-sim_results %>%  filter(data_type == "BW") %>%  filter(start=="eg_FALSE") %>% ggplot(aes(x=name, colour=integral_type, shape =start , y=mu)) +
+sim_results   %>%  filter(start=="eg_FALSE") %>% ggplot(aes(x=name, colour=integral_type, shape =start , y=mu)) +
   geom_point(size=2,  position=position_dodge(0.5)) + facet_grid(cols = vars(model_type), rows=vars(data_type), scales="free_x") +
-  theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + ylim(c(-1.8, 20)) +
-  geom_point(aes(y = true), size=2,  position=position_dodge(0.5), colour="black", alpha=0.5)
+  theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + # ylim(c(-1.8, 20)) +
+  geom_point(aes(y = true), size=2, colour="black", alpha=0.5)
 
 
 
-sim_results %>%  filter(data_type == "DCE") %>%  filter(start=="eg_TRUE") %>% ggplot(aes(x=name, colour=integral_type, shape = start , y=coverage_probability)) +
+sim_results %>% ggplot(aes(x=name, colour=integral_type,  y=coverage_probability2)) +
   geom_point(size=2) + facet_grid(cols = vars(data_type), scales="free_x") + theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
   geom_hline(yintercept=0.95, linetype="dashed") + facet_grid(cols = vars(model_type), rows=vars(data_type), scales="free_x")
 
+sim_results %>% filter(start=="eg_FALSE") %>%   ggplot(aes(x=name, colour=integral_type,  y=bias_pc)) +
+  geom_point(size=2,  position=position_dodge(0.5)) + facet_grid(cols = vars(data_type), scales="free_x") + theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  geom_hline(yintercept=0.95, linetype="dashed") + facet_grid(cols = vars(model_type), rows=vars(data_type), scales="free_x")
+#
 
-
-
+sim_results   %>%  filter(start=="eg_FALSE", data_type == "BWDCE") %>% ggplot(aes(x=name, colour=integral_type, shape =start , y=mu)) +
+  geom_point(size=2,  position=position_dodge(0.5)) + facet_grid(cols = vars(model_type), rows=vars(data_type), scales="free_x") +
+  theme_bw() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + # ylim(c(-1.8, 20)) +
+  geom_point(aes(y = true), size=2, colour="black", alpha=0.5)
 #
 #
 #

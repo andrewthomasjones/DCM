@@ -38,6 +38,7 @@ run_model_TMB <- function(model, verbose = FALSE) {
                imatrix = diag(model$nhop)
   )
 
+  model_orig <- model
 
   model$gamma[model$gamma == -1] <- 1
   model$beta[model$beta == -1] <- 1
@@ -190,16 +191,37 @@ run_model_TMB <- function(model, verbose = FALSE) {
   sorting_frame$clean_names_new2 <- factor(clean_names_new, levels = unique(clean_names_old))
   sorting_frame <- sorting_frame[order(sorting_frame$clean_names_new2, sorting_frame$order_new), ]
 
-  results  <-  data.frame(parameters = parameters_labels, #FIXME order is wrong
-                          estimate = se_final[sorting_frame$frame_order, 1],
-                          standard_errors = se_final[sorting_frame$frame_order, 2])
 
+
+
+  variable_names <- array(NA, length(parameters_labels))
+  parameters_label_idx <- stringr::str_match(parameters_labels, "^([a-z]{1,20}|[a-z]{1,20}_sig)_\\[([0-9]{1,3}),")
+
+
+
+
+  param_names <- str_replace(parameters_label_idx[, 2], "_sig", "")
+  param_lab_pos <- as.numeric(parameters_label_idx[, 3])
+
+
+  for (i in seq_len(length(parameters_labels))){
+    variable_names[i] <- row.names(model_orig[[param_names[i]]])[param_lab_pos[i]]
+  }
+
+
+
+  results  <-  data.frame(variable = variable_names,
+                          parameter = parameters_labels,
+                          estimate = se_final[sorting_frame$frame_order, 1],
+                          standard_error = se_final[sorting_frame$frame_order, 2])
+
+  results$LL  <-   c(opt$objective,  rep(".",  nrow(results) - 1))
 
   end_time <- Sys.time()
   time_taken <- end_time - start_time
 
   fitted_model  <-  list(result_name = result_name,
-                         model = model,
+                         model = model_orig,
                          model_name = model_type,
                          LL = opt$objective,
                          loglikf = opt,

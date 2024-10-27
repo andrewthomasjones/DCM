@@ -56,19 +56,19 @@ runModel  <-  function(model,  verbose = FALSE,
   }
 
 
-  if (model_type == "mtmm") {
-    data_names <- stringr::str_match(model$data$attribute_names, "^(.*)_(.*)$")
-
-    if (length(unique(data_names[, 3])) < 2) {
-      cli::cli_abort("Only one sub-dataset, MTMM model is not appropriate")
-    }
-
-    unique_name_length <- length(unique(data_names[, 2])) * length(unique(data_names[, 3]))
-    if (unique_name_length != length(model$data$attribute_names)) {
-      cli::cli_abort("Naming inconsistent.")
-    }
-
-  }
+  # if (model_type == "mtmm") {
+  #   data_names <- stringr::str_match(model$data$attribute_names, "^(.*)_(.*)$")
+  #
+  #   if (length(unique(data_names[, 3])) < 2) {
+  #     cli::cli_abort("Only one sub-dataset, MTMM model is not appropriate")
+  #   }
+  #
+  #   unique_name_length <- length(unique(data_names[, 2])) * length(unique(data_names[, 3]))
+  #   if (unique_name_length != length(model$data$attribute_names)) {
+  #     cli::cli_abort("Naming inconsistent.")
+  #   }
+  #
+  # }
 
   nrc <- dim(model$epsilon)[1] + dim(model$delta)[1]
 
@@ -198,9 +198,18 @@ runModel  <-  function(model,  verbose = FALSE,
                            "[", subscripts[, 1], ", ", subscripts[, 2], "]")
 
 
-    results  <-  data.frame(parameters = parameters,
+    variable_names <- array(NA, length(para_stems))
+
+    for (i in seq_len(length(para_stems))){
+      para_stems2 <- stringr::str_split(para_stems[i], "_")[[1]][1]
+      variable_names[i] <- row.names(model[[para_stems2]])[subscripts[i, 1]]
+    }
+
+
+    results  <-  data.frame(variable = variable_names,
+                            parameter = parameters,
                             estimate = loglik1$estimate,
-                            standard_errors = standard_errors)
+                            standard_error = standard_errors)
 
     #make sure standard deviation estimates corrected to be positive
     results$estimate[stringr::str_detect(results$parameters, "_sig_")] <-
