@@ -781,18 +781,22 @@ process_sims <-
 
 
 sd_CI <- function(s, SE, upper = FALSE, alpha = 0.05) {
-  SE <- SE * 4
-  k <-  s^2 / SE^2
 
-  crit1 <- stats::qchisq(1 - alpha / 2, k)
-  crit2 <- stats::qchisq(alpha / 2, k)
+  res <- array(NA, length(s))
 
-  if (upper == TRUE) {
-    res <- sqrt(k / crit2) * s
-  } else {
-    res <- sqrt(k / crit1) * s
+  for (i in seq_len(length(s))) {
+      SE_i <- SE[i] * 4
+      k <-  s[i]^2 / SE_i^2
+
+      crit1 <- stats::qchisq(1 - alpha / 2, k)
+      crit2 <- stats::qchisq(alpha / 2, k)
+
+      if (upper == TRUE) {
+        res[i] <- sqrt(k / crit2) * s[i]
+      } else {
+        res[i] <- sqrt(k / crit1) * s[i]
+      }
   }
-
   return(res)
 }
 
@@ -812,27 +816,28 @@ n_CI <- function(x, SE, upper = FALSE, alpha = 0.05) {
 
 CI_results <- function(results, alpha = 0.05) {
 
-  results$lower <- NA
-  results$upper <- NA
+    results$lower <- NA
+    results$upper <- NA
 
-  results$idx <- seq_len(nrow(results))
-  results$variance <- dplyr::case_when(str_detect(results$parameter, "_sig_") ~ TRUE,
-                                       TRUE ~ FALSE)
+    results$idx <- seq_len(nrow(results))
+    results$variance <- dplyr::case_when(str_detect(results$parameter, "_sig_") ~ TRUE,
+                                         TRUE ~ FALSE)
 
-  results$estimate <- dplyr::case_when(str_detect(results$parameter, "_sig_") ~ results$estimate^2,
-                                       TRUE ~ results$estimate)
+    results$estimate <- dplyr::case_when(str_detect(results$parameter, "_sig_") ~ results$estimate^2,
+                                         TRUE ~ results$estimate)
 
-  temp1 <- results[results$variance, ]
-  temp1$lower <- sd_CI(temp1$estimate, temp1$standard_error, FALSE)
-  temp1$upper <- sd_CI(temp1$stimate, temp1$standard_error, TRUE)
+    temp1 <- results[results$variance, ]
+    temp1$lower <- sd_CI(temp1$estimate, temp1$standard_error, FALSE)
+    temp1$upper <- sd_CI(temp1$estimate, temp1$standard_error, TRUE)
 
 
-  temp2 <- results[!results$variance, ]
-  temp2$lower <- n_CI(temp2$estimate, temp2$standard_error, FALSE)
-  temp2$upper <- n_CI(temp2$estimate, temp2$standard_error, TRUE)
+    temp2 <- results[!results$variance, ]
+    temp2$lower <- n_CI(temp2$estimate, temp2$standard_error, FALSE)
+    temp2$upper <- n_CI(temp2$estimate, temp2$standard_error, TRUE)
 
-  results_CI <- rbind(temp1, temp2)
-  results_CI <- results_CI[order(results_CI$idx), ]
+    results_CI <- rbind(temp1, temp2)
+    results_CI <- results_CI[order(results_CI$idx), ]
 
-  return(results_CI[, c(2,3,4,6,7)])
+    return(results_CI[, c(2,3,4,6,7)])
+
 }
