@@ -195,10 +195,17 @@ run_model_TMB <- function(model, verbose = FALSE) {
 
 
   variable_names <- array(NA, length(parameters_labels))
-  parameters_label_idx <- stringr::str_match(parameters_labels, "^([a-z]{1,20})_\\[([0-9]{1,3}),")
+  parameters_label_idx <- stringr::str_match(parameters_labels, "^([a-z]{1,20}|[a-z]{1,20}_sig)_\\[([0-9]{1,3}),")
+
+
+
+
+  param_names <- str_replace(parameters_label_idx[, 2], "_sig", "")
+  param_lab_pos <- as.numeric(parameters_label_idx[, 3])
+
 
   for (i in seq_len(length(parameters_labels))){
-    variable_names[i] <- row.names(model[[parameters_label_idx[i, 2]]])[as.numeric(parameters_label_idx[i, 3])]
+    variable_names[i] <- row.names(model_orig[[param_names[i]]])[param_lab_pos[i]]
   }
 
 

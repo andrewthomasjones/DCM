@@ -1,10 +1,10 @@
 library(DCM)
 
-cvError(DCEpriorities, 5, "fixed", integral_type = "GHQ")
+cvError(DCEpriorities, 5, "fixed", integral_type = "TMB")
 
-cvError(DCEpriorities, 5, "one-factor", integral_type = "GHQ")
+cvError(DCEpriorities, 5, "one-factor", integral_type = "TMB")
 
-#cvError(DCEpriorities, 3, "random", integral_type = "TMB") #doesnt work for any of them
+cvError(DCEpriorities, 3, "random", integral_type = "TMB") #doesnt work for any of them
 
 fix_cv <- cvError(DCEpriorities, 0, "fixed", integral_type = "GHQ")
 fix_cv
@@ -29,6 +29,13 @@ processedDCE <- setUp(DCEpriorities)
 createEMIWorkbook(processedDCE,  "fixed")
 cvError(DCEpriorities, 3, type="EMI", emi_filename = "/home/andew/Projects/DCM/EMI_fixed.xlsx")
 #FIXME cant do stuff thats been automatically joined
+
+
+
+
+processedDCE <- setUp(DCEpriorities[,1:6])
+model_random <- modelGenerator(processedDCE, "random")
+a <-runModel(model_random , integral_type = "TMB")
 
 
 
