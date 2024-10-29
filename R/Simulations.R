@@ -325,7 +325,8 @@ simulation <- function(chosen_values,  model,  processed) {
           concept2[data2[j, k + 4], ]
         ), nrow = 1))
       if (length(temp_list) > 3) {
-        names(temp_list) <- names(new_orig_data)
+        #print(names(new_orig_data))
+        names(temp_list) <- names(new_orig_data)[1:length(names(temp_list))]
         new_orig_data <- bind_rows(new_orig_data, temp_list)
       }
     }
@@ -435,6 +436,9 @@ estimate_model <- function(model_sims, type, precision) {
 #' @returns results
 #' @export
 generate_simulation_templates <- function(m, p = 2) {
+
+
+  p <- p +1
   #-----------------------------
   # define attributes and levels
   #-----------------------------
@@ -469,7 +473,8 @@ generate_simulation_templates <- function(m, p = 2) {
   row.names(template_DCE) <- NULL
 
 
-  l <- length(desLevels) + 1
+  #BW starts here
+  l <- length(desLevels) # + 1
 
   design_ouput2 <- crossdes::find.BIB(l, 4, 3, iter = 30)
 
@@ -515,7 +520,15 @@ generate_simulation_templates <- function(m, p = 2) {
     processed_template_BW$attribute_names[length(processed_template_BW$attribute_names)]
   processed_template_BW  <-
     removeVariables(processed_template_BW, name)
+
   processed_template_DCE <- setUp(template_DCE)
+  name <-
+    processed_template_DCE$attribute_names[length(processed_template_DCE$attribute_names)]
+  processed_template_DCE  <-
+    removeVariables(processed_template_DCE, name)
+
+
+
   processed_template_BWDCE  <-
     joinChoiceDatasets(processed_template_BW, processed_template_DCE)
 
@@ -724,11 +737,11 @@ process_sims <-
                     upper_bounds <- estimates_j + critical_val * standard_errors_j
                     lower_bounds <- estimates_j - critical_val * standard_errors_j
 
-                    sw_p_value <-
-                      if (sum(is.finite(z_scores)) > 3) {
-                        stats::shapiro.test(z_scores)$p.value
+                    sw_p_value <- NA
+                      if (sum(is.finite(z_scores)) > 3 & (sd(z_scores) > 0 )) {
+                        sw_p_value <- stats::shapiro.test(z_scores)$p.value
                       } else {
-                        NA
+                        sw_p_value <- NA
                       }
                     coverage_probability <-
                       (sum(1.0 * ((true_j > lower_bounds) & (true_j < upper_bounds)),
@@ -737,6 +750,14 @@ process_sims <-
                     coverage_probability2 <-
                       (sum(1.0 * ((true_j > lower_bounds2) & (true_j < upper_bounds2)),
                            na.rm = TRUE) / length(estimates))
+
+
+                    CIwidth <- function(p, n, alpha){
+                      qnorm(1-alpha/2) * sqrt( p * (1 - p) / n)
+                    }
+
+                    coverage_cutoff <- conf_level - CIwidth(conf_level, length(estimates), 0.05)
+                    bias_pc <- 100 * mean(((estimates_j - true_j) / true_j), na.rm = TRUE)
 
                     row_list[[row_count]] <- data.frame(
                       m_size = m_size,
@@ -757,13 +778,14 @@ process_sims <-
                       mean_upper2 = mean(upper_bounds2, na.rm = TRUE),
                       mean_lower2 = mean(lower_bounds2, na.rm = TRUE),
                       mse = mean((estimates_j - true_j) ^ 2, na.rm = TRUE),
+                      mae = mean(abs(estimates_j - true_j), na.rm = TRUE),
                       mean_std_deviation = mean(std_deviations, na.rm = TRUE),
-                      bias_pc = 100 * mean(estimates_j - true_j, na.rm = TRUE) / true_j,
+                      bias_pc = bias_pc,
                       mu = mean(estimates_j, na.rm = TRUE),
                       mu2 = stats::median(estimates_j, na.rm = TRUE),
                       sw_p_value = sw_p_value,
-                      good_estimate = coverage_probability > 0.90 &
-                        sw_p_value > 0.01
+                      good_estimate = (coverage_probability > coverage_cutoff) &
+                        (sw_p_value > 0.01) & (abs(bias_pc) < 10 )
                     )
                     row_count <- row_count + 1
                   }
