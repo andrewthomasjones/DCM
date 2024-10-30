@@ -162,8 +162,9 @@ predictDCM <- function(results, data = NULL) {
   actual_choice <- data[, 2]
 
   ce_loss <- CELoss(choice_matrix, predictions)
-
+  accuracy_val <- accuracy(choice_matrix, predictions)
   loss_result <- list(ce_loss = ce_loss,
+                      accuracy = accuracy_val,
                       predictions = predictions,
                       true = choice_matrix,
                       choices = choices,
@@ -185,6 +186,19 @@ CELoss <- function(true, predictions) {
 
   return(loss)
 }
+
+accuracy <- function(true, predictions) {
+  correct <- 0
+
+  for (i in seq_len(nrow(true))) {
+      tmp <- array(0, ncol(true))
+      tmp[which.max(predictions)] <- 1
+      correct <- correct + as.numeric(true[i, ] %*% predictions[i, ])
+  }
+  acc <- correct / nrow(true)
+  return(acc)
+}
+
 
 #' cvError
 #' @param raw_dataset raw_dataset
@@ -212,7 +226,17 @@ cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename =
   }
 
   loss_vector <- array(0, length(folds))
-  for (i in seq_len(length(folds))) {
+
+  fold_list <- foreach::foreach(
+    i=seq_len(length(folds)),
+    .final = function(x) {
+      setNames(x, paste0("fold_", seq_len(length(folds))))
+    },
+    .packages = "DCM"
+  ) %dopar% {
+    temp_list <- list()
+
+    cli::cli_inform(paste0("fold_", i, " of ", length(folds)))
 
     train_data <- dataset[!dataset$ID %in% folds[[i]], ]
     train_processed <- setUp(train_data)
@@ -234,13 +258,10 @@ cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename =
     }
     res <- runModel(model, integral_type = integral_type)
 
-
-
     loss_fixed <- predictDCM(res, test_processed)
-    #print(loss_fixed$ce_loss)
-    loss_vector[i] <- loss_fixed$ce_loss
-
+    return(list(loss_fixed$ce_loss, loss_fixed$accuracy))
   }
 
-  return(list(cv_loss = mean(loss_vector), fold_values = loss_vector))
+  return(fold_list)
+
 }
