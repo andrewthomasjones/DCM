@@ -179,12 +179,10 @@ CELoss <- function(true, predictions) {
   loss <- 0
 
   for (i in seq_len(nrow(true))) {
-    for (j in seq_len(ncol(true))) {
-      loss <- loss - true[i, j] * log(predictions[i, j])
-    }
+      loss <- loss - as.numeric(true[i, ] %*% log(predictions[i, ]))
   }
 
-  return(loss)
+  return(loss/nrow(true))
 }
 
 accuracy <- function(true, predictions) {
