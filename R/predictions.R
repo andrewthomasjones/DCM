@@ -179,19 +179,19 @@ CELoss <- function(true, predictions) {
   loss <- 0
 
   for (i in seq_len(nrow(true))) {
-      loss <- loss - as.numeric(true[i, ] %*% log(predictions[i, ]))
+    loss <- loss - as.numeric(true[i, ] %*% log(predictions[i, ]))
   }
 
-  return(loss/nrow(true))
+  return(loss / nrow(true))
 }
 
 accuracy <- function(true, predictions) {
   correct <- 0
 
   for (i in seq_len(nrow(true))) {
-      tmp <- array(0, ncol(true))
-      tmp[which.max(predictions)] <- 1
-      correct <- correct + as.numeric(true[i, ] %*% predictions[i, ])
+    tmp <- array(0, ncol(true))
+    tmp[which.max(predictions)] <- 1
+    correct <- correct + as.numeric(true[i, ] %*% predictions[i, ])
   }
   acc <- correct / nrow(true)
   return(acc)
@@ -226,7 +226,7 @@ cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename =
   loss_vector <- array(0, length(folds))
 
   fold_list <- foreach::foreach(
-    i=seq_len(length(folds)),
+    i = seq_len(length(folds)),
     .final = function(x) {
       setNames(x, paste0("fold_", seq_len(length(folds))))
     },
@@ -257,7 +257,11 @@ cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename =
     res <- runModel(model, integral_type = integral_type)
 
     loss_fixed <- predictDCM(res, test_processed)
-    return(list(loss = loss_fixed$ce_loss, acc=loss_fixed$accuracy, preds = loss_fixed$predictions,  true=loss_fixed$true))
+    return(list(loss = loss_fixed$ce_loss,
+                acc = loss_fixed$accuracy,
+                preds = loss_fixed$predictions,
+                true = loss_fixed$true)
+    )
   }
 
   return(fold_list)
