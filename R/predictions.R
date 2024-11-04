@@ -261,7 +261,7 @@ cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename =
                 acc = loss_fixed$accuracy,
                 preds = loss_fixed$predictions,
                 true = loss_fixed$true)
-    )
+           )
   }
 
   return(fold_list)
