@@ -152,8 +152,8 @@ predictDCM <- function(results, data = NULL) {
     options <- data[i, (1:nmax_choiceset_size) + 4]
     probs <- gb[options, ]
     probs <- probs / sum(probs)
-    prob_matrix[i, ] <- probs
-    choice_locator <- which(options  ==     data[i, 2])
+    prob_matrix[i, ] <- c(probs, rep(0, nmax_choiceset_size - length(probs)))
+    choice_locator <- which(options  == data[i, 2])
     choice_matrix[i, choice_locator] <- 1
   }
 
@@ -257,7 +257,7 @@ cvError <- function(raw_dataset, k = 0, type = "fixed", seed = 1, emi_filename =
     res <- runModel(model, integral_type = integral_type)
 
     loss_fixed <- predictDCM(res, test_processed)
-    return(list(loss_fixed$ce_loss, loss_fixed$accuracy))
+    return(list(loss = loss_fixed$ce_loss, acc=loss_fixed$accuracy, preds = loss_fixed$predictions,  true=loss_fixed$true))
   }
 
   return(fold_list)

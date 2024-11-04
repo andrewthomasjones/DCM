@@ -5,40 +5,68 @@ registerDoParallel(cores=5)
 
 mtmm_data <- read.csv("/Users/uqajon14/Downloads/priorities_BW_DCE_joined_variable_dropped.csv")
 
-#BWCDE
-fix_cv5_BWDCE <- cvError(mtmm_data, 5, "fixed", integral_type = "Draws")
-onef_cv5_BWDCE <- cvError(mtmm_data, 5, "one-factor", integral_type = "Draws")
-random_cv5_BWDCE <- cvError(mtmm_data, 5, "random", integral_type = "Draws")
-mtmm_cv5_BWDCE <- cvError(mtmm_data, 5, "mtmm", integral_type = "Draws")
-save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
+#BW
+fix_cv5_BW <- cvError(BWpriorities, 5, "fixed", integral_type = "Draws")
+onef_cv5_BW <- cvError(BWpriorities, 5, "one-factor", integral_type = "Draws")
+random_cv5_BW <- cvError(BWpriorities, 5, "random", integral_type = "Draws")
 
-fix_cv_BWDCE <- cvError(mtmm_data, 0, "fixed", integral_type = "Draws")
-onef_cv_BWDCE <- cvError(mtmm_data, 0, "one-factor", integral_type = "Draws")
-random_cv_BWDCE <- cvError(mtmm_data, 0, "random", integral_type = "Draws")
-mtmm_cv_BWDCE <- cvError(mtmm_data, 0, "mtmm", integral_type = "Draws")
 save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
 
 #DCE
 fix_cv5_DCE <- cvError(DCEpriorities, 5, "fixed", integral_type = "Draws")
 onef_cv5_DCE <- cvError(DCEpriorities, 5, "one-factor", integral_type = "Draws")
 random_cv5_DCE <- cvError(DCEpriorities, 5, "random", integral_type = "Draws")
+
 save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
 
 fix_cv_DCE <- cvError(DCEpriorities, 0, "fixed", integral_type = "Draws")
+save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
 onef_cv_DCE <- cvError(DCEpriorities, 0, "one-factor", integral_type = "Draws")
+save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
 random_cvv <- cvError(DCEpriorities, 0, "random", integral_type = "Draws")
 save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
 
-#BW
-fix_cv5_BW <- cvError(BWpriorities, 5, "fixed", integral_type = "Draws")
-onef_cv5_BW <- cvError(BWpriorities, 5, "one-factor", integral_type = "Draws")
-random_cv5_BW <- cvError(BWpriorities, 5, "random", integral_type = "Draws")
 save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
 
 fix_cv_BW <- cvError(BWpriorities, 0, "fixed", integral_type = "Draws")
+save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
 onef_cv_BW <- cvError(BWpriorities, 0, "one-factor", integral_type = "Draws")
+save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
 random_cv_BW <- cvError(BWpriorities, 0, "random", integral_type = "Draws")
 save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
+
+
+fix_cv_BWDCE <- cvError(mtmm_data, 0, "fixed", integral_type = "Draws")
+save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
+onef_cv_BWDCE <- cvError(mtmm_data, 0, "one-factor", integral_type = "Draws")
+save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
+#up to here
+random_cv_BWDCE <- cvError(mtmm_data, 0, "random", integral_type = "Draws")
+save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
+mtmm_cv_BWDCE <- cvError(mtmm_data, 0, "mtmm", integral_type = "Draws")#
+
+save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
+
+
+# below are actually already done.
+#BWCDE
+fix_cv5_BWDCE <- cvError(mtmm_data, 5, "fixed", integral_type = "Draws")
+onef_cv5_BWDCE <- cvError(mtmm_data, 5, "one-factor", integral_type = "Draws")
+random_cv5_BWDCE <- cvError(mtmm_data, 5, "random", integral_type = "Draws")
+mtmm_cv5_BWDCE <- cvError(mtmm_data, 5, "mtmm", integral_type = "Draws")
+
+save(list = ls(.GlobalEnv)[stringr::str_detect(ls(.GlobalEnv), "_cv")], file = "predictions.Rdata")
+
+
+
+
+
+
+
+
+
+
+
 
 #unlist(lapply(onef_cv5_DCE, "[[", 2))
 
